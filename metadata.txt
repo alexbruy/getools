@@ -1,0 +1,19 @@
+[general]
+name=GETools
+description=Open selected features in GoogleEarth
+category=Vector
+version=0.0.1
+qgisMinimumVersion=2.0
+
+icon=icons/getools.png
+tags=vector,google,kml
+
+author=Alexander Bruy
+email=alexander.bruy@gmail.com
+
+homepage=http://hub.qgis.org/projects/getools/wiki
+tracker=http://hub.qgis.org/projects/getools
+repository=https://github.com/alexbruy/getools
+
+experimental=True
+deprecated=False

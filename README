@@ -1,0 +1,6 @@
+GoogleEarth Tools
+-----------------
+Open point, feature(s) or vector layer in GoogleEarth application.
+
+Plugin allows to open in GoogleEarth location, selected feature(s) or whole
+vector layer from QGIS.
