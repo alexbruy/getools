@@ -33,6 +33,7 @@ from qgis.gui import *
 
 import clicktool
 import aboutdialog
+import geutils as utils
 
 import resources_rc
 
@@ -144,6 +145,8 @@ class GEToolsPlugin:
 
         self.toggleTools(self.canvas.currentLayer())
 
+        utils.tempDirectory()
+
     def unload(self):
         self.iface.removeVectorToolBarIcon(self.actionSelectCoords)
         self.iface.removeVectorToolBarIcon(self.actionOpenFeature)
@@ -166,6 +169,9 @@ class GEToolsPlugin:
         del self.toolClick
 
         # Delete temporary files
+        tmp = utils.tempFirectory()
+        if QDir(tmp).exists():
+            shutil.rmtree(tmp, True)
 
     def selectCoords(self):
         self.canvas.setMapTool(self.toolClick)
