@@ -2,7 +2,7 @@
 
 """
 ***************************************************************************
-    __init__.py
+    getools.py
     ---------------------
     Date                 : October 2013
     Copyright            : (C) 2013 by Alexander Bruy
@@ -31,6 +31,7 @@ from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 
+import clicktool
 import aboutdialog
 
 import resources_rc
@@ -39,15 +40,15 @@ import resources_rc
 class GEToolsPlugin:
     def __init__(self, iface):
         self.iface = iface
+        self.canvas = self.iface.mapCanvas()
 
         self.qgsVersion = unicode(QGis.QGIS_VERSION_INT)
 
-        # For i18n support
         userPluginPath = QFileInfo(
                 QgsApplication.qgisUserDbFilePath()).path() \
                 + '/python/plugins/getools'
         systemPluginPath = QgsApplication.prefixPath() \
-                + '/python/plugins/geptagphotos'
+                + '/python/plugins/getools'
 
         overrideLocale = QSettings().value('locale/overrideFlag', False,
                                            type=bool)
@@ -77,15 +78,16 @@ class GEToolsPlugin:
                     QCoreApplication.translate('GETools',
                             'QGIS %s detected.\n') % (qgisVersion) +
                     QCoreApplication.translate('GETools',
-                            'This version of GETools requires at least \
-                            QGIS 2.0.\nPlugin will not be enabled.'))
+                            'This version of GETools requires at least '
+                            'QGIS 2.0.\nPlugin will not be enabled.'))
             return None
 
-        self.actionOpenCoords = QAction(QCoreApplication.translate(
+        self.actionSelectCoords = QAction(QCoreApplication.translate(
                 'GETools', 'Coords to Google Earth'), self.iface.mainWindow())
-        self.actionOpenCoords.setIcon(QIcon(':/icons/getools-coords.svg'))
-        self.actionOpenCoords.setWhatsThis(
+        self.actionSelectCoords.setIcon(QIcon(':/icons/getools-coords.svg'))
+        self.actionSelectCoords.setWhatsThis(
                 'Open mouse coordinates in Google Earth')
+        self.actionSelectCoords.setCheckable(True)
 
         self.actionOpenFeature = QAction(QCoreApplication.translate(
                 'GETools', 'Feature to Google Earth'), self.iface.mainWindow())
@@ -110,7 +112,7 @@ class GEToolsPlugin:
         self.actionAbout.setWhatsThis('About GETools')
 
         self.iface.addPluginToVectorMenu(QCoreApplication.translate(
-                'GETools', 'GETools'), self.actionOpenCoords)
+                'GETools', 'GETools'), self.actionSelectCoords)
         self.iface.addPluginToVectorMenu(QCoreApplication.translate(
                 'GETools', 'GETools'), self.actionOpenFeature)
         self.iface.addPluginToVectorMenu(QCoreApplication.translate(
@@ -120,23 +122,35 @@ class GEToolsPlugin:
         self.iface.addPluginToVectorMenu(QCoreApplication.translate(
                 'GETools', 'GETools'), self.actionAbout)
 
-        self.iface.addVectorToolBarIcon(self.actionOpenCoords)
+        self.iface.addVectorToolBarIcon(self.actionSelectCoords)
         self.iface.addVectorToolBarIcon(self.actionOpenFeature)
         self.iface.addVectorToolBarIcon(self.actionOpenLayer)
 
-        self.actionOpenCoords.triggered.connect(self.sendCoords)
+        self.actionSelectCoords.triggered.connect(self.selectCoords)
         self.actionOpenFeature.triggered.connect(self.sendFeatures)
         self.actionOpenLayer.triggered.connect(self.sendLayer)
         self.actionSettings.triggered.connect(self.settings)
         self.actionAbout.triggered.connect(self.about)
 
+        # Map tools
+        self.toolClick = clicktool.ClickTool(self.canvas)
+        self.toolClick.canvasClicked.connect(self.processCoords)
+
+        # Handle tool changes
+        self.iface.mapCanvas().mapToolSet.connect(self.mapToolChanged)
+
+        # Handle layer changes
+        self.iface.currentLayerChanged.connect(self.toggleTools)
+
+        self.toggleTools(self.canvas.currentLayer())
+
     def unload(self):
-        self.iface.removeVectorToolBarIcon(self.actionOpenCoords)
+        self.iface.removeVectorToolBarIcon(self.actionSelectCoords)
         self.iface.removeVectorToolBarIcon(self.actionOpenFeature)
         self.iface.removeVectorToolBarIcon(self.actionOpenLayer)
 
         self.iface.removePluginVectorMenu(QCoreApplication.translate(
-                'GETools', 'GETools'), self.actionOpenCoords)
+                'GETools', 'GETools'), self.actionSelectCoords)
         self.iface.removePluginVectorMenu(QCoreApplication.translate(
                 'GETools', 'GETools'), self.actionOpenFeature)
         self.iface.removePluginVectorMenu(QCoreApplication.translate(
@@ -146,8 +160,15 @@ class GEToolsPlugin:
         self.iface.removePluginVectorMenu(QCoreApplication.translate(
                 'GETools', 'GETools'), self.actionAbout)
 
-    def sendCoords(self):
-        pass
+        if self.iface.mapCanvas().mapTool() == self.toolClick:
+            self.iface.mapCanvas().unsetMapTool(self.toolClick)
+
+        del self.toolClick
+
+        # Delete temporary files
+
+    def selectCoords(self):
+        self.canvas.setMapTool(self.toolClick)
 
     def sendFeatures(self):
         pass
@@ -161,3 +182,18 @@ class GEToolsPlugin:
     def about(self):
         dlg = aboutdialog.AboutDialog()
         dlg.exec_()
+
+    def mapToolChanged(self, tool):
+        if tool != self.toolClick:
+            self.actionSelectCoords.setChecked(False)
+
+    def toggleTools(self, layer):
+        if layer is None or layer.type() != QgsMapLayer.VectorLayer:
+            self.actionSelectCoords.setEnabled(False)
+            if self.iface.mapCanvas().mapTool() == self.toolClick:
+                self.iface.mapCanvas().unsetMapTool(self.toolClick)
+        else:
+            self.actionSelectCoords.setEnabled(True)
+
+    def processCoords(self, point, button):
+        pass

@@ -2,7 +2,7 @@
 
 """
 ***************************************************************************
-    __init__.py
+    clicktool.py
     ---------------------
     Date                 : October 2013
     Copyright            : (C) 2013 by Alexander Bruy
@@ -25,7 +25,29 @@ __copyright__ = '(C) 2013, Alexander Bruy'
 
 __revision__ = '$Format:%H$'
 
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
 
-def classFactory(iface):
-    from getools import GEToolsPlugin
-    return GEToolsPlugin(iface)
+from qgis.core import *
+from qgis.gui import *
+
+
+class ClickTool(QgsMapToolEmitPoint):
+    def __init__(self, canvas):
+        QgsMapToolEmitPoint.__init__(self, canvas)
+
+        self.canvas = canvas
+        self.cursor = Qt.ArrowCursor
+        self.geoCrs = QgsCoordinateReferenceSystem(4326)
+
+    def activate(self):
+        self.canvas.setCursor(self.cursor)
+
+    def canvasPressEvent(self, event):
+        pnt = self.toMapCoordinates(event.pos())
+        sourceCrs = self.canvas.mapRenderer().destinationCrs()
+        if sourceCrs.authid() != 'EPSG:4326':
+            crsTransform = QgsCoordinateTransform(sourceCrs, self.geoCrs)
+            pnt = crsTransform.transform(pnt)
+
+        self.canvasClicked.emit(pnt, event.button())
