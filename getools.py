@@ -83,25 +83,25 @@ class GEToolsPlugin:
 
         self.actionOpenCoords = QAction(QCoreApplication.translate(
                 'GETools', 'Coords to Google Earth'), self.iface.mainWindow())
-        self.actionOpenCoords.setIcon(QIcon(':/icons/getools.png'))
+        self.actionOpenCoords.setIcon(QIcon(':/icons/getools-coords.svg'))
         self.actionOpenCoords.setWhatsThis(
                 'Open mouse coordinates in Google Earth')
 
         self.actionOpenFeature = QAction(QCoreApplication.translate(
                 'GETools', 'Feature to Google Earth'), self.iface.mainWindow())
-        self.actionOpenFeature.setIcon(QIcon(':/icons/getools.png'))
+        self.actionOpenFeature.setIcon(QIcon(':/icons/getools-features.svg'))
         self.actionOpenFeature.setWhatsThis(
                 'Send selected feature to Google Earth')
         self.actionOpenFeature.setCheckable(True)
 
         self.actionOpenLayer = QAction(QCoreApplication.translate(
                 'GETools', 'Layer to Google Earth'), self.iface.mainWindow())
-        self.actionOpenLayer.setIcon(QIcon(':/icons/getools.png'))
+        self.actionOpenLayer.setIcon(QIcon(':/icons/getools-layer.svg'))
         self.actionOpenLayer.setWhatsThis('Send whole layer to Google Earth')
 
         self.actionSettings = QAction(QCoreApplication.translate(
                 'GETools', 'Settings'), self.iface.mainWindow())
-        self.actionSettings.setIcon(QIcon(':/icons/options.png'))
+        self.actionSettings.setIcon(QIcon(':/icons/settings.svg'))
         self.actionSettings.setWhatsThis('GETools settings')
 
         self.actionAbout = QAction(QCoreApplication.translate(

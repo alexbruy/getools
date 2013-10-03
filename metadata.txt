@@ -5,7 +5,7 @@ category=Vector
 version=0.0.1
 qgisMinimumVersion=2.0
 
-icon=icons/getools.png
+icon=icons/getools.svg
 tags=vector,google,kml
 
 author=Alexander Bruy

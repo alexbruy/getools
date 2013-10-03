@@ -1,6 +1,10 @@
 <RCC>
   <qresource>
-    <file>icons/getools.png</file>
+    <file>icons/getools.svg</file>
+    <file>icons/getools-coords.svg</file>
+    <file>icons/getools-features.svg</file>
+    <file>icons/getools-layer.svg</file>
+    <file>icons/settings.svg</file>
     <file>icons/about.png</file>
   </qresource>
 </RCC>
