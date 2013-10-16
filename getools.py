@@ -35,6 +35,7 @@ from qgis.gui import *
 
 import clicktool
 import selecttool
+import optionsdialog
 import aboutdialog
 import geutils as utils
 
@@ -191,7 +192,8 @@ class GEToolsPlugin:
         pass
 
     def settings(self):
-        pass
+        dlg = optionsdialog.OptionsDialog()
+        dlg.exec_()
 
     def about(self):
         dlg = aboutdialog.AboutDialog()

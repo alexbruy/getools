@@ -6,6 +6,10 @@
     <file>icons/getools-layer.svg</file>
     <file>icons/settings.svg</file>
     <file>icons/about.png</file>
+    <file>icons/points.svg</file>
+    <file>icons/lines.svg</file>
+    <file>icons/polygons.svg</file>
+    <file>icons/labels.svg</file>
   </qresource>
 </RCC>
 
