@@ -25,6 +25,8 @@ __copyright__ = '(C) 2013, Alexander Bruy'
 
 __revision__ = '$Format:%H$'
 
+import shutil
+
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
@@ -32,6 +34,7 @@ from qgis.core import *
 from qgis.gui import *
 
 import clicktool
+import selecttool
 import aboutdialog
 import geutils as utils
 
@@ -137,6 +140,8 @@ class GEToolsPlugin:
         self.toolClick = clicktool.ClickTool(self.canvas)
         self.toolClick.canvasClicked.connect(self.processCoords)
 
+        self.toolSelect = selecttool.SelectTool(self.iface, self.canvas)
+
         # Handle tool changes
         self.iface.mapCanvas().mapToolSet.connect(self.mapToolChanged)
 
@@ -165,11 +170,14 @@ class GEToolsPlugin:
 
         if self.iface.mapCanvas().mapTool() == self.toolClick:
             self.iface.mapCanvas().unsetMapTool(self.toolClick)
+        if self.iface.mapCanvas().mapTool() == self.toolSelect:
+            self.iface.mapCanvas().unsetMapTool(self.toolSelect)
 
         del self.toolClick
+        del self.toolSelect
 
         # Delete temporary files
-        tmp = utils.tempFirectory()
+        tmp = utils.tempDirectory()
         if QDir(tmp).exists():
             shutil.rmtree(tmp, True)
 
@@ -177,7 +185,7 @@ class GEToolsPlugin:
         self.canvas.setMapTool(self.toolClick)
 
     def sendFeatures(self):
-        pass
+        self.canvas.setMapTool(self.toolSelect)
 
     def sendLayer(self):
         pass
@@ -192,14 +200,20 @@ class GEToolsPlugin:
     def mapToolChanged(self, tool):
         if tool != self.toolClick:
             self.actionSelectCoords.setChecked(False)
+        if tool != self.toolSelect:
+            self.actionOpenFeature.setChecked(False)
 
     def toggleTools(self, layer):
         if layer is None or layer.type() != QgsMapLayer.VectorLayer:
             self.actionSelectCoords.setEnabled(False)
+            self.actionOpenFeature.setEnabled(False)
             if self.iface.mapCanvas().mapTool() == self.toolClick:
                 self.iface.mapCanvas().unsetMapTool(self.toolClick)
+            if self.iface.mapCanvas().mapTool() == self.toolSelect:
+                self.iface.mapCanvas().unsetMapTool(self.toolSelect)
         else:
             self.actionSelectCoords.setEnabled(True)
+            self.actionOpenFeature.setEnabled(True)
 
     def processCoords(self, point, button):
         pass

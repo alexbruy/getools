@@ -35,4 +35,3 @@ def tempDirectory():
         QDir().mkpath(tmp)
 
     return os.path.abspath(tmp)
-
