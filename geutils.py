@@ -26,6 +26,7 @@ __copyright__ = '(C) 2013, Alexander Bruy'
 __revision__ = '$Format:%H$'
 
 import os
+import uuid
 from PyQt4.QtCore import *
 
 
@@ -35,3 +36,7 @@ def tempDirectory():
         QDir().mkpath(tmp)
 
     return os.path.abspath(tmp)
+
+def tempFileName():
+    tmpDir = tempDirectory()
+    fName = os.path.join(tmpDir, str(uuid.uuid4()).replace('-', '') + '.kml')
