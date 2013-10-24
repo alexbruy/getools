@@ -209,6 +209,7 @@ class GEToolsPlugin:
         if layer is None or layer.type() != QgsMapLayer.VectorLayer:
             self.actionSelectCoords.setEnabled(False)
             self.actionOpenFeature.setEnabled(False)
+            self.actionOpenLayer.setEnabled(False)
             if self.iface.mapCanvas().mapTool() == self.toolClick:
                 self.iface.mapCanvas().unsetMapTool(self.toolClick)
             if self.iface.mapCanvas().mapTool() == self.toolSelect:
@@ -216,6 +217,7 @@ class GEToolsPlugin:
         else:
             self.actionSelectCoords.setEnabled(True)
             self.actionOpenFeature.setEnabled(True)
+            self.actionOpenLayer.setEnabled(True)
 
     def processCoords(self, point, button):
         pass
