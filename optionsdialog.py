@@ -230,21 +230,20 @@ class OptionsDialog(QgsOptionsDialogBase, Ui_OptionsDialog):
 
         mode = self.cmbPointColorMode.itemData(
                 self.cmbPointColorMode.currentIndex())
-        self.settings.setValue('points/color_mode', mode)
+        self.settings.setValue('points/color_mode', self.COLOR_MODES[mode])
 
         self.settings.setValue('points/scale', self.spnPointScale.value())
 
         mode = self.cmbPointAltMode.itemData(
                 self.cmbPointAltMode.currentIndex())
-        self.settings.setValue('points/altitude_mode', mode)
-
+        self.settings.setValue('points/altitude_mode',
+                               self.ALTITUDE_MODES[mode])
         self.settings.setValue('points/altitude',
                                self.spnPointAltitude.value())
-
         self.settings.setValue('points/extrude',
                                self.chkPointConnect.isChecked())
 
-       # Lines tab
+        # Lines tab
         color = self.btnLineColor.color()
         self.settings.setValue('lines/line_color_red', color.red())
         self.settings.setValue('lines/line_color_green', color.green())
@@ -253,23 +252,21 @@ class OptionsDialog(QgsOptionsDialogBase, Ui_OptionsDialog):
 
         mode = self.cmbLineColorMode.itemData(
                 self.cmbLineColorMode.currentIndex())
-        self.settings.setValue('lines/color_mode', mode)
-
+        self.settings.setValue('lines/color_mode', self.COLOR_MODES[mode])
         self.settings.setValue('lines/width', self.spnLineWidth.value())
 
         mode = self.cmbLineAltMode.itemData(
                 self.cmbLineAltMode.currentIndex())
-        self.settings.setValue('lines/altitude_mode', mode)
-
+        self.settings.setValue('lines/altitude_mode',
+                               self.ALTITUDE_MODES[mode])
         self.settings.setValue('lines/altitude',
                                self.spnLineAltitude.value())
-
         self.settings.setValue('lines/extrude',
                                self.chkLineConnect.isChecked())
         self.settings.setValue('lines/tessellate',
                                self.chkLineFollow.isChecked())
 
-       # Polygons tab
+        # Polygons tab
         color = self.btnPolyColor.color()
         self.settings.setValue('polygons/polygon_color_red', color.red())
         self.settings.setValue('polygons/polygon_color_green', color.green())
@@ -278,8 +275,7 @@ class OptionsDialog(QgsOptionsDialogBase, Ui_OptionsDialog):
 
         mode = self.cmbPolyColorMode.itemData(
                 self.cmbPolyColorMode.currentIndex())
-        self.settings.setValue('polygons/color_mode', mode)
-
+        self.settings.setValue('polygons/color_mode', self.COLOR_MODES[mode])
         self.settings.setValue('polygons/fill',
                                self.chkPolyFill.isChecked())
         self.settings.setValue('polygons/outline',
@@ -287,17 +283,16 @@ class OptionsDialog(QgsOptionsDialogBase, Ui_OptionsDialog):
 
         mode = self.cmbPolyAltMode.itemData(
                 self.cmbPolyAltMode.currentIndex())
-        self.settings.setValue('polygons/altitude_mode', mode)
-
+        self.settings.setValue('polygons/altitude_mode',
+                               self.ALTITUDE_MODES[mode])
         self.settings.setValue('polygons/altitude',
                                self.spnPolyAltitude.value())
-
         self.settings.setValue('polygons/extrude',
                                self.chkPolyConnect.isChecked())
         self.settings.setValue('polygons/tessellate',
                                self.chkPolyFollow.isChecked())
 
-       # Labels tab
+        # Labels tab
         color = self.btnLabelColor.color()
         self.settings.setValue('labels/label_color_red', color.red())
         self.settings.setValue('labels/label_color_green', color.green())
@@ -306,6 +301,5 @@ class OptionsDialog(QgsOptionsDialogBase, Ui_OptionsDialog):
 
         mode = self.cmbLabelColorMode.itemData(
                 self.cmbLabelColorMode.currentIndex())
-        self.settings.setValue('labels/color_mode', mode)
-
+        self.settings.setValue('labels/color_mode', self.COLOR_MODES[mode])
         self.settings.setValue('labels/scale', self.spnLabelScale.value())
