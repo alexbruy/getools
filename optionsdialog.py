@@ -222,6 +222,8 @@ class OptionsDialog(QgsOptionsDialogBase, Ui_OptionsDialog):
 
     def saveOptions(self):
         # Points tab
+        self.settings.setValue('points/overrideStyle',
+                               self.grpPointStyle.isChecked())
         color = self.btnPointColor.color()
         self.settings.setValue('points/point_color_red', color.red())
         self.settings.setValue('points/point_color_green', color.green())
@@ -244,6 +246,8 @@ class OptionsDialog(QgsOptionsDialogBase, Ui_OptionsDialog):
                                self.chkPointConnect.isChecked())
 
         # Lines tab
+        self.settings.setValue('lines/overrideStyle',
+                               self.grpLineStyle.isChecked())
         color = self.btnLineColor.color()
         self.settings.setValue('lines/line_color_red', color.red())
         self.settings.setValue('lines/line_color_green', color.green())
@@ -267,6 +271,8 @@ class OptionsDialog(QgsOptionsDialogBase, Ui_OptionsDialog):
                                self.chkLineFollow.isChecked())
 
         # Polygons tab
+        self.settings.setValue('polygons/overrideStyle',
+                               self.grpPolyStyle.isChecked())
         color = self.btnPolyColor.color()
         self.settings.setValue('polygons/polygon_color_red', color.red())
         self.settings.setValue('polygons/polygon_color_green', color.green())
@@ -293,6 +299,8 @@ class OptionsDialog(QgsOptionsDialogBase, Ui_OptionsDialog):
                                self.chkPolyFollow.isChecked())
 
         # Labels tab
+        self.settings.setValue('labels/overrideStyle',
+                               self.grpLabelStyle.isChecked())
         color = self.btnLabelColor.color()
         self.settings.setValue('labels/label_color_red', color.red())
         self.settings.setValue('labels/label_color_green', color.green())
