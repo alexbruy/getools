@@ -6,7 +6,7 @@
     ---------------------
     Date                 : October 2013
     Copyright            : (C) 2013 by Alexander Bruy
-    Email                : alexannder dot bruy at gmail dot com
+    Email                : alexander dot bruy at gmail dot com
 ***************************************************************************
 *                                                                         *
 *   This program is free software; you can redistribute it and/or modify  *
