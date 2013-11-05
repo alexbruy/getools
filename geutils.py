@@ -41,6 +41,7 @@ def tempDirectory():
 def tempFileName():
     tmpDir = tempDirectory()
     fName = os.path.join(tmpDir, str(uuid.uuid4()).replace('-', '') + '.kml')
+    return fName
 
 
 def encodeStringForXml(string):
