@@ -33,15 +33,14 @@ import geutils as utils
 
 
 class KMLWriter(QObject):
+    exportError = pyqtSignal(str)
+    exportFinished = pyqtSignal(str)
+
     def __init__(self):
         QObject.__init__(self)
 
+        self.settings = QSettings('alexbruy', 'getools')
         self.layer = None
-
-        self.altMode = ''
-        self.altitude = 0.0
-        self.extrude = False
-        self.tessellate = False
 
     def exportPoint(self, point):
         pass
@@ -54,56 +53,76 @@ class KMLWriter(QObject):
                 self._exportVectorLayer(onlySelected)
             else:
                 print 'Layer has no geometry'
+                self.exportError.emit(self.tr('Layer has no geometry'))
         elif layerType == QgsMapLayer.RasterLayer:
             pass
         else:
             print 'Unsupported layer type', layerType
+            self.exportError.emit(
+                    self.tr('Unsupported layer type %s') % layerType)
 
     def _exportVectorLayer(self, onlySelected):
         # Read geometry settings
+        self.geomSettings = ''
         geometryType = self.layer.geometryType()
         if geometryType == QGis.Point:
             mode = self.settings.value(
                     'points/altitude_mode', 0, type=int)
-            self.altMode = OptionsDialog.ALTITUDE_MODES[mode]
+            altMode = OptionsDialog.ALTITUDE_MODES[mode]
             self.altitude = self.settings.value(
                     'points/altitude', 0.0, type=float)
-            self.extrude =  self.settings.value(
+            extrude =  self.settings.value(
                     'points/extrude', False, type=bool)
+
+            self.geomSettings += '<extrude>%d</extrude>\n' % extrude
+            self.geomSettings += \
+                    '<gx:altitudeMode>%s</gx:altitudeMode>\n' % altMode
         elif geometryType == QGis.Line:
             mode = self.settings.value(
                     'lines/altitude_mode', 0, type=int)
-            self.altMode = OptionsDialog.ALTITUDE_MODES[mode]
+            altMode = OptionsDialog.ALTITUDE_MODES[mode]
             self.altitude = self.settings.value(
                     'lines/altitude', 0.0, type=float)
-            self.extrude =  self.settings.value(
+            extrude =  self.settings.value(
                     'lines/extrude', False, type=bool)
-            self.tessellate =  self.settings.value(
+            tessellate =  self.settings.value(
                     'lines/tessellate', False, type=bool)
+
+            self.geomSettings += '<extrude>%d</extrude>\n' % extrude
+            self.geomSettings += '<tessellate>%d</tessellate>\n' % tessellate
+            self.geomSettings += \
+                    '<gx:altitudeMode>%s</gx:altitudeMode>\n' % altMode
         elif geometryType == QGis.Polygon:
             mode = self.settings.value(
                     'polygons/altitude_mode', 0, type=int)
-            self.altMode = OptionsDialog.ALTITUDE_MODES[mode]
+            altMode = OptionsDialog.ALTITUDE_MODES[mode]
             self.altitude = self.settings.value(
                     'polygons/altitude', 0.0, type=float)
-            self.extrude =  self.settings.value(
+            extrude =  self.settings.value(
                     'polygons/extrude', False, type=bool)
-            self.tessellate =  self.settings.value(
+            tessellate =  self.settings.value(
                     'polygons/tessellate', False, type=bool)
+
+            self.geomSettings += '<extrude>%d</extrude>\n' % extrude
+            self.geomSettings += '<tessellate>%d</tessellate>\n' % tessellate
+            self.geomSettings += \
+                    '<gx:altitudeMode>%s</gx:altitudeMode>\n' % altMode
         else:
             # TODO: emit signal and stop
             print 'Unsupported geometry type', geometryType
+            self.exportError.emit(
+                    self.tr('Unsupported geometry type %s') % geometryType)
 
         fileName = utils.tempFileName()
         with open(fileName, 'w') as kmlFile:
             kmlFile.write(self._kmlHeader())
-            s = utils.encodeStringForXml(layer.name())
+            s = utils.encodeStringForXml(self.layer.name())
             kmlFile.write('<name>%s</name>\n' % s)
 
             # TODO: write layer styles
 
-            hasName = self.layer.fieldNameIndex('name') == -1
-            hasDescription = self.layer.fieldNameIndex('descr') == -1
+            self.hasName = self.layer.fieldNameIndex('name') != -1
+            self.hasDescription = self.layer.fieldNameIndex('descr') != -1
 
             if onlySelected:
                 for f in self.layer.selectedFeatures():
@@ -112,6 +131,8 @@ class KMLWriter(QObject):
                 for f in self.layer.getFeatures():
                     kmlFile.write(self._featureToKml(f))
             kmlFile.write(self._kmlFooter())
+
+        self.exportFinished.emit(fileName)
 
     def _exportRasterLayer(self):
         pass
@@ -127,16 +148,18 @@ class KMLWriter(QObject):
 
     def _featureToKml(self, feature):
         geom = feature.geometry()
-        kmlFile.write('<Placemark>\n')
-        if hasName:
-            s = utils.encodeStringFroXml(feature['name'])
-            kmlFile.write('<name>%s</name>\n' % s)
-        if hasDescription:
-            s = utils.encodeStringFroXml(feature['descr'])
-            kmlFile.write('<description>%s</description>\n' % s)
+        kml = ''
+        kml += '<Placemark>\n'
+        if self.hasName:
+            s = utils.encodeStringForXml(feature['name'])
+            kml += '<name>%s</name>\n' % s
+        if self.hasDescription:
+            s = utils.encodeStringForXml(feature['descr'])
+            kml += '<description>%s</description>\n' % s
         # TODO: write feature style
-        kmlFile.write(self._geometryToKml(geom))
-        kmlFile.write('</Placemark>\n')
+        kml += self._geometryToKml(geom)
+        kml += '</Placemark>\n'
+        return kml
 
     def _geometryToKml(self, geometry):
         wkbType = geometry.wkbType()
@@ -178,10 +201,9 @@ class KMLWriter(QObject):
 
     def _pointToKml(self, point):
         kml = '<Point>\n'
-        kml += '<extrude>%d</extrude>\n' % extrude
-        kml += '<gx:altitudeMode>%s</gx:altitudeMode>\n' % altMode
+        kml += self.geomSettings
         kml += '<coordinates>'
-        kml += '%f,%f,%f' % (point.x(), point.y(), altitude)
+        kml += '%f,%f,%f' % (point.x(), point.y(), self.altitude)
         kml += '</coordinates>\n'
         kml += '</Point>\n'
         return kml
@@ -189,12 +211,10 @@ class KMLWriter(QObject):
     def _lineToKml(self, line):
         coords = ''
         for point in line:
-            coords += '%f,%f,%f ' % (point.x(), point.y(), altitude)
+            coords += '%f,%f,%f ' % (point.x(), point.y(), self.altitude)
 
         kml = '<LineString>\n'
-        kml += '<extrude>%d</extrude>\n' % extrude
-        kml += '<tessellate>%d</tessellate>\n' % tessellate
-        kml += '<gx:altitudeMode>%s</gx:altitudeMode>\n' % altMode
+        kml += self.geomSettings
         kml += '<coordinates>'
         kml += coords[:-1]
         kml += '</coordinates>\n'
@@ -206,18 +226,17 @@ class KMLWriter(QObject):
         for line in polygon:
             coords = ''
             for point in line:
-                coords += '%f,%f,%f ' % (point.x(), point.y(), altitude)
+                coords += '%f,%f,%f ' % (point.x(), point.y(), self.altitude)
             rings.append(coords[:-1])
 
         kml = '<Polygon>\n'
-        kml += '<extrude>%d</extrude>\n' % extrude
-        kml += '<tessellate>%d</tessellate>\n' % tessellate
-        kml += '<gx:altitudeMode>%s</gx:altitudeMode>\n' % altMode
+        kml += self.geomSettings
         kml += '<outerBoundaryIs>\n'
         kml += '<LinearRing>\n'
         kml += '<coordinates>'
         kml += rings[0]
         kml += '</coordinates>\n'
+        kml += '</LinearRing>\n'
         kml += '</outerBoundaryIs>\n'
         for i in xrange(1, len(rings)):
             kml += '<innerBoundaryIs>\n'
@@ -225,6 +244,7 @@ class KMLWriter(QObject):
             kml += '<coordinates>'
             kml += rings[i]
             kml += '</coordinates>\n'
+            kml += '</LinearRing>\n'
             kml += '</innerBoundaryIs>\n'
         kml += '</Polygon>\n'
         return kml
