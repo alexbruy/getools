@@ -25,6 +25,8 @@ __copyright__ = '(C) 2013, Alexander Bruy'
 
 __revision__ = '$Format:%H$'
 
+import codecs
+
 from PyQt4.QtCore import *
 from qgis.core import *
 
@@ -116,7 +118,7 @@ class KMLWriter(QObject):
                     self.tr('Unsupported geometry type %s') % geometryType)
 
         fileName = utils.tempFileName()
-        with open(fileName, 'w') as kmlFile:
+        with codecs.open(fileName, 'w', encoding='utf-8') as kmlFile:
             kmlFile.write(self._kmlHeader())
             s = utils.encodeStringForXml(self.layer.name())
             kmlFile.write('<name>%s</name>\n' % s)
