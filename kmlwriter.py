@@ -41,23 +41,27 @@ class KMLWriter(QObject):
 
         self.settings = QSettings('alexbruy', 'getools')
         self.layer = None
+        self.onlySelected = False
+
+    def setLayer(self, layer):
+        self.layer = layer
+
+    def setOnlySelected(self, onlySelected):
+        self.onlySelected = onlySelected
 
     def exportPoint(self, point):
         pass
 
-    def exportLayer(self, layer, onlySelected=False):
-        self.layer = layer
+    def exportLayer(self):
         layerType = self.layer.type()
         if layerType == QgsMapLayer.VectorLayer:
             if self.layer.hasGeometryType():
-                self._exportVectorLayer(onlySelected)
+                self._exportVectorLayer(self.onlySelected)
             else:
-                print 'Layer has no geometry'
                 self.exportError.emit(self.tr('Layer has no geometry'))
         elif layerType == QgsMapLayer.RasterLayer:
             pass
         else:
-            print 'Unsupported layer type', layerType
             self.exportError.emit(
                     self.tr('Unsupported layer type %s') % layerType)
 
@@ -108,8 +112,6 @@ class KMLWriter(QObject):
             self.geomSettings += \
                     '<gx:altitudeMode>%s</gx:altitudeMode>\n' % altMode
         else:
-            # TODO: emit signal and stop
-            print 'Unsupported geometry type', geometryType
             self.exportError.emit(
                     self.tr('Unsupported geometry type %s') % geometryType)
 
@@ -124,7 +126,7 @@ class KMLWriter(QObject):
             self.hasName = self.layer.fieldNameIndex('name') != -1
             self.hasDescription = self.layer.fieldNameIndex('descr') != -1
 
-            if onlySelected:
+            if self.onlySelected:
                 for f in self.layer.selectedFeatures():
                     kmlFile.write(self._featureToKml(f))
             else:
@@ -132,6 +134,7 @@ class KMLWriter(QObject):
                     kmlFile.write(self._featureToKml(f))
             kmlFile.write(self._kmlFooter())
 
+        self._cleanup()
         self.exportFinished.emit(fileName)
 
     def _exportRasterLayer(self):
@@ -269,3 +272,10 @@ class KMLWriter(QObject):
 
     def _symbolToKml(self, symbol):
         pass
+
+    def _cleanup(self):
+        self.layer = None
+        self.onlySelected = None
+
+        self.geomSettings = ''
+        self.altitude = 0.0
