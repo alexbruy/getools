@@ -84,7 +84,7 @@ class SelectTool(QgsMapTool):
             if self.selectRect.width() == 1:
                 self.selectRect.setLeft(self.selectRect.left() + 1)
             if self.selectRect.height() == 1:
-                mSelectRect.setBottom(self.selectRect.bottom() + 1)
+                self.selectRect.setBottom(self.selectRect.bottom() + 1)
 
         if self.rubberBand:
             self._setRubberBand()
@@ -142,8 +142,8 @@ class SelectTool(QgsMapTool):
         self.selectRect.setBottom(point.y() + boxSize)
 
     def _setSelectFeatures(self, selectGeometry, event):
-        doContains = True
-        doDifference = False
+        doContains = True if event.modifiers() & Qt.ShiftModifier else False
+        doDifference = True if event.modifiers() & Qt.ControlModifier else False
         singleSelect = False
 
         if selectGeometry.type() != QGis.Polygon:
