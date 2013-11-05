@@ -35,6 +35,7 @@ from qgis.gui import *
 
 import clicktool
 import selecttool
+import kmlwriter
 import optionsdialog
 import aboutdialog
 import geutils as utils
@@ -94,17 +95,17 @@ class GEToolsPlugin:
                 'Open mouse coordinates in Google Earth')
         self.actionSelectCoords.setCheckable(True)
 
-        self.actionOpenFeature = QAction(QCoreApplication.translate(
+        self.actionSelectFeatures = QAction(QCoreApplication.translate(
                 'GETools', 'Feature to Google Earth'), self.iface.mainWindow())
-        self.actionOpenFeature.setIcon(QIcon(':/icons/getools-features.svg'))
-        self.actionOpenFeature.setWhatsThis(
+        self.actionSelectFeatures.setIcon(QIcon(':/icons/getools-features.svg'))
+        self.actionSelectFeatures.setWhatsThis(
                 'Send selected feature to Google Earth')
-        self.actionOpenFeature.setCheckable(True)
+        self.actionSelectFeatures.setCheckable(True)
 
-        self.actionOpenLayer = QAction(QCoreApplication.translate(
+        self.actionProcessLayer = QAction(QCoreApplication.translate(
                 'GETools', 'Layer to Google Earth'), self.iface.mainWindow())
-        self.actionOpenLayer.setIcon(QIcon(':/icons/getools-layer.svg'))
-        self.actionOpenLayer.setWhatsThis('Send whole layer to Google Earth')
+        self.actionProcessLayer.setIcon(QIcon(':/icons/getools-layer.svg'))
+        self.actionProcessLayer.setWhatsThis('Send whole layer to Google Earth')
 
         self.actionSettings = QAction(QCoreApplication.translate(
                 'GETools', 'Settings'), self.iface.mainWindow())
@@ -119,21 +120,21 @@ class GEToolsPlugin:
         self.iface.addPluginToVectorMenu(QCoreApplication.translate(
                 'GETools', 'GETools'), self.actionSelectCoords)
         self.iface.addPluginToVectorMenu(QCoreApplication.translate(
-                'GETools', 'GETools'), self.actionOpenFeature)
+                'GETools', 'GETools'), self.actionSelectFeatures)
         self.iface.addPluginToVectorMenu(QCoreApplication.translate(
-                'GETools', 'GETools'), self.actionOpenLayer)
+                'GETools', 'GETools'), self.actionProcessLayer)
         self.iface.addPluginToVectorMenu(QCoreApplication.translate(
                 'GETools', 'GETools'), self.actionSettings)
         self.iface.addPluginToVectorMenu(QCoreApplication.translate(
                 'GETools', 'GETools'), self.actionAbout)
 
         self.iface.addVectorToolBarIcon(self.actionSelectCoords)
-        self.iface.addVectorToolBarIcon(self.actionOpenFeature)
-        self.iface.addVectorToolBarIcon(self.actionOpenLayer)
+        self.iface.addVectorToolBarIcon(self.actionSelectFeatures)
+        self.iface.addVectorToolBarIcon(self.actionProcessLayer)
 
         self.actionSelectCoords.triggered.connect(self.selectCoords)
-        self.actionOpenFeature.triggered.connect(self.sendFeatures)
-        self.actionOpenLayer.triggered.connect(self.sendLayer)
+        self.actionSelectFeatures.triggered.connect(self.selectFeatures)
+        self.actionProcessLayer.triggered.connect(self.processLayer)
         self.actionSettings.triggered.connect(self.settings)
         self.actionAbout.triggered.connect(self.about)
 
@@ -153,17 +154,26 @@ class GEToolsPlugin:
 
         utils.tempDirectory()
 
+        # prepare worker
+        self.thread = QThread()
+        self.writer = kmlwriter.KMLWriter()
+        self.writer.moveToThread(self.thread)
+        self.writer.exportError.connect(self.thread.quit)
+        self.writer.exportError.connect(self.showMessage)
+        self.writer.exportFinished.connect(self.thread.quit)
+        self.writer.exportFinished.connect(self.openResults)
+
     def unload(self):
         self.iface.removeVectorToolBarIcon(self.actionSelectCoords)
-        self.iface.removeVectorToolBarIcon(self.actionOpenFeature)
-        self.iface.removeVectorToolBarIcon(self.actionOpenLayer)
+        self.iface.removeVectorToolBarIcon(self.actionSelectFeatures)
+        self.iface.removeVectorToolBarIcon(self.actionProcessLayer)
 
         self.iface.removePluginVectorMenu(QCoreApplication.translate(
                 'GETools', 'GETools'), self.actionSelectCoords)
         self.iface.removePluginVectorMenu(QCoreApplication.translate(
-                'GETools', 'GETools'), self.actionOpenFeature)
+                'GETools', 'GETools'), self.actionSelectFeatures)
         self.iface.removePluginVectorMenu(QCoreApplication.translate(
-                'GETools', 'GETools'), self.actionOpenLayer)
+                'GETools', 'GETools'), self.actionProcessLayer)
         self.iface.removePluginVectorMenu(QCoreApplication.translate(
                 'GETools', 'GETools'), self.actionSettings)
         self.iface.removePluginVectorMenu(QCoreApplication.translate(
@@ -185,11 +195,8 @@ class GEToolsPlugin:
     def selectCoords(self):
         self.canvas.setMapTool(self.toolClick)
 
-    def sendFeatures(self):
+    def selectFeatures(self):
         self.canvas.setMapTool(self.toolSelect)
-
-    def sendLayer(self):
-        pass
 
     def settings(self):
         dlg = optionsdialog.OptionsDialog()
@@ -203,21 +210,71 @@ class GEToolsPlugin:
         if tool != self.toolClick:
             self.actionSelectCoords.setChecked(False)
         if tool != self.toolSelect:
-            self.actionOpenFeature.setChecked(False)
+            self.actionSelectFeatures.setChecked(False)
 
     def toggleTools(self, layer):
         if layer is None or layer.type() != QgsMapLayer.VectorLayer:
             self.actionSelectCoords.setEnabled(False)
-            self.actionOpenFeature.setEnabled(False)
-            self.actionOpenLayer.setEnabled(False)
+            self.actionSelectFeatures.setEnabled(False)
+            self.actionProcessLayer.setEnabled(False)
             if self.iface.mapCanvas().mapTool() == self.toolClick:
                 self.iface.mapCanvas().unsetMapTool(self.toolClick)
             if self.iface.mapCanvas().mapTool() == self.toolSelect:
                 self.iface.mapCanvas().unsetMapTool(self.toolSelect)
         else:
             self.actionSelectCoords.setEnabled(True)
-            self.actionOpenFeature.setEnabled(True)
-            self.actionOpenLayer.setEnabled(True)
+            self.actionSelectFeatures.setEnabled(True)
+            self.actionProcessLayer.setEnabled(True)
 
     def processCoords(self, point, button):
         pass
+
+    def processFeatures(self):
+        settings = QSettings()
+        timeout = settings.value('/qgis/messageTimeout', 5, type=int)
+
+        if self.thread.isRunning():
+            self.iface.messageBar().pushMessage(
+                    QCoreApplication.translate('GETools',
+                            'There is running export operation. Please wait '
+                            'when it finished.'),
+                    QgsMessageBar.WARNING, timeout)
+        else:
+            self.writer.setLayer(self.canvas.currentLayer())
+            self.writer.setOnlySelected(True)
+            self.thread.started.connect(self.writer.exportLayer)
+            self.thread.start()
+
+    def processLayer(self):
+        settings = QSettings()
+        timeout = settings.value('/qgis/messageTimeout', 5, type=int)
+
+        if self.thread.isRunning():
+            self.iface.messageBar().pushMessage(
+                    QCoreApplication.translate('GETools',
+                            'There is running export operation. Please wait '
+                            'when it finished.'),
+                    QgsMessageBar.WARNING, timeout)
+        else:
+            self.writer.setLayer(self.canvas.currentLayer())
+            self.writer.setOnlySelected(False)
+            self.thread.started.connect(self.writer.exportLayer)
+            self.thread.start()
+
+    def showMessage(self, message):
+        settings = QSettings()
+        timeout = settings.value('/qgis/messageTimeout', 5, type=int)
+        self.thread.started.disconnect()
+        self.iface.messageBar().pushMessage(message, QgsMessageBar.WARNING,
+                                          timeout)
+
+    def openResults(self, fileName):
+        settings = QSettings()
+        timeout = settings.value('/qgis/messageTimeout', 5, type=int)
+
+        self.thread.started.disconnect()
+        self.iface.messageBar().pushMessage(
+                QCoreApplication.translate('GETools', 'Export completed'),
+                QgsMessageBar.INFO, timeout)
+
+        QDesktopServices.openUrl(QUrl('file:///' + fileName))
