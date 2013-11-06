@@ -35,6 +35,8 @@ from qgis.gui import *
 
 
 class SelectTool(QgsMapTool):
+    featuresSelected = pyqtSignal()
+
     def __init__(self, iface, canvas):
         QgsMapTool.__init__(self, canvas)
 
@@ -98,6 +100,7 @@ class SelectTool(QgsMapTool):
             self.rubberBand = None
 
         self.dragging = False
+        self.featuresSelected.emit()
 
     def _setRubberBand(self):
         transform = self.canvas.getCoordinateTransform()

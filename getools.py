@@ -143,6 +143,7 @@ class GEToolsPlugin:
         self.toolClick.canvasClicked.connect(self.processCoords)
 
         self.toolSelect = selecttool.SelectTool(self.iface, self.canvas)
+        self.toolSelect.featuresSelected.connect(self.processFeatures)
 
         # Handle tool changes
         self.iface.mapCanvas().mapToolSet.connect(self.mapToolChanged)
@@ -186,6 +187,10 @@ class GEToolsPlugin:
 
         del self.toolClick
         del self.toolSelect
+
+        self.thread.wait()
+        self.writer = None
+        self.thread = None
 
         # Delete temporary files
         tmp = utils.tempDirectory()
