@@ -1,6 +1,9 @@
 GoogleEarth Tools
 -----------------
-Open point, feature(s) or vector layer in GoogleEarth application.
+View cursor position, selected features or whole layer in GoogleEarth
+application.
 
-Plugin allows to open in GoogleEarth location, selected feature(s) or whole
-vector layer from QGIS.
+Plugin allows to create KML file, containing cursor position, selected
+feature(s) or whole layer and open it in GoogleEarth desktop application.
+
+NOTE: GoogleEarth application should be installed first.
