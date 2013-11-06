@@ -74,14 +74,14 @@ class AboutDialog(QDialog, Ui_Dialog):
                     'http://hub.qgis.org/projects/getools/wiki'))
         else:
             QDesktopServices.openUrl(QUrl(
-                    'http://hub.qgis.org/projects/geotagphotos/wiki'))
+                    'http://hub.qgis.org/projects/getools/wiki'))
 
     def getAboutText(self):
-        return self.tr("""<p>Send selected features, click coordinates or
-                whole vector layer to Google Earth.</p>
-                <p><strong>Homepage</strong>:
-                <a href="http://hub.qgis.org/projects/getools">
-                http://hub.qgis.org/projects/getools</a></p>
-                <p>Please report bugs at
-                <a href="http://hub.qgis.org/projects/getools/issues">
-                bugtracker</a>.</p>""")
+        return self.tr('<p>View cursor position, selected feature(s), or '
+                'whole vector layer in Google Earth application.</p>'
+                '<p><strong>Homepage</strong>: '
+                '<a href="http://hub.qgis.org/projects/getools">'
+                'http://hub.qgis.org/projects/getools</a></p>'
+                '<p>Please report bugs at '
+                '<a href="http://hub.qgis.org/projects/getools/issues">'
+                'bugtracker</a>.</p>')
