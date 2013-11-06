@@ -2,7 +2,7 @@
 name=GETools
 description=Open selected features in GoogleEarth
 category=Vector
-version=0.0.1
+version=0.1.0
 qgisMinimumVersion=2.0
 
 icon=icons/getools.svg
