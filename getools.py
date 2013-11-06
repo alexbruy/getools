@@ -232,7 +232,19 @@ class GEToolsPlugin:
             self.actionProcessLayer.setEnabled(True)
 
     def processCoords(self, point, button):
-        pass
+        settings = QSettings()
+        timeout = settings.value('/qgis/messageTimeout', 5, type=int)
+
+        if self.thread.isRunning():
+            self.iface.messageBar().pushMessage(
+                    QCoreApplication.translate('GETools',
+                            'There is running export operation. Please wait '
+                            'when it finished.'),
+                    QgsMessageBar.WARNING, timeout)
+        else:
+            self.writer.setPoint(point)
+            self.thread.started.connect(self.writer.exportPoint)
+            self.thread.start()
 
     def processFeatures(self):
         settings = QSettings()

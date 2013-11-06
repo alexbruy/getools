@@ -42,6 +42,7 @@ class KMLWriter(QObject):
         QObject.__init__(self)
 
         self.settings = QSettings('alexbruy', 'getools')
+        self.point = None
         self.layer = None
         self.onlySelected = False
 
@@ -51,8 +52,44 @@ class KMLWriter(QObject):
     def setOnlySelected(self, onlySelected):
         self.onlySelected = onlySelected
 
-    def exportPoint(self, point):
-        pass
+    def setPoint(self, point):
+        self.point = point
+
+    def exportPoint(self):
+        mode = self.settings.value('points/altitude_mode', 0, type=int)
+        altMode = OptionsDialog.ALTITUDE_MODES[mode]
+        altitude = self.settings.value('points/altitude', 0.0, type=float)
+        extrude =  self.settings.value('points/extrude', False, type=bool)
+
+        geomSettings = '<extrude>%d</extrude>\n' % extrude
+        geomSettings += '<gx:altitudeMode>%s</gx:altitudeMode>\n' % altMode
+
+        fileName = utils.tempFileName()
+        with codecs.open(fileName, 'w', encoding='utf-8') as kmlFile:
+            kmlFile.write(self._kmlHeader())
+
+            kmlFile.write('<name>%s</name>\n' % self.tr('Cursor coordinates'))
+
+            # TODO: write style
+
+            kmlFile.write('<Placemark>\n')
+            kmlFile.write('<name>%s</name>\n' % self.tr('Custom point'))
+            kmlFile.write('<description>%s</description>\n' %
+                          self.point.toString())
+            # TODO: write point style
+            kmlFile.write('<Point>\n')
+            kmlFile.write(geomSettings)
+            kmlFile.write('<coordinates>')
+            kmlFile.write('%f,%f,%f' % (self.point.x(), self.point.y(),
+                          altitude))
+            kmlFile.write('</coordinates>\n')
+            kmlFile.write('</Point>\n')
+            kmlFile.write('</Placemark>\n')
+
+            kmlFile.write(self._kmlFooter())
+
+        self._cleanup()
+        self.exportFinished.emit(fileName)
 
     def exportLayer(self):
         layerType = self.layer.type()
@@ -276,6 +313,7 @@ class KMLWriter(QObject):
         pass
 
     def _cleanup(self):
+        self.point = None
         self.layer = None
         self.onlySelected = None
 
