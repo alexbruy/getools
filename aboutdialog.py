@@ -78,7 +78,8 @@ class AboutDialog(QDialog, Ui_Dialog):
 
     def getAboutText(self):
         return self.tr('<p>View cursor position, selected feature(s), or '
-                'whole vector layer in Google Earth application.</p>'
+                'whole raster or vector layer in Google Earth application.</p>'
+                '<p>NOTE: supports only rasters loaded via gdal provider.</p>'
                 '<p><strong>Homepage</strong>: '
                 '<a href="http://hub.qgis.org/projects/getools">'
                 'http://hub.qgis.org/projects/getools</a></p>'
