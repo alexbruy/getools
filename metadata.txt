@@ -6,7 +6,7 @@ version=0.1.0
 qgisMinimumVersion=2.0
 
 icon=icons/getools.svg
-tags=vector,google,kml
+tags=vector,raster,google,kml
 
 author=Alexander Bruy
 email=alexander.bruy@gmail.com
