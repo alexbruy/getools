@@ -42,12 +42,20 @@ class KMLWriter(QObject):
         QObject.__init__(self)
 
         self.settings = QSettings('alexbruy', 'getools')
+        self.geoCrs = QgsCoordinateReferenceSystem(4326)
+
         self.point = None
         self.layer = None
+        self.crsTransform = None
         self.onlySelected = False
+        self.needsTransform = False
 
     def setLayer(self, layer):
         self.layer = layer
+        sourceCrs = self.layer.crs()
+        if sourceCrs.authid() != 'EPSG:4326':
+            self.crsTransform = QgsCoordinateTransform(sourceCrs, self.geoCrs)
+            self.needsTransform = True
 
     def setOnlySelected(self, onlySelected):
         self.onlySelected = onlySelected
@@ -190,6 +198,9 @@ class KMLWriter(QObject):
 
     def _featureToKml(self, feature):
         geom = feature.geometry()
+        if self.needsTransform:
+            geom.transform(self.crsTransform)
+
         kml = ''
         kml += '<Placemark>\n'
         if self.hasName:
@@ -315,7 +326,9 @@ class KMLWriter(QObject):
     def _cleanup(self):
         self.point = None
         self.layer = None
-        self.onlySelected = None
+        self.crsTransform = None
+        self.onlySelected = False
+        self.needsTransform = False
 
         self.geomSettings = ''
         self.altitude = 0.0
