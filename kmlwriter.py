@@ -107,7 +107,12 @@ class KMLWriter(QObject):
             else:
                 self.exportError.emit(self.tr('Layer has no geometry'))
         elif layerType == QgsMapLayer.RasterLayer:
-            pass
+            providerType = self.layer.providerType()
+            if providerType == 'gdal':
+                self._exportRasterLayer()
+            else:
+                self.exportError.emit(self.tr('Unsupported provider %s') %
+                                      providerType)
         else:
             self.exportError.emit(
                     self.tr('Unsupported layer type %s') % layerType)
@@ -185,7 +190,45 @@ class KMLWriter(QObject):
         self.exportFinished.emit(fileName)
 
     def _exportRasterLayer(self):
-        pass
+        # Read ettings
+        mode = self.settings.value(
+                'raster/altitude_mode', 0, type=int)
+        altMode = OptionsDialog.ALTITUDE_MODES[mode]
+        altitude = self.settings.value(
+                'raster/altitude', 0.0, type=float)
+
+        geomSettings = '<altitude>%f</altitude>\n' % altitude
+        geomSettings += '<gx:altitudeMode>%s</gx:altitudeMode>\n' % altMode
+
+        bbox = self.layer.extent()
+        if self.needsTransform:
+            bbox = self.crsTransform.transformBoundingBox(bbox)
+
+        fileName = utils.tempFileName()
+        with codecs.open(fileName, 'w', encoding='utf-8') as kmlFile:
+            kmlFile.write(self._kmlHeader())
+            s = utils.encodeStringForXml(self.layer.name())
+            kmlFile.write('<name>%s</name>\n' % s)
+            kmlFile.write('<GroundOverlay>\n')
+            # TODO: write style
+            kmlFile.write('<Icon>\n')
+            kmlFile.write('<href>%s</href>\n' % self.layer.source())
+            kmlFile.write('</Icon>\n')
+            # Altitude settings
+            kmlFile.write(geomSettings)
+            # Bounding box
+            kmlFile.write('<LatLonBox>\n')
+            kmlFile.write('<north>%s</north>\n' % bbox.yMaximum())
+            kmlFile.write('<south>%s</south>\n' % bbox.yMinimum())
+            kmlFile.write('<east>%s</east>\n' % bbox.xMaximum())
+            kmlFile.write('<west>%s</west>\n' % bbox.xMinimum())
+            kmlFile.write('<rotation>%s</rotation>\n' % 0.0)
+            kmlFile.write('</LatLonBox>\n')
+            kmlFile.write('</GroundOverlay>\n')
+            kmlFile.write(self._kmlFooter())
+
+        self._cleanup()
+        self.exportFinished.emit(fileName)
 
     def _kmlHeader(self):
         return '<?xml version="1.0" encoding="UTF-8"?>\n' \

@@ -92,20 +92,25 @@ class GEToolsPlugin:
                 'GETools', 'Coords to Google Earth'), self.iface.mainWindow())
         self.actionSelectCoords.setIcon(QIcon(':/icons/getools-coords.svg'))
         self.actionSelectCoords.setWhatsThis(
-                'Open mouse coordinates in Google Earth')
+                'View mouse coordinates in Google Earth')
         self.actionSelectCoords.setCheckable(True)
 
         self.actionSelectFeatures = QAction(QCoreApplication.translate(
                 'GETools', 'Feature to Google Earth'), self.iface.mainWindow())
         self.actionSelectFeatures.setIcon(QIcon(':/icons/getools-features.svg'))
         self.actionSelectFeatures.setWhatsThis(
-                'Send selected feature to Google Earth')
+                'View selected feature in Google Earth')
         self.actionSelectFeatures.setCheckable(True)
 
-        self.actionProcessLayer = QAction(QCoreApplication.translate(
-                'GETools', 'Layer to Google Earth'), self.iface.mainWindow())
-        self.actionProcessLayer.setIcon(QIcon(':/icons/getools-layer.svg'))
-        self.actionProcessLayer.setWhatsThis('Send whole layer to Google Earth')
+        self.actionProcessVectorLayer = QAction(QCoreApplication.translate(
+                'GETools', 'Vector layer to Google Earth'), self.iface.mainWindow())
+        self.actionProcessVectorLayer.setIcon(QIcon(':/icons/getools-vector-layer.svg'))
+        self.actionProcessVectorLayer.setWhatsThis('View vector layer in Google Earth')
+
+        self.actionProcessRasterLayer = QAction(QCoreApplication.translate(
+                'GETools', 'Raster layer to Google Earth'), self.iface.mainWindow())
+        self.actionProcessRasterLayer.setIcon(QIcon(':/icons/getools-raster-layer.svg'))
+        self.actionProcessRasterLayer.setWhatsThis('View raster layer in Google Earth')
 
         self.actionSettings = QAction(QCoreApplication.translate(
                 'GETools', 'Settings'), self.iface.mainWindow())
@@ -122,19 +127,29 @@ class GEToolsPlugin:
         self.iface.addPluginToVectorMenu(QCoreApplication.translate(
                 'GETools', 'GETools'), self.actionSelectFeatures)
         self.iface.addPluginToVectorMenu(QCoreApplication.translate(
-                'GETools', 'GETools'), self.actionProcessLayer)
+                'GETools', 'GETools'), self.actionProcessVectorLayer)
         self.iface.addPluginToVectorMenu(QCoreApplication.translate(
                 'GETools', 'GETools'), self.actionSettings)
         self.iface.addPluginToVectorMenu(QCoreApplication.translate(
                 'GETools', 'GETools'), self.actionAbout)
 
+        self.iface.addPluginToRasterMenu(QCoreApplication.translate(
+                'GETools', 'GETools'), self.actionProcessRasterLayer)
+        self.iface.addPluginToRasterMenu(QCoreApplication.translate(
+                'GETools', 'GETools'), self.actionSettings)
+        self.iface.addPluginToRasterMenu(QCoreApplication.translate(
+                'GETools', 'GETools'), self.actionAbout)
+
         self.iface.addVectorToolBarIcon(self.actionSelectCoords)
         self.iface.addVectorToolBarIcon(self.actionSelectFeatures)
-        self.iface.addVectorToolBarIcon(self.actionProcessLayer)
+        self.iface.addVectorToolBarIcon(self.actionProcessVectorLayer)
+
+        self.iface.addRasterToolBarIcon(self.actionProcessRasterLayer)
 
         self.actionSelectCoords.triggered.connect(self.selectCoords)
         self.actionSelectFeatures.triggered.connect(self.selectFeatures)
-        self.actionProcessLayer.triggered.connect(self.processLayer)
+        self.actionProcessVectorLayer.triggered.connect(self.processLayer)
+        self.actionProcessRasterLayer.triggered.connect(self.processLayer)
         self.actionSettings.triggered.connect(self.settings)
         self.actionAbout.triggered.connect(self.about)
 
@@ -167,17 +182,26 @@ class GEToolsPlugin:
     def unload(self):
         self.iface.removeVectorToolBarIcon(self.actionSelectCoords)
         self.iface.removeVectorToolBarIcon(self.actionSelectFeatures)
-        self.iface.removeVectorToolBarIcon(self.actionProcessLayer)
+        self.iface.removeVectorToolBarIcon(self.actionProcessVectorLayer)
+
+        self.iface.removeRasterToolBarIcon(self.actionProcessRasterLayer)
 
         self.iface.removePluginVectorMenu(QCoreApplication.translate(
                 'GETools', 'GETools'), self.actionSelectCoords)
         self.iface.removePluginVectorMenu(QCoreApplication.translate(
                 'GETools', 'GETools'), self.actionSelectFeatures)
         self.iface.removePluginVectorMenu(QCoreApplication.translate(
-                'GETools', 'GETools'), self.actionProcessLayer)
+                'GETools', 'GETools'), self.actionProcessVectorLayer)
         self.iface.removePluginVectorMenu(QCoreApplication.translate(
                 'GETools', 'GETools'), self.actionSettings)
         self.iface.removePluginVectorMenu(QCoreApplication.translate(
+                'GETools', 'GETools'), self.actionAbout)
+
+        self.iface.removePluginRasterMenu(QCoreApplication.translate(
+                'GETools', 'GETools'), self.actionProcessVectorLayer)
+        self.iface.removePluginRasterMenu(QCoreApplication.translate(
+                'GETools', 'GETools'), self.actionSettings)
+        self.iface.removePluginRasterMenu(QCoreApplication.translate(
                 'GETools', 'GETools'), self.actionAbout)
 
         if self.iface.mapCanvas().mapTool() == self.toolClick:
@@ -218,18 +242,30 @@ class GEToolsPlugin:
             self.actionSelectFeatures.setChecked(False)
 
     def toggleTools(self, layer):
-        if layer is None or layer.type() != QgsMapLayer.VectorLayer:
+        if layer is None:
             self.actionSelectCoords.setEnabled(False)
             self.actionSelectFeatures.setEnabled(False)
-            self.actionProcessLayer.setEnabled(False)
+            self.actionProcessVectorLayer.setEnabled(False)
+            self.actionProcessRasterLayer.setEnabled(False)
             if self.iface.mapCanvas().mapTool() == self.toolClick:
                 self.iface.mapCanvas().unsetMapTool(self.toolClick)
             if self.iface.mapCanvas().mapTool() == self.toolSelect:
                 self.iface.mapCanvas().unsetMapTool(self.toolSelect)
         else:
-            self.actionSelectCoords.setEnabled(True)
-            self.actionSelectFeatures.setEnabled(True)
-            self.actionProcessLayer.setEnabled(True)
+            if layer.type() != QgsMapLayer.VectorLayer:
+                self.actionSelectCoords.setEnabled(False)
+                self.actionSelectFeatures.setEnabled(False)
+                self.actionProcessVectorLayer.setEnabled(False)
+                self.actionProcessRasterLayer.setEnabled(True)
+                if self.iface.mapCanvas().mapTool() == self.toolClick:
+                    self.iface.mapCanvas().unsetMapTool(self.toolClick)
+                if self.iface.mapCanvas().mapTool() == self.toolSelect:
+                    self.iface.mapCanvas().unsetMapTool(self.toolSelect)
+            else:
+                self.actionSelectCoords.setEnabled(True)
+                self.actionSelectFeatures.setEnabled(True)
+                self.actionProcessVectorLayer.setEnabled(True)
+                self.actionProcessRasterLayer.setEnabled(False)
 
     def processCoords(self, point, button):
         settings = QSettings()

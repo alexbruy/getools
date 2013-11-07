@@ -80,6 +80,9 @@ class OptionsDialog(QgsOptionsDialogBase, Ui_OptionsDialog):
         item = self.mOptionsListWidget.findItems(self.tr('Labels'),
                 Qt.MatchFixedString | Qt.MatchCaseSensitive)[0]
         item.setIcon(QIcon(':/icons/labels.svg'))
+        item = self.mOptionsListWidget.findItems(self.tr('Rasters'),
+                Qt.MatchFixedString | Qt.MatchCaseSensitive)[0]
+        item.setIcon(QIcon(':/icons/rasters.svg'))
 
         # Points tab
         red = self.settings.value('points/point_color_red',
@@ -214,6 +217,29 @@ class OptionsDialog(QgsOptionsDialogBase, Ui_OptionsDialog):
         self.spnLabelScale.setValue(
                 self.settings.value('labels/scale', 1.0, type=float))
 
+        # Rasters tab
+        red = self.settings.value('rasters/raster_color_red',
+                                  255, type=int)
+        green = self.settings.value('rasters/raster_color_green',
+                                    255, type=int)
+        blue = self.settings.value('rasters/raster_color_blue',
+                                   0, type=int)
+        alpha = self.settings.value('rasters/raster_color_alpha',
+                                    255, type=int)
+        self.btnRasterColor.setColor(QColor(red, green, blue, alpha))
+        self.btnRasterColor.setColorDialogOptions(QColorDialog.ShowAlphaChannel)
+
+        self.cmbRasterAltMode.addItem(self.tr('Clamp to ground'), 0)
+        self.cmbRasterAltMode.addItem(self.tr('Absolute'), 2)
+        self.cmbRasterAltMode.addItem(self.tr('Clamp to sea floor'), 3)
+        self.cmbRasterAltMode.addItem(self.tr('Relative to sea floor'), 4)
+        mode = self.settings.value('rasters/altitude_mode', 0, type=int)
+        self.cmbRasterAltMode.setCurrentIndex(
+                self.cmbRasterAltMode.findData(mode))
+
+        self.spnRasterAltitude.setValue(
+                self.settings.value('rasters/altitude', 0.0, type=float))
+
     def reject(self):
         QDialog.reject(self)
 
@@ -296,8 +322,6 @@ class OptionsDialog(QgsOptionsDialogBase, Ui_OptionsDialog):
                                self.chkPolyFollow.isChecked())
 
         # Labels tab
-        self.settings.setValue('labels/overrideStyle',
-                               self.grpLabelStyle.isChecked())
         color = self.btnLabelColor.color()
         self.settings.setValue('labels/label_color_red', color.red())
         self.settings.setValue('labels/label_color_green', color.green())
@@ -308,3 +332,16 @@ class OptionsDialog(QgsOptionsDialogBase, Ui_OptionsDialog):
                 self.cmbLabelColorMode.currentIndex())
         self.settings.setValue('labels/color_mode', mode)
         self.settings.setValue('labels/scale', self.spnLabelScale.value())
+
+        # Rasters tab
+        color = self.btnRasterColor.color()
+        self.settings.setValue('rasters/raster_color_red', color.red())
+        self.settings.setValue('rsaters/raster_color_green', color.green())
+        self.settings.setValue('rasters/raster_color_blue', color.blue())
+        self.settings.setValue('rsaters/raster_color_alpha', color.alpha())
+
+        mode = self.cmbRasterAltMode.itemData(
+                self.cmbRasterAltMode.currentIndex())
+        self.settings.setValue('rasters/altitude_mode', mode)
+        self.settings.setValue('rasters/altitude',
+                               self.spnRasterAltitude.value())
