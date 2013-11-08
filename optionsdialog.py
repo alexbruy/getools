@@ -229,6 +229,10 @@ class OptionsDialog(QgsOptionsDialogBase, Ui_OptionsDialog):
         self.btnRasterColor.setColor(QColor(red, green, blue, alpha))
         self.btnRasterColor.setColorDialogOptions(QColorDialog.ShowAlphaChannel)
 
+        self.chkRasterRendered.setChecked(
+                self.settings.value('rasters/rendered', False, type=bool))
+
+
         self.cmbRasterAltMode.addItem(self.tr('Clamp to ground'), 0)
         self.cmbRasterAltMode.addItem(self.tr('Absolute'), 2)
         self.cmbRasterAltMode.addItem(self.tr('Clamp to sea floor'), 3)
@@ -336,9 +340,13 @@ class OptionsDialog(QgsOptionsDialogBase, Ui_OptionsDialog):
         # Rasters tab
         color = self.btnRasterColor.color()
         self.settings.setValue('rasters/raster_color_red', color.red())
-        self.settings.setValue('rsaters/raster_color_green', color.green())
+        self.settings.setValue('rasters/raster_color_green', color.green())
         self.settings.setValue('rasters/raster_color_blue', color.blue())
-        self.settings.setValue('rsaters/raster_color_alpha', color.alpha())
+        self.settings.setValue('rasters/raster_color_alpha', color.alpha())
+
+        self.settings.setValue('rasters/rendered',
+                               self.chkRasterRendered.isChecked())
+
 
         mode = self.cmbRasterAltMode.itemData(
                 self.cmbRasterAltMode.currentIndex())
