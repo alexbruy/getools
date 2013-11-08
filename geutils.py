@@ -27,7 +27,10 @@ __revision__ = '$Format:%H$'
 
 import os
 import uuid
+
 from PyQt4.QtCore import *
+
+from qgis.core import *
 
 
 def tempDirectory():
@@ -52,3 +55,24 @@ def encodeStringForXml(string):
     encodedString.replace('<', '&lt;')
     encodedString.replace('>', '&gt;')
     return encodedString
+
+
+def writeRenderedRaster(layer, fileName):
+    provider = layer.dataProvider()
+    fileWriter = QgsRasterFileWriter(fileName)
+    pipe = QgsRasterPipe(layer.pipe())
+
+    projector = pipe.projector()
+    if not projector:
+        print 'Cannot get pipe projector'
+        return False
+
+    projector.setCRS(provider.crs(), provider.crs())
+
+    if not pipe.last():
+        del pipe
+        return False
+
+    fileWriter.writeRaster(pipe, provider.xSize(), provider.ySize(),
+                           provider.extent(), provider.crs())
+    return True

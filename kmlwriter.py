@@ -25,6 +25,7 @@ __copyright__ = '(C) 2013, Alexander Bruy'
 
 __revision__ = '$Format:%H$'
 
+import os
 import codecs
 
 from PyQt4.QtCore import *
@@ -191,14 +192,27 @@ class KMLWriter(QObject):
 
     def _exportRasterLayer(self):
         # Read ettings
+        rendered = self.settings.value(
+                'rasters/rendered', False, type=bool)
+
         mode = self.settings.value(
-                'raster/altitude_mode', 0, type=int)
+                'rasters/altitude_mode', 0, type=int)
         altMode = OptionsDialog.ALTITUDE_MODES[mode]
         altitude = self.settings.value(
-                'raster/altitude', 0.0, type=float)
+                'rasters/altitude', 0.0, type=float)
 
         geomSettings = '<altitude>%f</altitude>\n' % altitude
         geomSettings += '<gx:altitudeMode>%s</gx:altitudeMode>\n' % altMode
+
+        rasterPath = self.layer.source()
+
+        if rendered:
+            tmpDir = utils.tempDirectory()
+            fileName = os.path.splitext(os.path.basename(rasterPath))[0]
+            rasterPath = os.path.join(tmpDir, fileName + '.tif')
+            if not utils.writeRenderedRaster(self.layer, rasterPath):
+                self.exportError.emit(
+                        self.tr('Export of rendered raster failed.'))
 
         bbox = self.layer.extent()
         if self.needsTransform:
@@ -212,7 +226,7 @@ class KMLWriter(QObject):
             kmlFile.write('<GroundOverlay>\n')
             # TODO: write style
             kmlFile.write('<Icon>\n')
-            kmlFile.write('<href>%s</href>\n' % self.layer.source())
+            kmlFile.write('<href>%s</href>\n' % rasterPath)
             kmlFile.write('</Icon>\n')
             # Altitude settings
             kmlFile.write(geomSettings)
