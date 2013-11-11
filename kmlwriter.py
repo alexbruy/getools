@@ -301,7 +301,7 @@ class KMLWriter(QObject):
             polygons = geometry.asMultiPolygon()
             kmlGeom += '<MultiGeometry>\n'
             for polygon in polygons:
-                kmlGeom += self._polygonToKml(point)
+                kmlGeom += self._polygonToKml(polygon)
             kmlGeom += '</MultiGeometry>\n'
         else:
             # TODO: emit signal/write to log and continue
