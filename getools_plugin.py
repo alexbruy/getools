@@ -36,10 +36,10 @@ from qgis.gui import *
 
 from getools.tools.clicktool import ClickTool
 from getools.tools.selecttool import SelectTool
-import kmlwriter
 from getools.gui.optionsdialog import OptionsDialog
 from getools.gui.aboutdialog import AboutDialog
-import geutils as utils
+from getools.kmlwriter import KMLWriter
+import getools.geutils as utils
 
 import resources_rc
 

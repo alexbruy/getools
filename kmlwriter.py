@@ -32,7 +32,7 @@ from PyQt4.QtCore import *
 from qgis.core import *
 
 from getools.gui.optionsdialog import OptionsDialog
-import geutils as utils
+import getools.geutils as utils
 
 
 class KMLWriter(QObject):
