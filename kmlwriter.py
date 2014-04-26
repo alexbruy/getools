@@ -368,6 +368,81 @@ class KMLWriter(QObject):
     def _symbolToKml(self, symbol):
         pass
 
+    def _defaultStyle(self):
+        # Point style
+        red = self.settings.value('points/point_color_red', 255, int)
+        green = self.settings.value('points/point_color_green', 255, int)
+        blue = self.settings.value('points/point_color_blue', 0, int)
+        alpha = self.settings.value('points/point_color_alpha', 255, int)
+
+        mode = self.settings.value('points/color_mode', 0, int)
+        colorMode = OptionsDialog.COLOR_MODES[mode]
+
+        scale = self.settings.value('points/scale', 1.0, float)
+
+        style = '<Style id="defaultStyle">\n'
+        style += '<IconStyle>'
+        style += '<color>%x%x%x%x</color>\n' % (alpha, blue, green, red)
+        style += '<colorMode>%s</colorMode>\n' % colorMode
+        style += '<scale>%s</scale>\n' % scale
+        #style += '<Icon><href>%s</href></Icon>\n' % pathToIcon
+        style += '</IconStyle>\n'
+
+        # Line style
+        red = self.settings.value('lines/line_color_red', 255, int)
+        green = self.settings.value('lines/line_color_green', 255, int)
+        blue = self.settings.value('lines/line_color_blue', 0, int)
+        alpha = self.settings.value('lines/line_color_alpha', 255, int)
+
+        mode = self.settings.value('lines/color_mode', 0, int)
+        colorMode = OptionsDialog.COLOR_MODES[mode]
+
+        width = self.settings.value('lines/width', 1.0, float)
+
+        style += '<LineStyle>\n'
+        style += '<color>%x%x%x%x</color>\n' % (alpha, blue, green, red)
+        style += '<colorMode>%s</colorMode>\n' % colorMode
+        style += '<width>%s</width>\n' % width
+        style += '</LineStyle>\n'
+
+        # Polygon style
+        red = self.settings.value('polygons/polygon_color_red', 255, int)
+        green = self.settings.value('polygons/polygon_color_green', 255, int)
+        blue = self.settings.value('polygons/polygon_color_blue', 0, int)
+        alpha = self.settings.value('polygons/polygon_color_alpha', 255, int)
+
+        mode = self.settings.value('polygons/color_mode', 0, int)
+        colorMode = OptionsDialog.COLOR_MODES[mode]
+
+        fill = self.settings.value('polygons/fill', False, bool)
+        outline = self.settings.value('polygons/outline', False, bool)
+
+        style += '<PolyStyle>\n'
+        style += '<color>%x%x%x%x</color>\n' % (alpha, blue, green, red)
+        style += '<colorMode>%s</colorMode>\n' % colorMode
+        style += '<fill>%s</fill>\n' % fill
+        style += '<outline>%s</outline>\n' % outline
+        style += '</PolyStyle>\n'
+
+        # Label style
+        red = self.settings.value('labels/label_color_red', 255, int)
+        green = self.settings.value('labels/label_color_green', 255, int)
+        blue = self.settings.value('labels/label_color_blue', 0, int)
+        alpha = self.settings.value('labels/polygon_color_alpha', 255, int)
+
+        mode = self.settings.value('labels/color_mode', 0, int)
+        colorMode = OptionsDialog.COLOR_MODES[mode]
+
+        scale = self.settings.value('labels/scale', 1.0, float)
+
+        style += '<LabelStyle>'
+        style += '<color>%x%x%x%x</color>\n' % (alpha, blue, green, red)
+        style += '<colorMode>%s</colorMode>\n' % colorMode
+        style += '<scale>%s</scale>\n' % scale
+        style += '</LabelStyle>\n'
+
+        style += '</Style>\n'
+
     def _cleanup(self):
         self.point = None
         self.layer = None

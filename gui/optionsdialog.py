@@ -188,7 +188,7 @@ class OptionsDialog(QgsOptionsDialogBase, Ui_OptionsDialog):
         red = self.settings.value('labels/label_color_red', 255, int)
         green = self.settings.value('labels/label_color_green', 255, int)
         blue = self.settings.value('labels/label_color_blue', 0, int)
-        alpha = self.settings.value('labels/polygon_color_alpha', 255, int)
+        alpha = self.settings.value('labels/label_color_alpha', 255, int)
         self.btnLabelColor.setColor(QColor(red, green, blue, alpha))
         self.btnLabelColor.setColorDialogOptions(QColorDialog.ShowAlphaChannel)
 
