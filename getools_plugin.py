@@ -2,7 +2,7 @@
 
 """
 ***************************************************************************
-    getools.py
+    getools_plugin.py
     ---------------------
     Date                 : October 2013
     Copyright            : (C) 2013 by Alexander Bruy
@@ -37,8 +37,8 @@ from qgis.gui import *
 import clicktool
 import selecttool
 import kmlwriter
-import optionsdialog
-import aboutdialog
+from getools.gui.optionsdialog import OptionsDialog
+from getools.gui.aboutdialog import AboutDialog
 import geutils as utils
 
 import resources_rc
@@ -218,11 +218,11 @@ class GEToolsPlugin:
         self.canvas.setMapTool(self.toolSelect)
 
     def settings(self):
-        dlg = optionsdialog.OptionsDialog()
+        dlg = OptionsDialog()
         dlg.exec_()
 
     def about(self):
-        dlg = aboutdialog.AboutDialog()
+        dlg = AboutDialog()
         dlg.exec_()
 
     def mapToolChanged(self, tool):

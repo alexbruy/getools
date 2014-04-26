@@ -31,7 +31,7 @@ import codecs
 from PyQt4.QtCore import *
 from qgis.core import *
 
-from optionsdialog import OptionsDialog
+from getools.gui.optionsdialog import OptionsDialog
 import geutils as utils
 
 

@@ -31,9 +31,9 @@ import ConfigParser
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-from ui.ui_aboutdialogbase import Ui_Dialog
+from getools.ui.ui_aboutdialogbase import Ui_Dialog
 
-import resources_rc
+import getools.resources_rc
 
 
 class AboutDialog(QDialog, Ui_Dialog):
@@ -43,10 +43,11 @@ class AboutDialog(QDialog, Ui_Dialog):
 
         self.btnHelp = self.buttonBox.button(QDialogButtonBox.Help)
 
-        self.lblLogo.setPixmap(QPixmap(':/icons/getools.png'))
+        self.lblLogo.setPixmap(QPixmap(':/icons/getools.svg'))
 
         cfg = ConfigParser.SafeConfigParser()
-        cfg.read(os.path.join(os.path.dirname(__file__), 'metadata.txt'))
+        cfg.read(os.path.join(
+            os.path.split(os.path.dirname(__file__))[0], 'metadata.txt'))
         version = cfg.get('general', 'version')
 
         self.lblVersion.setText(self.tr('Version: %s') % (version))

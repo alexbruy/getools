@@ -27,5 +27,5 @@ __revision__ = '$Format:%H$'
 
 
 def classFactory(iface):
-    from getools import GEToolsPlugin
+    from getools.getools_plugin import GEToolsPlugin
     return GEToolsPlugin(iface)

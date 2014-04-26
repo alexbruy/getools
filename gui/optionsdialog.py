@@ -32,8 +32,8 @@ from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 
-from ui.ui_optionsdialogbase import Ui_OptionsDialog
-import resources_rc
+from getools.ui.ui_optionsdialogbase import Ui_OptionsDialog
+import getools.resources_rc
 
 
 class OptionsDialog(QgsOptionsDialogBase, Ui_OptionsDialog):
