@@ -34,8 +34,8 @@ from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 
-import clicktool
-import selecttool
+from getools.tools.clicktool import ClickTool
+from getools.tools.selecttool import SelectTool
 import kmlwriter
 from getools.gui.optionsdialog import OptionsDialog
 from getools.gui.aboutdialog import AboutDialog
@@ -144,10 +144,10 @@ class GEToolsPlugin:
         self.actionAbout.triggered.connect(self.about)
 
         # Map tools
-        self.toolClick = clicktool.ClickTool(self.canvas)
+        self.toolClick = ClickTool(self.canvas)
         self.toolClick.canvasClicked.connect(self.processCoords)
 
-        self.toolSelect = selecttool.SelectTool(self.iface, self.canvas)
+        self.toolSelect = SelectTool(self.iface, self.canvas)
         self.toolSelect.featuresSelected.connect(self.processFeatures)
 
         # Handle tool changes
