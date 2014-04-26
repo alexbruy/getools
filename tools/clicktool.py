@@ -45,7 +45,7 @@ class ClickTool(QgsMapToolEmitPoint):
 
     def canvasPressEvent(self, event):
         pnt = self.toMapCoordinates(event.pos())
-        sourceCrs = self.canvas.mapRenderer().destinationCrs()
+        sourceCrs = self.canvas.mapSettings().destinationCrs()
         if sourceCrs.authid() != 'EPSG:4326':
             crsTransform = QgsCoordinateTransform(sourceCrs, self.geoCrs)
             pnt = crsTransform.transform(pnt)

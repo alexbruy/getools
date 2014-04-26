@@ -163,10 +163,10 @@ class SelectTool(QgsMapTool):
         # and then click somewhere off the globe, an exception will be thrown.
         selectGeomTrans = QgsGeometry(selectGeometry)
 
-        if self.canvas.mapRenderer().hasCrsTransformEnabled():
+        if self.canvas.mapSettings().hasCrsTransformEnabled():
             try:
                 ct = QgsCoordinateTransform(
-                    self.canvas.mapRenderer().destinationCrs(), vlayer.crs())
+                    self.canvas.mapSettings().destinationCrs(), vlayer.crs())
                 selectGeomTrans.transform(ct)
             except QgsCsException as cse:
                 # Catch exception for 'invalid' point and leave existing
