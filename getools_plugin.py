@@ -162,7 +162,7 @@ class GEToolsPlugin:
 
         # prepare worker
         self.thread = QThread()
-        self.writer = kmlwriter.KMLWriter()
+        self.writer = KMLWriter()
         self.writer.moveToThread(self.thread)
         self.writer.exportError.connect(self.thread.quit)
         self.writer.exportError.connect(self.showError)
