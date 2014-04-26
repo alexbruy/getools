@@ -65,10 +65,10 @@ class KMLWriter(QObject):
         self.point = point
 
     def exportPoint(self):
-        mode = self.settings.value('points/altitude_mode', 0, type=int)
+        mode = self.settings.value('points/altitude_mode', 0, int)
         altMode = OptionsDialog.ALTITUDE_MODES[mode]
-        altitude = self.settings.value('points/altitude', 0.0, type=float)
-        extrude =  self.settings.value('points/extrude', False, type=bool)
+        altitude = self.settings.value('points/altitude', 0.0, float)
+        extrude = self.settings.value('points/extrude', False, bool)
 
         geomSettings = '<extrude>%d</extrude>\n' % extrude
         geomSettings += '<gx:altitudeMode>%s</gx:altitudeMode>\n' % altMode
@@ -112,8 +112,8 @@ class KMLWriter(QObject):
             if providerType == 'gdal':
                 self._exportRasterLayer()
             else:
-                self.exportError.emit(self.tr('Unsupported provider %s') %
-                                      providerType)
+                self.exportError.emit(
+                    self.tr('Unsupported provider %s') % providerType)
         else:
             self.exportError.emit(
                     self.tr('Unsupported layer type %s') % layerType)
@@ -123,50 +123,41 @@ class KMLWriter(QObject):
         self.geomSettings = ''
         geometryType = self.layer.geometryType()
         if geometryType == QGis.Point:
-            mode = self.settings.value(
-                    'points/altitude_mode', 0, type=int)
+            mode = self.settings.value('points/altitude_mode', 0, int)
             altMode = OptionsDialog.ALTITUDE_MODES[mode]
-            self.altitude = self.settings.value(
-                    'points/altitude', 0.0, type=float)
-            extrude =  self.settings.value(
-                    'points/extrude', False, type=bool)
+            self.altitude = self.settings.value('points/altitude', 0.0, float)
+            extrude = self.settings.value('points/extrude', False, bool)
 
             self.geomSettings += '<extrude>%d</extrude>\n' % extrude
             self.geomSettings += \
-                    '<gx:altitudeMode>%s</gx:altitudeMode>\n' % altMode
+                '<gx:altitudeMode>%s</gx:altitudeMode>\n' % altMode
         elif geometryType == QGis.Line:
-            mode = self.settings.value(
-                    'lines/altitude_mode', 0, type=int)
+            mode = self.settings.value('lines/altitude_mode', 0, int)
             altMode = OptionsDialog.ALTITUDE_MODES[mode]
-            self.altitude = self.settings.value(
-                    'lines/altitude', 0.0, type=float)
-            extrude =  self.settings.value(
-                    'lines/extrude', False, type=bool)
-            tessellate =  self.settings.value(
-                    'lines/tessellate', False, type=bool)
+            self.altitude = self.settings.value('lines/altitude', 0.0, float)
+            extrude = self.settings.value('lines/extrude', False, bool)
+            tessellate = self.settings.value('lines/tessellate', False, bool)
 
             self.geomSettings += '<extrude>%d</extrude>\n' % extrude
             self.geomSettings += '<tessellate>%d</tessellate>\n' % tessellate
             self.geomSettings += \
-                    '<gx:altitudeMode>%s</gx:altitudeMode>\n' % altMode
+                '<gx:altitudeMode>%s</gx:altitudeMode>\n' % altMode
         elif geometryType == QGis.Polygon:
-            mode = self.settings.value(
-                    'polygons/altitude_mode', 0, type=int)
+            mode = self.settings.value('polygons/altitude_mode', 0, int)
             altMode = OptionsDialog.ALTITUDE_MODES[mode]
             self.altitude = self.settings.value(
-                    'polygons/altitude', 0.0, type=float)
-            extrude =  self.settings.value(
-                    'polygons/extrude', False, type=bool)
-            tessellate =  self.settings.value(
-                    'polygons/tessellate', False, type=bool)
+                'polygons/altitude', 0.0, float)
+            extrude = self.settings.value('polygons/extrude', False, bool)
+            tessellate = self.settings.value(
+                'polygons/tessellate', False, bool)
 
             self.geomSettings += '<extrude>%d</extrude>\n' % extrude
             self.geomSettings += '<tessellate>%d</tessellate>\n' % tessellate
             self.geomSettings += \
-                    '<gx:altitudeMode>%s</gx:altitudeMode>\n' % altMode
+                '<gx:altitudeMode>%s</gx:altitudeMode>\n' % altMode
         else:
             self.exportError.emit(
-                    self.tr('Unsupported geometry type %s') % geometryType)
+                self.tr('Unsupported geometry type %s') % geometryType)
 
         fileName = utils.tempFileName()
         with codecs.open(fileName, 'w', encoding='utf-8') as kmlFile:
@@ -192,14 +183,11 @@ class KMLWriter(QObject):
 
     def _exportRasterLayer(self):
         # Read ettings
-        rendered = self.settings.value(
-                'rasters/rendered', False, type=bool)
+        rendered = self.settings.value('rasters/rendered', False, bool)
 
-        mode = self.settings.value(
-                'rasters/altitude_mode', 0, type=int)
+        mode = self.settings.value('rasters/altitude_mode', 0, int)
         altMode = OptionsDialog.ALTITUDE_MODES[mode]
-        altitude = self.settings.value(
-                'rasters/altitude', 0.0, type=float)
+        altitude = self.settings.value('rasters/altitude', 0.0, float)
 
         geomSettings = '<altitude>%f</altitude>\n' % altitude
         geomSettings += '<gx:altitudeMode>%s</gx:altitudeMode>\n' % altMode
@@ -212,7 +200,7 @@ class KMLWriter(QObject):
             rasterPath = os.path.join(tmpDir, fileName + '.tif')
             if not utils.writeRenderedRaster(self.layer, rasterPath):
                 self.exportError.emit(
-                        self.tr('Export of rendered raster failed.'))
+                    self.tr('Export of rendered raster failed.'))
 
         bbox = self.layer.extent()
         if self.needsTransform:
@@ -282,7 +270,7 @@ class KMLWriter(QObject):
         elif wkbType in [QGis.WKBLineString, QGis.WKBLineString25D]:
             line = geometry.asPolyline()
             kmlGeom = self._lineToKml(line)
-        elif  wkbType in [QGis.WKBPolygon, QGis.WKBPolygon25D]:
+        elif wkbType in [QGis.WKBPolygon, QGis.WKBPolygon25D]:
             polygon = geometry.asPolygon()
             kmlGeom = self._polygonToKml(polygon)
         elif wkbType in [QGis.WKBMultiPoint, QGis.WKBMultiPoint25D]:

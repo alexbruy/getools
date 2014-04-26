@@ -74,5 +74,5 @@ def writeRenderedRaster(layer, fileName):
         return False
 
     fileWriter.writeRaster(pipe, provider.xSize(), provider.ySize(),
-                           provider.extent(), provider.crs())
+        provider.extent(), provider.crs())
     return True

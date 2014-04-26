@@ -61,8 +61,7 @@ class AboutDialog(QDialog, Ui_Dialog):
         QDialog.reject(self)
 
     def openHelp(self):
-        overrideLocale = QSettings().value('locale/overrideFlag', False,
-                                           type=bool)
+        overrideLocale = QSettings().value('locale/overrideFlag', False, bool)
         if not overrideLocale:
             localeFullName = QLocale.system().name()
         else:
@@ -70,19 +69,20 @@ class AboutDialog(QDialog, Ui_Dialog):
 
         localeShortName = localeFullName[0:2]
         if localeShortName in ['ru', 'uk']:
-            QDesktopServices.openUrl(QUrl(
-                    'http://hub.qgis.org/projects/getools/wiki'))
+            QDesktopServices.openUrl(
+                QUrl('http://hub.qgis.org/projects/getools/wiki'))
         else:
-            QDesktopServices.openUrl(QUrl(
-                    'http://hub.qgis.org/projects/getools/wiki'))
+            QDesktopServices.openUrl(
+                QUrl('http://hub.qgis.org/projects/getools/wiki'))
 
     def getAboutText(self):
-        return self.tr('<p>View cursor position, selected feature(s), or '
-                'whole raster or vector layer in Google Earth application.</p>'
-                '<p>NOTE: supports only rasters loaded via gdal provider.</p>'
-                '<p><strong>Homepage</strong>: '
-                '<a href="http://hub.qgis.org/projects/getools">'
-                'http://hub.qgis.org/projects/getools</a></p>'
-                '<p>Please report bugs at '
-                '<a href="http://hub.qgis.org/projects/getools/issues">'
-                'bugtracker</a>.</p>')
+        return self.tr(
+            '<p>View cursor position, selected feature(s), or '
+            'whole raster or vector layer in Google Earth application.</p>'
+            '<p>NOTE: supports only rasters loaded via gdal provider.</p>'
+            '<p><strong>Homepage</strong>: '
+            '<a href="http://hub.qgis.org/projects/getools">'
+            'http://hub.qgis.org/projects/getools</a></p>'
+            '<p>Please report bugs at '
+            '<a href="http://hub.qgis.org/projects/getools/issues">'
+            'bugtracker</a>.</p>')

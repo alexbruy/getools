@@ -105,10 +105,10 @@ class SelectTool(QgsMapTool):
     def _setRubberBand(self):
         transform = self.canvas.getCoordinateTransform()
 
-        ll = transform.toMapCoordinates(self.selectRect.left(),
-                                        self.selectRect.bottom())
-        ur = transform.toMapCoordinates(self.selectRect.right(),
-                                        self.selectRect.top())
+        ll = transform.toMapCoordinates(
+            self.selectRect.left(), self.selectRect.bottom())
+        ur = transform.toMapCoordinates(
+            self.selectRect.right(), self.selectRect.top())
 
         if self.rubberBand:
             self.rubberBand.reset(QGis.Polygon)
@@ -146,7 +146,8 @@ class SelectTool(QgsMapTool):
 
     def _setSelectFeatures(self, selectGeometry, event):
         doContains = True if event.modifiers() & Qt.ShiftModifier else False
-        doDifference = True if event.modifiers() & Qt.ControlModifier else False
+        doDifference = \
+            True if event.modifiers() & Qt.ControlModifier else False
         singleSelect = False
 
         if selectGeometry.type() != QGis.Polygon:
@@ -165,16 +166,15 @@ class SelectTool(QgsMapTool):
         if self.canvas.mapRenderer().hasCrsTransformEnabled():
             try:
                 ct = QgsCoordinateTransform(
-                        self.canvas.mapRenderer().destinationCrs(),
-                        vlayer.crs())
+                    self.canvas.mapRenderer().destinationCrs(), vlayer.crs())
                 selectGeomTrans.transform(ct)
             except QgsCsException as cse:
                 # Catch exception for 'invalid' point and leave existing
                 # selection unchanged
                 self.iface.messageBar().pushMessage(
-                    self.tr("CRS Exception"),
+                    self.tr('CRS Exception'),
                     self.tr("Selection extends beyond layer's coordinate"
-                            'system.'),
+                            "system."),
                     QgsMessageBar.WARNING,
                     self.iface.messageTimeout())
                 return
