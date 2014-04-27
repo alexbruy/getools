@@ -78,8 +78,9 @@ class AboutDialog(QDialog, Ui_Dialog):
 
     def getAboutText(self):
         return self.tr(
-            '<p>View cursor position, selected feature(s), or '
-            'whole raster or vector layer in Google Earth application.</p>'
+            '<p>View cursor position, selected feature(s), whole raster or '
+            'vector layer in Google Earth application. It is possible to '
+            'create and use custom styling for all types of vector layers.</p>'
             '<p>NOTE: supports only rasters loaded via gdal provider.</p>'
             '<p><strong>Developers</strong>: Alexander Bruy, icons by Robert '
             'Szczepanek.</p>'
