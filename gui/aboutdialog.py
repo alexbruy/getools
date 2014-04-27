@@ -69,7 +69,7 @@ class AboutDialog(QDialog, Ui_Dialog):
             localeFullName = QSettings().value('locale/userLocale', '')
 
         localeShortName = localeFullName[0:2]
-        if localeShortName in ['ru', 'uk']:
+        if localeShortName in ['uk']:
             QDesktopServices.openUrl(
                 QUrl('http://hub.qgis.org/projects/getools/wiki'))
         else:
@@ -81,9 +81,11 @@ class AboutDialog(QDialog, Ui_Dialog):
             '<p>View cursor position, selected feature(s), or '
             'whole raster or vector layer in Google Earth application.</p>'
             '<p>NOTE: supports only rasters loaded via gdal provider.</p>'
+            '<p><strong>Developers</strong>: Alexander Bruy, icons by Robert '
+            'Szczepanek.</p>'
             '<p><strong>Homepage</strong>: '
             '<a href="http://hub.qgis.org/projects/getools">'
-            'http://hub.qgis.org/projects/getools</a></p>'
+            'http://hub.qgis.org/projects/getools</a>.</p>'
             '<p>Please report bugs at '
             '<a href="http://hub.qgis.org/projects/getools/issues">'
             'bugtracker</a>.</p>')

@@ -32,12 +32,25 @@ from PyQt4.QtCore import *
 from qgis.core import *
 
 from getools.gui.optionsdialog import OptionsDialog
+from getools.getools_data import *
 import getools.geutils as utils
 
 
 class KMLWriter(QObject):
     exportError = pyqtSignal(str)
     exportFinished = pyqtSignal(str)
+
+    COLOR_MODES = {0: 'normal',
+                   1: 'random'
+                  }
+
+
+    ALTITUDE_MODES = {0: 'clampToGround',
+                      1: 'relativeToGround',
+                      2: 'absolute',
+                      3: 'clampToSeaFloor',
+                      4: 'relativeToSeaFloor'
+                     }
 
     def __init__(self):
         QObject.__init__(self)
@@ -66,7 +79,7 @@ class KMLWriter(QObject):
 
     def exportPoint(self):
         mode = self.settings.value('points/altitude_mode', 0, int)
-        altMode = OptionsDialog.ALTITUDE_MODES[mode]
+        altMode = self.ALTITUDE_MODES[mode]
         altitude = self.settings.value('points/altitude', 0.0, float)
         extrude = self.settings.value('points/extrude', False, bool)
 
@@ -124,7 +137,7 @@ class KMLWriter(QObject):
         geometryType = self.layer.geometryType()
         if geometryType == QGis.Point:
             mode = self.settings.value('points/altitude_mode', 0, int)
-            altMode = OptionsDialog.ALTITUDE_MODES[mode]
+            altMode = self.ALTITUDE_MODES[mode]
             self.altitude = self.settings.value('points/altitude', 0.0, float)
             extrude = self.settings.value('points/extrude', False, bool)
 
@@ -133,7 +146,7 @@ class KMLWriter(QObject):
                 '<gx:altitudeMode>%s</gx:altitudeMode>\n' % altMode
         elif geometryType == QGis.Line:
             mode = self.settings.value('lines/altitude_mode', 0, int)
-            altMode = OptionsDialog.ALTITUDE_MODES[mode]
+            altMode = self.ALTITUDE_MODES[mode]
             self.altitude = self.settings.value('lines/altitude', 0.0, float)
             extrude = self.settings.value('lines/extrude', False, bool)
             tessellate = self.settings.value('lines/tessellate', False, bool)
@@ -144,7 +157,7 @@ class KMLWriter(QObject):
                 '<gx:altitudeMode>%s</gx:altitudeMode>\n' % altMode
         elif geometryType == QGis.Polygon:
             mode = self.settings.value('polygons/altitude_mode', 0, int)
-            altMode = OptionsDialog.ALTITUDE_MODES[mode]
+            altMode = self.ALTITUDE_MODES[mode]
             self.altitude = self.settings.value(
                 'polygons/altitude', 0.0, float)
             extrude = self.settings.value('polygons/extrude', False, bool)
@@ -186,7 +199,7 @@ class KMLWriter(QObject):
         rendered = self.settings.value('rasters/rendered', False, bool)
 
         mode = self.settings.value('rasters/altitude_mode', 0, int)
-        altMode = OptionsDialog.ALTITUDE_MODES[mode]
+        altMode = self.ALTITUDE_MODES[mode]
         altitude = self.settings.value('rasters/altitude', 0.0, float)
 
         geomSettings = '<altitude>%f</altitude>\n' % altitude
@@ -376,7 +389,7 @@ class KMLWriter(QObject):
         alpha = self.settings.value('points/point_color_alpha', 255, int)
 
         mode = self.settings.value('points/color_mode', 0, int)
-        colorMode = OptionsDialog.COLOR_MODES[mode]
+        colorMode = self.COLOR_MODES[mode]
 
         scale = self.settings.value('points/scale', 1.0, float)
 
@@ -395,7 +408,7 @@ class KMLWriter(QObject):
         alpha = self.settings.value('lines/line_color_alpha', 255, int)
 
         mode = self.settings.value('lines/color_mode', 0, int)
-        colorMode = OptionsDialog.COLOR_MODES[mode]
+        colorMode = self.COLOR_MODES[mode]
 
         width = self.settings.value('lines/width', 1.0, float)
 
@@ -412,7 +425,7 @@ class KMLWriter(QObject):
         alpha = self.settings.value('polygons/polygon_color_alpha', 255, int)
 
         mode = self.settings.value('polygons/color_mode', 0, int)
-        colorMode = OptionsDialog.COLOR_MODES[mode]
+        colorMode = self.COLOR_MODES[mode]
 
         fill = self.settings.value('polygons/fill', False, bool)
         outline = self.settings.value('polygons/outline', False, bool)
@@ -431,7 +444,7 @@ class KMLWriter(QObject):
         alpha = self.settings.value('labels/polygon_color_alpha', 255, int)
 
         mode = self.settings.value('labels/color_mode', 0, int)
-        colorMode = OptionsDialog.COLOR_MODES[mode]
+        colorMode = self.COLOR_MODES[mode]
 
         scale = self.settings.value('labels/scale', 1.0, float)
 

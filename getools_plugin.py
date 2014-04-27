@@ -80,37 +80,45 @@ class GEToolsPlugin:
 
         self.actionSelectCoords = QAction(QCoreApplication.translate(
             'GETools', 'Coords to Google Earth'), self.iface.mainWindow())
-        self.actionSelectCoords.setIcon(QIcon(':/icons/getools-coords.svg'))
-        self.actionSelectCoords.setWhatsThis(
-            'View mouse coordinates in Google Earth')
+        self.actionSelectCoords.setIcon(QIcon(':/icons/ge-click.svg'))
+        self.actionSelectCoords.setWhatsThis(QCoreApplication.translate(
+            'GETools', 'View mouse coordinates in Google Earth'))
         self.actionSelectCoords.setCheckable(True)
 
         self.actionSelectFeatures = QAction(QCoreApplication.translate(
             'GETools', 'Feature to Google Earth'), self.iface.mainWindow())
-        self.actionSelectFeatures.setIcon(QIcon(':/icons/getools-features.svg'))
-        self.actionSelectFeatures.setWhatsThis(
-            'View selected feature in Google Earth')
+        self.actionSelectFeatures.setIcon(QIcon(':/icons/ge-selected.svg'))
+        self.actionSelectFeatures.setWhatsThis(QCoreApplication.translate(
+            'GETools', 'View selected feature in Google Earth'))
         self.actionSelectFeatures.setCheckable(True)
 
         self.actionProcessVectorLayer = QAction(QCoreApplication.translate(
-            'GETools', 'Vector layer to Google Earth'), self.iface.mainWindow())
-        self.actionProcessVectorLayer.setIcon(QIcon(':/icons/getools-vector-layer.svg'))
-        self.actionProcessVectorLayer.setWhatsThis('View vector layer in Google Earth')
+            'GETools', 'Vector layer to Google Earth'),
+            self.iface.mainWindow())
+        self.actionProcessVectorLayer.setIcon(
+            QIcon(':/icons/ge-export-vector.svg'))
+        self.actionProcessVectorLayer.setWhatsThis(QCoreApplication.translate(
+            'GETools', 'View vector layer in Google Earth'))
 
         self.actionProcessRasterLayer = QAction(QCoreApplication.translate(
-            'GETools', 'Raster layer to Google Earth'), self.iface.mainWindow())
-        self.actionProcessRasterLayer.setIcon(QIcon(':/icons/getools-raster-layer.svg'))
-        self.actionProcessRasterLayer.setWhatsThis('View raster layer in Google Earth')
+            'GETools', 'Raster layer to Google Earth'),
+            self.iface.mainWindow())
+        self.actionProcessRasterLayer.setIcon(
+            QIcon(':/icons/ge-export-raster.svg'))
+        self.actionProcessRasterLayer.setWhatsThis(QCoreApplication.translate(
+            'GETools', 'View raster layer in Google Earth'))
 
         self.actionSettings = QAction(QCoreApplication.translate(
             'GETools', 'Settings'), self.iface.mainWindow())
         self.actionSettings.setIcon(QIcon(':/icons/settings.svg'))
-        self.actionSettings.setWhatsThis('GETools settings')
+        self.actionSettings.setWhatsThis(
+            QCoreApplication.translate('GETools', 'GETools settings'))
 
         self.actionAbout = QAction(QCoreApplication.translate(
             'GETools', 'About GETools...'), self.iface.mainWindow())
         self.actionAbout.setIcon(QIcon(':/icons/about.png'))
-        self.actionAbout.setWhatsThis('About GETools')
+        self.actionAbout.setWhatsThis(
+            QCoreApplication.translate('GETools', 'About GETools'))
 
         self.iface.addPluginToVectorMenu(QCoreApplication.translate(
             'GETools', 'GETools'), self.actionSelectCoords)
@@ -160,7 +168,7 @@ class GEToolsPlugin:
 
         utils.tempDirectory()
 
-        # prepare worker
+        # Prepare worker
         self.thread = QThread()
         self.writer = KMLWriter()
         self.writer.moveToThread(self.thread)

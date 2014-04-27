@@ -38,16 +38,6 @@ import getools.resources_rc
 
 class OptionsDialog(QgsOptionsDialogBase, Ui_OptionsDialog):
 
-    COLOR_MODES = {0: 'normal',
-                   1: 'random'}
-
-    ALTITUDE_MODES = {0: 'clampToGround',
-                      1: 'relativeToGround',
-                      2: 'absolute',
-                      3: 'clampToSeaFloor',
-                      4: 'relativeToSeaFloor'
-                     }
-
     def __init__(self):
         QgsOptionsDialogBase.__init__(self, 'Window')
         self.setupUi(self)

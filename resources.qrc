@@ -1,17 +1,16 @@
 <RCC>
   <qresource>
-    <file>icons/getools.svg</file>
-    <file>icons/getools-coords.svg</file>
-    <file>icons/getools-features.svg</file>
-    <file>icons/getools-vector-layer.svg</file>
-    <file>icons/getools-raster-layer.svg</file>
+    <file>icons/ge-click.svg</file>
+    <file>icons/ge-export-raster.svg</file>
+    <file>icons/ge-export-vector.svg</file>
+    <file>icons/ge-selected.svg</file>
     <file>icons/settings.svg</file>
-    <file>icons/about.png</file>
     <file>icons/points.svg</file>
     <file>icons/lines.svg</file>
     <file>icons/polygons.svg</file>
     <file>icons/labels.svg</file>
     <file>icons/rasters.svg</file>
+    <file>icons/about.png</file>
   </qresource>
 </RCC>
 
