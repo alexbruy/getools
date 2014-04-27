@@ -474,8 +474,8 @@ class KMLWriter(QObject):
             mode = self.settings.value('polygons/color_mode', 0, int)
             colorMode = self.COLOR_MODES[mode]
 
-            fill = self.settings.value('polygons/fill', False, bool)
-            outline = self.settings.value('polygons/outline', False, bool)
+            fill = self.settings.value('polygons/fill', False, int)
+            outline = self.settings.value('polygons/outline', False, int)
 
             style += '<PolyStyle>\n'
             style += '<color>%02x%02x%02x%02x</color>\n' % (
