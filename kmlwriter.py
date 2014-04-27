@@ -43,7 +43,6 @@ class KMLWriter(QObject):
                    1: 'random'
                   }
 
-
     ALTITUDE_MODES = {0: 'clampToGround',
                       1: 'relativeToGround',
                       2: 'absolute',
@@ -439,7 +438,8 @@ class KMLWriter(QObject):
             scale = self.settings.value('points/scale', 1.0, float)
 
             style += '<IconStyle>'
-            style += '<color>%02x%02x%02x%02x</color>\n' % (alpha, blue, green, red)
+            style += '<color>%02x%02x%02x%02x</color>\n' % (
+                alpha, blue, green, red)
             style += '<colorMode>%s</colorMode>\n' % colorMode
             style += '<scale>%s</scale>\n' % scale
             #style += '<Icon><href>%s</href></Icon>\n' % pathToIcon
@@ -457,16 +457,19 @@ class KMLWriter(QObject):
             width = self.settings.value('lines/width', 1.0, float)
 
             style += '<LineStyle>\n'
-            style += '<color>%02x%02x%02x%02x</color>\n' % (alpha, blue, green, red)
+            style += '<color>%02x%02x%02x%02x</color>\n' % (
+                alpha, blue, green, red)
             style += '<colorMode>%s</colorMode>\n' % colorMode
             style += '<width>%s</width>\n' % width
             style += '</LineStyle>\n'
         elif geometryType == QGis.Polygon:
             # Polygon style
             red = self.settings.value('polygons/polygon_color_red', 255, int)
-            green = self.settings.value('polygons/polygon_color_green', 255, int)
+            green = self.settings.value(
+                'polygons/polygon_color_green', 255, int)
             blue = self.settings.value('polygons/polygon_color_blue', 0, int)
-            alpha = self.settings.value('polygons/polygon_color_alpha', 255, int)
+            alpha = self.settings.value(
+                'polygons/polygon_color_alpha', 255, int)
 
             mode = self.settings.value('polygons/color_mode', 0, int)
             colorMode = self.COLOR_MODES[mode]
@@ -475,7 +478,8 @@ class KMLWriter(QObject):
             outline = self.settings.value('polygons/outline', False, bool)
 
             style += '<PolyStyle>\n'
-            style += '<color>%02x%02x%02x%02x</color>\n' % (alpha, blue, green, red)
+            style += '<color>%02x%02x%02x%02x</color>\n' % (
+                alpha, blue, green, red)
             style += '<colorMode>%s</colorMode>\n' % colorMode
             style += '<fill>%s</fill>\n' % fill
             style += '<outline>%s</outline>\n' % outline
