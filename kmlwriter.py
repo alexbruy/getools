@@ -32,7 +32,6 @@ from PyQt4.QtCore import *
 from qgis.core import *
 
 from getools.gui.optionsdialog import OptionsDialog
-from getools.getools_data import *
 import getools.geutils as utils
 
 
@@ -93,12 +92,16 @@ class KMLWriter(QObject):
             kmlFile.write('<name>%s</name>\n' % self.tr('Cursor coordinates'))
 
             # TODO: write style
+            # FIXME: is this necessary for markers?
 
             kmlFile.write('<Placemark>\n')
             kmlFile.write('<name>%s</name>\n' % self.tr('Custom point'))
             kmlFile.write('<description>%s</description>\n' %
                           self.point.toString())
+
             # TODO: write point style
+            # FIXME: is this necessary for markers?
+
             kmlFile.write('<Point>\n')
             kmlFile.write(geomSettings)
             kmlFile.write('<coordinates>')
@@ -134,6 +137,7 @@ class KMLWriter(QObject):
     def _exportVectorLayer(self, onlySelected):
         # Read geometry settings
         self.geomSettings = ''
+        self.overrideStyle = False
         geometryType = self.layer.geometryType()
         if geometryType == QGis.Point:
             mode = self.settings.value('points/altitude_mode', 0, int)
@@ -144,6 +148,9 @@ class KMLWriter(QObject):
             self.geomSettings += '<extrude>%d</extrude>\n' % extrude
             self.geomSettings += \
                 '<gx:altitudeMode>%s</gx:altitudeMode>\n' % altMode
+
+            self.overrideStyle = self.settings.value(
+                'points/overrideStyle', False, bool)
         elif geometryType == QGis.Line:
             mode = self.settings.value('lines/altitude_mode', 0, int)
             altMode = self.ALTITUDE_MODES[mode]
@@ -155,6 +162,9 @@ class KMLWriter(QObject):
             self.geomSettings += '<tessellate>%d</tessellate>\n' % tessellate
             self.geomSettings += \
                 '<gx:altitudeMode>%s</gx:altitudeMode>\n' % altMode
+
+            self.overrideStyle = self.settings.value(
+                'lines/overrideStyle', False, bool)
         elif geometryType == QGis.Polygon:
             mode = self.settings.value('polygons/altitude_mode', 0, int)
             altMode = self.ALTITUDE_MODES[mode]
@@ -168,9 +178,18 @@ class KMLWriter(QObject):
             self.geomSettings += '<tessellate>%d</tessellate>\n' % tessellate
             self.geomSettings += \
                 '<gx:altitudeMode>%s</gx:altitudeMode>\n' % altMode
+
+            self.overrideStyle = self.settings.value(
+                'polygons/overrideStyle', False, bool)
         else:
             self.exportError.emit(
                 self.tr('Unsupported geometry type %s') % geometryType)
+
+        # Extract and convert layer symbology
+        if self.overrideStyle:
+            styleMap, style = self._defaultStyle(geometryType)
+        else:
+            pass
 
         fileName = utils.tempFileName()
         with codecs.open(fileName, 'w', encoding='utf-8') as kmlFile:
@@ -178,7 +197,8 @@ class KMLWriter(QObject):
             s = utils.encodeStringForXml(self.layer.name())
             kmlFile.write('<name>%s</name>\n' % s)
 
-            # TODO: write layer styles
+            # Write layer styles
+            kmlFile.write(style)
 
             self.hasName = self.layer.fieldNameIndex('name') != -1
             self.hasDescription = self.layer.fieldNameIndex('descr') != -1
@@ -226,6 +246,7 @@ class KMLWriter(QObject):
             kmlFile.write('<name>%s</name>\n' % s)
             kmlFile.write('<GroundOverlay>\n')
             # TODO: write style
+            # FIXME: is it necessary for ground overlays?
             kmlFile.write('<Icon>\n')
             kmlFile.write('<href>%s</href>\n' % rasterPath)
             kmlFile.write('</Icon>\n')
@@ -259,15 +280,20 @@ class KMLWriter(QObject):
         if self.needsTransform:
             geom.transform(self.crsTransform)
 
-        kml = ''
-        kml += '<Placemark>\n'
+        kml = '<Placemark>\n'
         if self.hasName:
             s = utils.encodeStringForXml(feature['name'])
             kml += '<name>%s</name>\n' % s
         if self.hasDescription:
             s = utils.encodeStringForXml(feature['descr'])
             kml += '<description>%s</description>\n' % s
-        # TODO: write feature style
+
+        # TODO: Write feature style
+        if self.overrideStyle:
+            kml += '<styleUrl>#defaultStyle</styleUrl>'
+        else:
+            pass
+
         kml += self._geometryToKml(geom)
         kml += '</Placemark>\n'
         return kml
@@ -365,6 +391,16 @@ class KMLWriter(QObject):
         renderer = self.layer.rendererV2()
         rendererType = renderer.type()
 
+        if geometryType == QGis.Point:
+            if self.settings():
+                return
+        elif geometryType == QGis.Line:
+            pass
+        elif geometryType == QGisPolygon:
+            pass
+        else:
+            pass
+
         styleMap = dict()
         if rendererType == 'singleSymbol':
             pass
@@ -378,64 +414,72 @@ class KMLWriter(QObject):
             # TODO: emit signal/write to log and write deafault styles
             print 'Unsupported renderer'
 
-    def _symbolToKml(self, symbol):
+    def _pointSymbolToKml(self, symbol):
         pass
 
-    def _defaultStyle(self):
-        # Point style
-        red = self.settings.value('points/point_color_red', 255, int)
-        green = self.settings.value('points/point_color_green', 255, int)
-        blue = self.settings.value('points/point_color_blue', 0, int)
-        alpha = self.settings.value('points/point_color_alpha', 255, int)
+    def _lineSymbolToKml(self, symbol):
+        pass
 
-        mode = self.settings.value('points/color_mode', 0, int)
-        colorMode = self.COLOR_MODES[mode]
+    def _polygonSymbolToKml(self, symbol):
+        pass
 
-        scale = self.settings.value('points/scale', 1.0, float)
-
+    def _defaultStyle(self, geometryType):
         style = '<Style id="defaultStyle">\n'
-        style += '<IconStyle>'
-        style += '<color>%x%x%x%x</color>\n' % (alpha, blue, green, red)
-        style += '<colorMode>%s</colorMode>\n' % colorMode
-        style += '<scale>%s</scale>\n' % scale
-        #style += '<Icon><href>%s</href></Icon>\n' % pathToIcon
-        style += '</IconStyle>\n'
 
-        # Line style
-        red = self.settings.value('lines/line_color_red', 255, int)
-        green = self.settings.value('lines/line_color_green', 255, int)
-        blue = self.settings.value('lines/line_color_blue', 0, int)
-        alpha = self.settings.value('lines/line_color_alpha', 255, int)
+        if geometryType == QGis.Point:
+            # Point style
+            red = self.settings.value('points/point_color_red', 255, int)
+            green = self.settings.value('points/point_color_green', 255, int)
+            blue = self.settings.value('points/point_color_blue', 0, int)
+            alpha = self.settings.value('points/point_color_alpha', 255, int)
 
-        mode = self.settings.value('lines/color_mode', 0, int)
-        colorMode = self.COLOR_MODES[mode]
+            mode = self.settings.value('points/color_mode', 0, int)
+            colorMode = self.COLOR_MODES[mode]
 
-        width = self.settings.value('lines/width', 1.0, float)
+            scale = self.settings.value('points/scale', 1.0, float)
 
-        style += '<LineStyle>\n'
-        style += '<color>%x%x%x%x</color>\n' % (alpha, blue, green, red)
-        style += '<colorMode>%s</colorMode>\n' % colorMode
-        style += '<width>%s</width>\n' % width
-        style += '</LineStyle>\n'
+            style += '<IconStyle>'
+            style += '<color>%02x%02x%02x%02x</color>\n' % (alpha, blue, green, red)
+            style += '<colorMode>%s</colorMode>\n' % colorMode
+            style += '<scale>%s</scale>\n' % scale
+            #style += '<Icon><href>%s</href></Icon>\n' % pathToIcon
+            style += '</IconStyle>\n'
+        elif geometryType == QGis.Line:
+            # Line style
+            red = self.settings.value('lines/line_color_red', 255, int)
+            green = self.settings.value('lines/line_color_green', 255, int)
+            blue = self.settings.value('lines/line_color_blue', 0, int)
+            alpha = self.settings.value('lines/line_color_alpha', 255, int)
 
-        # Polygon style
-        red = self.settings.value('polygons/polygon_color_red', 255, int)
-        green = self.settings.value('polygons/polygon_color_green', 255, int)
-        blue = self.settings.value('polygons/polygon_color_blue', 0, int)
-        alpha = self.settings.value('polygons/polygon_color_alpha', 255, int)
+            mode = self.settings.value('lines/color_mode', 0, int)
+            colorMode = self.COLOR_MODES[mode]
 
-        mode = self.settings.value('polygons/color_mode', 0, int)
-        colorMode = self.COLOR_MODES[mode]
+            width = self.settings.value('lines/width', 1.0, float)
 
-        fill = self.settings.value('polygons/fill', False, bool)
-        outline = self.settings.value('polygons/outline', False, bool)
+            style += '<LineStyle>\n'
+            style += '<color>%02x%02x%02x%02x</color>\n' % (alpha, blue, green, red)
+            style += '<colorMode>%s</colorMode>\n' % colorMode
+            style += '<width>%s</width>\n' % width
+            style += '</LineStyle>\n'
+        elif geometryType == QGis.Polygon:
+            # Polygon style
+            red = self.settings.value('polygons/polygon_color_red', 255, int)
+            green = self.settings.value('polygons/polygon_color_green', 255, int)
+            blue = self.settings.value('polygons/polygon_color_blue', 0, int)
+            alpha = self.settings.value('polygons/polygon_color_alpha', 255, int)
 
-        style += '<PolyStyle>\n'
-        style += '<color>%x%x%x%x</color>\n' % (alpha, blue, green, red)
-        style += '<colorMode>%s</colorMode>\n' % colorMode
-        style += '<fill>%s</fill>\n' % fill
-        style += '<outline>%s</outline>\n' % outline
-        style += '</PolyStyle>\n'
+            mode = self.settings.value('polygons/color_mode', 0, int)
+            colorMode = self.COLOR_MODES[mode]
+
+            fill = self.settings.value('polygons/fill', False, bool)
+            outline = self.settings.value('polygons/outline', False, bool)
+
+            style += '<PolyStyle>\n'
+            style += '<color>%02x%02x%02x%02x</color>\n' % (alpha, blue, green, red)
+            style += '<colorMode>%s</colorMode>\n' % colorMode
+            style += '<fill>%s</fill>\n' % fill
+            style += '<outline>%s</outline>\n' % outline
+            style += '</PolyStyle>\n'
 
         # Label style
         red = self.settings.value('labels/label_color_red', 255, int)
@@ -455,6 +499,8 @@ class KMLWriter(QObject):
         style += '</LabelStyle>\n'
 
         style += '</Style>\n'
+
+        return dict(), style
 
     def _cleanup(self):
         self.point = None
