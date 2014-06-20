@@ -38,8 +38,8 @@ import getools.resources_rc
 
 class OptionsDialog(QgsOptionsDialogBase, Ui_OptionsDialog):
 
-    def __init__(self):
-        QgsOptionsDialogBase.__init__(self, 'Window')
+    def __init__(self, parent):
+        QgsOptionsDialogBase.__init__(self, 'Window', parent)
         self.setupUi(self)
 
         self.settings = QSettings('alexbruy', 'getools')
@@ -50,8 +50,8 @@ class OptionsDialog(QgsOptionsDialogBase, Ui_OptionsDialog):
         self.grpPointGeometry.setSettings(self.settings)
         self.grpLineStyle.setSettings(self.settings)
         self.grpLineGeometry.setSettings(self.settings)
-        self.grpPolyStyle.setSettings(self.settings)
-        self.grpPolyGeometry.setSettings(self.settings)
+        self.grpPolygonStyle.setSettings(self.settings)
+        self.grpPolygonGeometry.setSettings(self.settings)
 
         self.accepted.connect(self.saveOptions)
 
@@ -91,12 +91,12 @@ class OptionsDialog(QgsOptionsDialogBase, Ui_OptionsDialog):
         self.spnPointScale.setValue(
             self.settings.value('points/scale', 1.0, float))
 
-        self.cmbPointAltMode.addItem(self.tr('Clamp to ground'), 0)
-        self.cmbPointAltMode.addItem(self.tr('Relative to ground'), 1)
-        self.cmbPointAltMode.addItem(self.tr('Absolute'), 2)
+        self.cmbPointAltitudeMode.addItem(self.tr('Clamp to ground'), 0)
+        self.cmbPointAltitudeMode.addItem(self.tr('Relative to ground'), 1)
+        self.cmbPointAltitudeMode.addItem(self.tr('Absolute'), 2)
         mode = self.settings.value('points/altitude_mode', 0, int)
-        self.cmbPointAltMode.setCurrentIndex(
-            self.cmbPointAltMode.findData(mode))
+        self.cmbPointAltitudeMode.setCurrentIndex(
+            self.cmbPointAltitudeMode.findData(mode))
 
         self.spnPointAltitude.setValue(
             self.settings.value('points/altitude', 0.0, float))
@@ -116,19 +116,19 @@ class OptionsDialog(QgsOptionsDialogBase, Ui_OptionsDialog):
         self.cmbLineColorMode.addItem(self.tr('Random'), 1)
         mode = self.settings.value('lines/color_mode', 0, int)
         self.cmbLineColorMode.setCurrentIndex(
-            self.cmbPointColorMode.findData(mode))
+            self.cmbLineColorMode.findData(mode))
 
         self.spnLineWidth.setValue(
             self.settings.value('lines/width', 1.0, float))
 
-        self.cmbLineAltMode.addItem(self.tr('Clamp to ground'), 0)
-        self.cmbLineAltMode.addItem(self.tr('Relative to ground'), 1)
-        self.cmbLineAltMode.addItem(self.tr('Absolute'), 2)
-        self.cmbLineAltMode.addItem(self.tr('Clamp to sea floor'), 3)
-        self.cmbLineAltMode.addItem(self.tr('Relative to sea floor'), 4)
+        self.cmbLineAltitudeMode.addItem(self.tr('Clamp to ground'), 0)
+        self.cmbLineAltitudeMode.addItem(self.tr('Relative to ground'), 1)
+        self.cmbLineAltitudeMode.addItem(self.tr('Absolute'), 2)
+        self.cmbLineAltitudeMode.addItem(self.tr('Clamp to sea floor'), 3)
+        self.cmbLineAltitudeMode.addItem(self.tr('Relative to sea floor'), 4)
         mode = self.settings.value('lines/altitude_mode', 0, int)
-        self.cmbLineAltMode.setCurrentIndex(
-            self.cmbLineAltMode.findData(mode))
+        self.cmbLineAltitudeMode.setCurrentIndex(
+            self.cmbLineAltitudeMode.findData(mode))
 
         self.spnLineAltitude.setValue(
             self.settings.value('lines/altitude', 0.0, float))
@@ -143,35 +143,36 @@ class OptionsDialog(QgsOptionsDialogBase, Ui_OptionsDialog):
         green = self.settings.value('polygons/polygon_color_green', 255, int)
         blue = self.settings.value('polygons/polygon_color_blue', 0, int)
         alpha = self.settings.value('polygons/polygon_color_alpha', 255, int)
-        self.btnPolyColor.setColor(QColor(red, green, blue, alpha))
-        self.btnPolyColor.setColorDialogOptions(QColorDialog.ShowAlphaChannel)
+        self.btnPolygonColor.setColor(QColor(red, green, blue, alpha))
+        self.btnPolygonColor.setColorDialogOptions(
+            QColorDialog.ShowAlphaChannel)
 
-        self.cmbPolyColorMode.addItem(self.tr('Normal'), 0)
-        self.cmbPolyColorMode.addItem(self.tr('Random'), 1)
+        self.cmbPolygonColorMode.addItem(self.tr('Normal'), 0)
+        self.cmbPolygonColorMode.addItem(self.tr('Random'), 1)
         mode = self.settings.value('polygons/color_mode', 0, int)
-        self.cmbPolyColorMode.setCurrentIndex(
-            self.cmbPointColorMode.findData(mode))
+        self.cmbPolygonColorMode.setCurrentIndex(
+            self.cmbPolygonColorMode.findData(mode))
 
-        self.chkPolyFill.setChecked(
+        self.chkPolygonFill.setChecked(
             self.settings.value('polygons/fill', False, bool))
-        self.chkPolyOutline.setChecked(
+        self.chkPolygonOutline.setChecked(
             self.settings.value('polygons/outline', False, bool))
 
-        self.cmbPolyAltMode.addItem(self.tr('Clamp to ground'), 0)
-        self.cmbPolyAltMode.addItem(self.tr('Relative to ground'), 1)
-        self.cmbPolyAltMode.addItem(self.tr('Absolute'), 2)
-        self.cmbPolyAltMode.addItem(self.tr('Clamp to sea floor'), 3)
-        self.cmbPolyAltMode.addItem(self.tr('Relative to sea floor'), 4)
+        self.cmbPolygonAltitudeMode.addItem(self.tr('Clamp to ground'), 0)
+        self.cmbPolygonAltitudeMode.addItem(self.tr('Relative to ground'), 1)
+        self.cmbPolygonAltitudeMode.addItem(self.tr('Absolute'), 2)
+        self.cmbPolygonAltitudeMode.addItem(self.tr('Clamp to sea floor'), 3)
+        self.cmbPolygonAltitudeMode.addItem(self.tr('Relative to sea floor'), 4)
         mode = self.settings.value('polygons/altitude_mode', 0, int)
-        self.cmbPolyAltMode.setCurrentIndex(
-            self.cmbPolyAltMode.findData(mode))
+        self.cmbPolygonAltitudeMode.setCurrentIndex(
+            self.cmbPolygonAltitudeMode.findData(mode))
 
-        self.spnPolyAltitude.setValue(
+        self.spnPolygonAltitude.setValue(
             self.settings.value('polygons/altitude', 0.0, float))
 
-        self.chkPolyConnect.setChecked(
+        self.chkPolygonConnect.setChecked(
             self.settings.value('polygons/extrude', False, bool))
-        self.chkPolyFollow.setChecked(
+        self.chkPolygonFollow.setChecked(
             self.settings.value('polygons/tessellate', False, bool))
 
         # Labels tab
@@ -203,13 +204,13 @@ class OptionsDialog(QgsOptionsDialogBase, Ui_OptionsDialog):
         self.chkRasterRendered.setChecked(
             self.settings.value('rasters/rendered', False, bool))
 
-        self.cmbRasterAltMode.addItem(self.tr('Clamp to ground'), 0)
-        self.cmbRasterAltMode.addItem(self.tr('Absolute'), 2)
-        self.cmbRasterAltMode.addItem(self.tr('Clamp to sea floor'), 3)
-        self.cmbRasterAltMode.addItem(self.tr('Relative to sea floor'), 4)
+        self.cmbRasterAltitudeMode.addItem(self.tr('Clamp to ground'), 0)
+        self.cmbRasterAltitudeMode.addItem(self.tr('Absolute'), 2)
+        self.cmbRasterAltitudeMode.addItem(self.tr('Clamp to sea floor'), 3)
+        self.cmbRasterAltitudeMode.addItem(self.tr('Relative to sea floor'), 4)
         mode = self.settings.value('rasters/altitude_mode', 0, int)
-        self.cmbRasterAltMode.setCurrentIndex(
-            self.cmbRasterAltMode.findData(mode))
+        self.cmbRasterAltitudeMode.setCurrentIndex(
+            self.cmbRasterAltitudeMode.findData(mode))
 
         self.spnRasterAltitude.setValue(
             self.settings.value('rasters/altitude', 0.0, float))
@@ -236,8 +237,8 @@ class OptionsDialog(QgsOptionsDialogBase, Ui_OptionsDialog):
 
         self.settings.setValue('points/scale', self.spnPointScale.value())
 
-        mode = self.cmbPointAltMode.itemData(
-            self.cmbPointAltMode.currentIndex())
+        mode = self.cmbPointAltitudeMode.itemData(
+            self.cmbPointAltitudeMode.currentIndex())
         self.settings.setValue('points/altitude_mode', mode)
         self.settings.setValue(
             'points/altitude', self.spnPointAltitude.value())
@@ -258,7 +259,8 @@ class OptionsDialog(QgsOptionsDialogBase, Ui_OptionsDialog):
         self.settings.setValue('lines/color_mode', mode)
         self.settings.setValue('lines/width', self.spnLineWidth.value())
 
-        mode = self.cmbLineAltMode.itemData(self.cmbLineAltMode.currentIndex())
+        mode = self.cmbLineAltitudeMode.itemData(
+            self.cmbLineAltMode.currentIndex())
         self.settings.setValue('lines/altitude_mode', mode)
         self.settings.setValue('lines/altitude', self.spnLineAltitude.value())
         self.settings.setValue(
@@ -268,29 +270,30 @@ class OptionsDialog(QgsOptionsDialogBase, Ui_OptionsDialog):
 
         # Polygons tab
         self.settings.setValue(
-            'polygons/overrideStyle', self.grpPolyStyle.isChecked())
-        color = self.btnPolyColor.color()
+            'polygons/overrideStyle', self.grpPolygonStyle.isChecked())
+        color = self.btnPolygonColor.color()
         self.settings.setValue('polygons/polygon_color_red', color.red())
         self.settings.setValue('polygons/polygon_color_green', color.green())
         self.settings.setValue('polygons/polygon_color_blue', color.blue())
         self.settings.setValue('polygons/polygon_color_alpha', color.alpha())
 
-        mode = self.cmbPolyColorMode.itemData(
-            self.cmbPolyColorMode.currentIndex())
+        mode = self.cmbPolygonColorMode.itemData(
+            self.cmbPolygonColorMode.currentIndex())
         self.settings.setValue('polygons/color_mode', mode)
-        self.settings.setValue('polygons/fill', self.chkPolyFill.isChecked())
         self.settings.setValue(
-            'polygons/outline', self.chkPolyOutline.isChecked())
+            'polygons/fill', self.chkPolygonFill.isChecked())
+        self.settings.setValue(
+            'polygons/outline', self.chkPolygonOutline.isChecked())
 
-        mode = self.cmbPolyAltMode.itemData(
-            self.cmbPolyAltMode.currentIndex())
+        mode = self.cmbPolygonAltitudeMode.itemData(
+            self.cmbPolygonAltitudeMode.currentIndex())
         self.settings.setValue('polygons/altitude_mode', mode)
         self.settings.setValue(
-            'polygons/altitude', self.spnPolyAltitude.value())
+            'polygons/altitude', self.spnPolygonAltitude.value())
         self.settings.setValue(
-            'polygons/extrude', self.chkPolyConnect.isChecked())
+            'polygons/extrude', self.chkPolygonConnect.isChecked())
         self.settings.setValue(
-            'polygons/tessellate', self.chkPolyFollow.isChecked())
+            'polygons/tessellate', self.chkPolygonFollow.isChecked())
 
         # Labels tab
         color = self.btnLabelColor.color()
@@ -314,8 +317,8 @@ class OptionsDialog(QgsOptionsDialogBase, Ui_OptionsDialog):
         self.settings.setValue(
             'rasters/rendered', self.chkRasterRendered.isChecked())
 
-        mode = self.cmbRasterAltMode.itemData(
-            self.cmbRasterAltMode.currentIndex())
+        mode = self.cmbRasterAltitudeMode.itemData(
+            self.cmbRasterAltitudeMode.currentIndex())
         self.settings.setValue('rasters/altitude_mode', mode)
         self.settings.setValue(
             'rasters/altitude', self.spnRasterAltitude.value())

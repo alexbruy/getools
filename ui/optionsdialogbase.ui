@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>700</width>
-    <height>377</height>
+    <height>376</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -135,23 +135,13 @@
           </sizepolicy>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>2</number>
          </property>
-         <widget class="QWidget" name="mOptsPage_01">
+         <widget class="QWidget" name="mOptionsPagePoints">
           <layout class="QVBoxLayout" name="verticalLayout_14">
            <property name="margin">
             <number>0</number>
            </property>
-           <item>
-            <widget class="QLabel" name="label">
-             <property name="styleSheet">
-              <string notr="true">font-weight:bold;</string>
-             </property>
-             <property name="text">
-              <string>Points</string>
-             </property>
-            </widget>
-           </item>
            <item>
             <widget class="QScrollArea" name="scrollArea">
              <property name="frameShape">
@@ -165,8 +155,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>526</width>
-                <height>307</height>
+                <width>429</width>
+                <height>255</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_13">
@@ -187,18 +177,18 @@
                  <property name="checked">
                   <bool>false</bool>
                  </property>
-                 <property name="collapsed" stdset="0">
-                  <bool>false</bool>
-                 </property>
                  <property name="saveCollapsedState" stdset="0">
                   <bool>true</bool>
                  </property>
                  <property name="saveCheckedState" stdset="0">
                   <bool>true</bool>
                  </property>
+                 <property name="collapsed" stdset="0">
+                  <bool>false</bool>
+                 </property>
                  <layout class="QGridLayout" name="gridLayout">
                   <item row="0" column="0">
-                   <widget class="QLabel" name="label_2">
+                   <widget class="QLabel" name="label">
                     <property name="text">
                      <string>Color</string>
                     </property>
@@ -212,7 +202,7 @@
                    </widget>
                   </item>
                   <item row="1" column="0">
-                   <widget class="QLabel" name="label_4">
+                   <widget class="QLabel" name="label_2">
                     <property name="text">
                      <string>Color mode</string>
                     </property>
@@ -256,24 +246,17 @@
                   <bool>false</bool>
                  </property>
                  <layout class="QGridLayout" name="gridLayout_2">
-                  <item row="0" column="0">
-                   <widget class="QLabel" name="label_6">
+                  <item row="0" column="0" rowspan="2">
+                   <widget class="QLabel" name="label_4">
                     <property name="text">
                      <string>Altitude mode</string>
                     </property>
                    </widget>
                   </item>
                   <item row="0" column="1">
-                   <widget class="QComboBox" name="cmbPointAltMode"/>
+                   <widget class="QComboBox" name="cmbPointAltitudeMode"/>
                   </item>
-                  <item row="1" column="0">
-                   <widget class="QLabel" name="label_5">
-                    <property name="text">
-                     <string>Altitude above sea level</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="1">
+                  <item row="1" column="1" rowspan="2">
                    <widget class="QDoubleSpinBox" name="spnPointAltitude">
                     <property name="suffix">
                      <string> m</string>
@@ -284,12 +267,19 @@
                     <property name="minimum">
                      <double>-999999.999998999992386</double>
                     </property>
-                    <property name="maximum">
-                     <double>999999.999998999992386</double>
+                    <property name="value">
+                     <double>0.000000000000000</double>
                     </property>
                    </widget>
                   </item>
-                  <item row="2" column="0" colspan="2">
+                  <item row="2" column="0">
+                   <widget class="QLabel" name="label_5">
+                    <property name="text">
+                     <string>Altitude above sea level</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="0">
                    <widget class="QCheckBox" name="chkPointConnect">
                     <property name="text">
                      <string>Connect point to the ground with a line</string>
@@ -318,21 +308,11 @@
            </item>
           </layout>
          </widget>
-         <widget class="QWidget" name="mOptsPage_02">
+         <widget class="QWidget" name="mOptionsPageLines">
           <layout class="QVBoxLayout" name="verticalLayout_4">
            <property name="margin">
             <number>0</number>
            </property>
-           <item>
-            <widget class="QLabel" name="label_7">
-             <property name="styleSheet">
-              <string notr="true">font-weight:bold;</string>
-             </property>
-             <property name="text">
-              <string>Lines</string>
-             </property>
-            </widget>
-           </item>
            <item>
             <widget class="QScrollArea" name="scrollArea_2">
              <property name="frameShape">
@@ -341,13 +321,13 @@
              <property name="widgetResizable">
               <bool>true</bool>
              </property>
-             <widget class="QWidget" name="scrollAreaWidgetContents_2">
+             <widget class="QWidget" name="scrollAreaWidgetContents_3">
               <property name="geometry">
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>526</width>
-                <height>307</height>
+                <width>407</width>
+                <height>281</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_15">
@@ -368,18 +348,18 @@
                  <property name="checked">
                   <bool>false</bool>
                  </property>
-                 <property name="collapsed" stdset="0">
-                  <bool>false</bool>
-                 </property>
                  <property name="saveCollapsedState" stdset="0">
                   <bool>true</bool>
                  </property>
                  <property name="saveCheckedState" stdset="0">
                   <bool>true</bool>
                  </property>
+                 <property name="collapsed" stdset="0">
+                  <bool>false</bool>
+                 </property>
                  <layout class="QGridLayout" name="gridLayout_3">
                   <item row="0" column="0">
-                   <widget class="QLabel" name="label_8">
+                   <widget class="QLabel" name="label_6">
                     <property name="text">
                      <string>Color</string>
                     </property>
@@ -393,7 +373,7 @@
                    </widget>
                   </item>
                   <item row="1" column="0">
-                   <widget class="QLabel" name="label_9">
+                   <widget class="QLabel" name="label_7">
                     <property name="text">
                      <string>Color mode</string>
                     </property>
@@ -403,7 +383,7 @@
                    <widget class="QComboBox" name="cmbLineColorMode"/>
                   </item>
                   <item row="2" column="0">
-                   <widget class="QLabel" name="label_10">
+                   <widget class="QLabel" name="label_8">
                     <property name="text">
                      <string>Width</string>
                     </property>
@@ -437,6 +417,30 @@
                   <bool>false</bool>
                  </property>
                  <layout class="QGridLayout" name="gridLayout_4">
+                  <item row="3" column="0">
+                   <widget class="QCheckBox" name="chkLineConnect">
+                    <property name="text">
+                     <string>Connect linestring to the ground</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QComboBox" name="cmbLineAltitudeMode"/>
+                  </item>
+                  <item row="0" column="0" rowspan="2">
+                   <widget class="QLabel" name="label_9">
+                    <property name="text">
+                     <string>Altitude mode</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="0">
+                   <widget class="QLabel" name="label_10">
+                    <property name="text">
+                     <string>Altitude above sea level</string>
+                    </property>
+                   </widget>
+                  </item>
                   <item row="1" column="1" rowspan="2">
                    <widget class="QDoubleSpinBox" name="spnLineAltitude">
                     <property name="suffix">
@@ -453,31 +457,7 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="0" column="1">
-                   <widget class="QComboBox" name="cmbLineAltMode"/>
-                  </item>
-                  <item row="0" column="0">
-                   <widget class="QLabel" name="label_11">
-                    <property name="text">
-                     <string>Altitude mode</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="0">
-                   <widget class="QLabel" name="label_12">
-                    <property name="text">
-                     <string>Altitude above sea level</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="3" column="0" colspan="2">
-                   <widget class="QCheckBox" name="chkLineConnect">
-                    <property name="text">
-                     <string>Connect linestring to the ground</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="4" column="0" colspan="2">
+                  <item row="4" column="0">
                    <widget class="QCheckBox" name="chkLineFollow">
                     <property name="text">
                      <string>Allow linestring to follow the terrain</string>
@@ -506,21 +486,11 @@
            </item>
           </layout>
          </widget>
-         <widget class="QWidget" name="mOptsPage_03">
+         <widget class="QWidget" name="mOptionsPagePolygons">
           <layout class="QVBoxLayout" name="verticalLayout_5">
            <property name="margin">
             <number>0</number>
            </property>
-           <item>
-            <widget class="QLabel" name="label_13">
-             <property name="styleSheet">
-              <string notr="true">font-weight:bold;</string>
-             </property>
-             <property name="text">
-              <string>Polygons</string>
-             </property>
-            </widget>
-           </item>
            <item>
             <widget class="QScrollArea" name="scrollArea_3">
              <property name="frameShape">
@@ -535,10 +505,10 @@
                 <x>0</x>
                 <y>0</y>
                 <width>526</width>
-                <height>307</height>
+                <height>326</height>
                </rect>
               </property>
-              <layout class="QVBoxLayout" name="verticalLayout_17">
+              <layout class="QVBoxLayout" name="verticalLayout_16">
                <property name="topMargin">
                 <number>0</number>
                </property>
@@ -546,7 +516,7 @@
                 <number>0</number>
                </property>
                <item>
-                <widget class="QgsCollapsibleGroupBox" name="grpPolyStyle">
+                <widget class="QgsCollapsibleGroupBox" name="grpPolygonStyle">
                  <property name="title">
                   <string>Style</string>
                  </property>
@@ -556,59 +526,59 @@
                  <property name="checked">
                   <bool>false</bool>
                  </property>
-                 <property name="collapsed" stdset="0">
-                  <bool>false</bool>
-                 </property>
                  <property name="saveCollapsedState" stdset="0">
                   <bool>true</bool>
                  </property>
                  <property name="saveCheckedState" stdset="0">
                   <bool>true</bool>
                  </property>
-                 <layout class="QGridLayout" name="gridLayout_7">
-                  <item row="2" column="0">
-                   <widget class="QCheckBox" name="chkPolyFill">
+                 <property name="collapsed" stdset="0">
+                  <bool>false</bool>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_5">
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="label_12">
                     <property name="text">
-                     <string>Fill polygon</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="3" column="0">
-                   <widget class="QCheckBox" name="chkPolyOutline">
-                    <property name="text">
-                     <string>Outline polygon</string>
+                     <string>Color mode</string>
                     </property>
                    </widget>
                   </item>
                   <item row="0" column="0">
-                   <widget class="QLabel" name="label_19">
+                   <widget class="QLabel" name="label_11">
                     <property name="text">
                      <string>Color</string>
                     </property>
                    </widget>
                   </item>
                   <item row="0" column="1">
-                   <widget class="QgsColorButton" name="btnPolyColor">
+                   <widget class="QgsColorButton" name="btnPolygonColor">
                     <property name="text">
                      <string/>
                     </property>
                    </widget>
                   </item>
-                  <item row="1" column="0">
-                   <widget class="QLabel" name="label_20">
+                  <item row="1" column="1">
+                   <widget class="QComboBox" name="cmbPolygonColorMode"/>
+                  </item>
+                  <item row="2" column="0">
+                   <widget class="QCheckBox" name="chkPolygonFill">
                     <property name="text">
-                     <string>Color mode</string>
+                     <string>Fill polygon</string>
                     </property>
                    </widget>
                   </item>
-                  <item row="1" column="1">
-                   <widget class="QComboBox" name="cmbPolyColorMode"/>
+                  <item row="3" column="0">
+                   <widget class="QCheckBox" name="chkPolygonOutline">
+                    <property name="text">
+                     <string>Outline polygon</string>
+                    </property>
+                   </widget>
                   </item>
                  </layout>
                 </widget>
                </item>
                <item>
-                <widget class="QgsCollapsibleGroupBox" name="grpPolyGeometry">
+                <widget class="QgsCollapsibleGroupBox" name="grpPolygonGeometry">
                  <property name="title">
                   <string>Geometry</string>
                  </property>
@@ -621,23 +591,33 @@
                  <property name="saveCheckedState" stdset="0">
                   <bool>false</bool>
                  </property>
-                 <layout class="QGridLayout" name="gridLayout_8">
-                  <item row="0" column="0">
-                   <widget class="QLabel" name="label_22">
+                 <layout class="QGridLayout" name="gridLayout_6">
+                  <item row="3" column="0">
+                   <widget class="QCheckBox" name="chkPolygonConnect">
+                    <property name="text">
+                     <string>Connect polygon to the ground</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0" rowspan="2">
+                   <widget class="QLabel" name="label_14">
                     <property name="text">
                      <string>Altitude mode</string>
                     </property>
                    </widget>
                   </item>
-                  <item row="1" column="0">
-                   <widget class="QLabel" name="label_23">
+                  <item row="0" column="1">
+                   <widget class="QComboBox" name="cmbPolygonAltitudeMode"/>
+                  </item>
+                  <item row="2" column="0">
+                   <widget class="QLabel" name="label_15">
                     <property name="text">
                      <string>Altitude above sea level</string>
                     </property>
                    </widget>
                   </item>
-                  <item row="1" column="1">
-                   <widget class="QDoubleSpinBox" name="spnPolyAltitude">
+                  <item row="1" column="1" rowspan="2">
+                   <widget class="QDoubleSpinBox" name="spnPolygonAltitude">
                     <property name="suffix">
                      <string> m</string>
                     </property>
@@ -648,26 +628,129 @@
                      <double>-999999.999998999992386</double>
                     </property>
                     <property name="value">
-                     <double>1.000000000000000</double>
+                     <double>0.000000000000000</double>
                     </property>
                    </widget>
                   </item>
-                  <item row="2" column="0" colspan="2">
-                   <widget class="QCheckBox" name="chkPolyConnect">
-                    <property name="text">
-                     <string>Connect polygon to the ground</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="3" column="0">
-                   <widget class="QCheckBox" name="chkPolyFollow">
+                  <item row="4" column="0">
+                   <widget class="QCheckBox" name="chkPolygonFollow">
                     <property name="text">
                      <string>Allow polygon to follow the terrain</string>
                     </property>
                    </widget>
                   </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <spacer name="verticalSpacer_3">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </widget>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="mOptionsPageLabels">
+          <layout class="QVBoxLayout" name="verticalLayout_6">
+           <property name="margin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QScrollArea" name="scrollArea_4">
+             <property name="frameShape">
+              <enum>QFrame::NoFrame</enum>
+             </property>
+             <property name="widgetResizable">
+              <bool>true</bool>
+             </property>
+             <widget class="QWidget" name="scrollAreaWidgetContents_5">
+              <property name="geometry">
+               <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>198</width>
+                <height>131</height>
+               </rect>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_17">
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QgsCollapsibleGroupBox" name="grpLabelStyle">
+                 <property name="title">
+                  <string>Style</string>
+                 </property>
+                 <property name="checkable">
+                  <bool>true</bool>
+                 </property>
+                 <property name="checked">
+                  <bool>false</bool>
+                 </property>
+                 <property name="saveCollapsedState" stdset="0">
+                  <bool>true</bool>
+                 </property>
+                 <property name="saveCheckedState" stdset="0">
+                  <bool>true</bool>
+                 </property>
+                 <property name="collapsed" stdset="0">
+                  <bool>false</bool>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_7">
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="label_13">
+                    <property name="text">
+                     <string>Color</string>
+                    </property>
+                   </widget>
+                  </item>
                   <item row="0" column="1">
-                   <widget class="QComboBox" name="cmbPolyAltMode"/>
+                   <widget class="QgsColorButton" name="btnLabelColor">
+                    <property name="text">
+                     <string/>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="label_16">
+                    <property name="text">
+                     <string>Color mode</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QComboBox" name="cmbLabelColorMode"/>
+                  </item>
+                  <item row="2" column="0">
+                   <widget class="QLabel" name="label_17">
+                    <property name="text">
+                     <string>Scale</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="1">
+                   <widget class="QDoubleSpinBox" name="spnLabelScale">
+                    <property name="minimum">
+                     <double>1.000000000000000</double>
+                    </property>
+                    <property name="maximum">
+                     <double>100.000000000000000</double>
+                    </property>
+                   </widget>
                   </item>
                  </layout>
                 </widget>
@@ -691,36 +774,26 @@
            </item>
           </layout>
          </widget>
-         <widget class="QWidget" name="mOptsPage_04">
-          <layout class="QVBoxLayout" name="verticalLayout_6">
+         <widget class="QWidget" name="mOptionsPageRasters">
+          <layout class="QVBoxLayout" name="verticalLayout_7">
            <property name="margin">
             <number>0</number>
            </property>
            <item>
-            <widget class="QLabel" name="label_21">
-             <property name="styleSheet">
-              <string notr="true">font-weight:bold;</string>
-             </property>
-             <property name="text">
-              <string>Labels</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QScrollArea" name="scrollArea_4">
+            <widget class="QScrollArea" name="scrollArea_5">
              <property name="frameShape">
               <enum>QFrame::NoFrame</enum>
              </property>
              <property name="widgetResizable">
               <bool>true</bool>
              </property>
-             <widget class="QWidget" name="scrollAreaWidgetContents_5">
+             <widget class="QWidget" name="scrollAreaWidgetContents_6">
               <property name="geometry">
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>526</width>
-                <height>307</height>
+                <width>305</width>
+                <height>199</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_18">
@@ -731,160 +804,37 @@
                 <number>0</number>
                </property>
                <item>
-                <widget class="QGroupBox" name="grpLabelStyle">
-                 <property name="title">
-                  <string>Style</string>
-                 </property>
-                 <layout class="QGridLayout" name="gridLayout_9">
-                  <item row="0" column="0">
-                   <widget class="QLabel" name="label_24">
-                    <property name="text">
-                     <string>Color</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="1">
-                   <widget class="QgsColorButton" name="btnLabelColor">
-                    <property name="minimumSize">
-                     <size>
-                      <width>100</width>
-                      <height>0</height>
-                     </size>
-                    </property>
-                    <property name="maximumSize">
-                     <size>
-                      <width>16777215</width>
-                      <height>16777215</height>
-                     </size>
-                    </property>
-                    <property name="text">
-                     <string/>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="0">
-                   <widget class="QLabel" name="label_25">
-                    <property name="text">
-                     <string>Color mode</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="1">
-                   <widget class="QComboBox" name="cmbLabelColorMode"/>
-                  </item>
-                  <item row="2" column="0">
-                   <widget class="QLabel" name="label_26">
-                    <property name="text">
-                     <string>Scale</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="2" column="1">
-                   <widget class="QDoubleSpinBox" name="spnLabelScale">
-                    <property name="minimum">
-                     <double>1.000000000000000</double>
-                    </property>
-                    <property name="maximum">
-                     <double>100.000000000000000</double>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item>
-                <spacer name="verticalSpacer_5">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-              </layout>
-             </widget>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="mOptsPage_05">
-          <layout class="QVBoxLayout" name="verticalLayout_7">
-           <property name="margin">
-            <number>0</number>
-           </property>
-           <item>
-            <widget class="QLabel" name="label_14">
-             <property name="styleSheet">
-              <string notr="true">font-weight:bold;</string>
-             </property>
-             <property name="text">
-              <string>Rasters</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QScrollArea" name="scrollArea_5">
-             <property name="frameShape">
-              <enum>QFrame::NoFrame</enum>
-             </property>
-             <property name="widgetResizable">
-              <bool>true</bool>
-             </property>
-             <widget class="QWidget" name="scrollAreaWidgetContents_3">
-              <property name="geometry">
-               <rect>
-                <x>0</x>
-                <y>0</y>
-                <width>526</width>
-                <height>307</height>
-               </rect>
-              </property>
-              <layout class="QVBoxLayout" name="verticalLayout_8">
-               <property name="topMargin">
-                <number>0</number>
-               </property>
-               <property name="bottomMargin">
-                <number>0</number>
-               </property>
-               <item>
-                <widget class="QGroupBox" name="grpRasterColor">
+                <widget class="QgsCollapsibleGroupBox" name="grpRasterStyle">
                  <property name="title">
                   <string>Style</string>
                  </property>
                  <property name="checkable">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </property>
                  <property name="checked">
                   <bool>false</bool>
                  </property>
-                 <layout class="QGridLayout" name="gridLayout_5">
-                  <item row="0" column="0">
-                   <widget class="QLabel" name="label_15">
+                 <property name="saveCollapsedState" stdset="0">
+                  <bool>true</bool>
+                 </property>
+                 <property name="saveCheckedState" stdset="0">
+                  <bool>true</bool>
+                 </property>
+                 <property name="collapsed" stdset="0">
+                  <bool>false</bool>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_8">
+                  <item row="0" column="1">
+                   <widget class="QgsColorButton" name="btnRasterColor">
                     <property name="text">
-                     <string>Color</string>
+                     <string/>
                     </property>
                    </widget>
                   </item>
-                  <item row="0" column="1">
-                   <widget class="QgsColorButton" name="btnRasterColor">
-                    <property name="minimumSize">
-                     <size>
-                      <width>100</width>
-                      <height>0</height>
-                     </size>
-                    </property>
-                    <property name="maximumSize">
-                     <size>
-                      <width>16777215</width>
-                      <height>16777215</height>
-                     </size>
-                    </property>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="label_18">
                     <property name="text">
-                     <string/>
+                     <string>Color</string>
                     </property>
                    </widget>
                   </item>
@@ -899,26 +849,28 @@
                 </widget>
                </item>
                <item>
-                <widget class="QGroupBox" name="grpRasterGeometry">
+                <widget class="QgsCollapsibleGroupBox" name="grpRasterGeometry">
                  <property name="title">
                   <string>Geometry</string>
                  </property>
-                 <layout class="QGridLayout" name="gridLayout_6">
-                  <item row="0" column="0">
-                   <widget class="QLabel" name="label_16">
+                 <property name="collapsed" stdset="0">
+                  <bool>false</bool>
+                 </property>
+                 <property name="saveCollapsedState" stdset="0">
+                  <bool>true</bool>
+                 </property>
+                 <property name="saveCheckedState" stdset="0">
+                  <bool>false</bool>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_9">
+                  <item row="0" column="0" rowspan="2">
+                   <widget class="QLabel" name="label_21">
                     <property name="text">
                      <string>Altitude mode</string>
                     </property>
                    </widget>
                   </item>
-                  <item row="1" column="0">
-                   <widget class="QLabel" name="label_17">
-                    <property name="text">
-                     <string>Altitude above earth surface</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="2">
+                  <item row="1" column="1" rowspan="2">
                    <widget class="QDoubleSpinBox" name="spnRasterAltitude">
                     <property name="suffix">
                      <string> m</string>
@@ -930,25 +882,32 @@
                      <double>-999999.999998999992386</double>
                     </property>
                     <property name="value">
-                     <double>1.000000000000000</double>
+                     <double>0.000000000000000</double>
                     </property>
                    </widget>
                   </item>
-                  <item row="0" column="2">
-                   <widget class="QComboBox" name="cmbRasterAltMode"/>
+                  <item row="2" column="0">
+                   <widget class="QLabel" name="label_22">
+                    <property name="text">
+                     <string>Altitude above surface</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QComboBox" name="cmbRasterAltitudeMode"/>
                   </item>
                  </layout>
                 </widget>
                </item>
                <item>
-                <spacer name="verticalSpacer_3">
+                <spacer name="verticalSpacer_5">
                  <property name="orientation">
                   <enum>Qt::Vertical</enum>
                  </property>
                  <property name="sizeHint" stdset="0">
                   <size>
                    <width>20</width>
-                   <height>134</height>
+                   <height>40</height>
                   </size>
                  </property>
                 </spacer>

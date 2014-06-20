@@ -226,7 +226,7 @@ class GEToolsPlugin:
         self.canvas.setMapTool(self.toolSelect)
 
     def settings(self):
-        dlg = OptionsDialog()
+        dlg = OptionsDialog(self.iface.mainWindow())
         dlg.exec_()
 
     def about(self):
