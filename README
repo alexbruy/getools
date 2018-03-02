@@ -1,14 +1,12 @@
 GoogleEarth Tools
 -----------------
-View cursor position, selected features or whole layer in Google Earth
+View cursor position, selected features or whole layer in the Google Earth
 application.
 
-Plugin allows to create KML file, containing cursor position, selected
-feature(s) or whole vector layer and open it in Google Earth desktop
-application. Also it supports raster layers, but currently only those that was
-loaded via QGIS gdal provider.
+Plugin creates KML file, containing cursor position, selected feature(s)
+or whole vector layer and opens this file in the Google Earth desktop application.
+Also it supports raster layers, but currently only those that are loaded via
+QGIS GDAL provider.
 
-It is possible to specify and use custom styling for all types of vector
-features.
-
-NOTE: Google Earth application should be installed first.
+It is possible to preserve vector layer styling (considering KML limitations),
+as well as use custom styling for all types of vector features.
