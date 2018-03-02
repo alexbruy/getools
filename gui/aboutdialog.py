@@ -4,8 +4,8 @@
 ***************************************************************************
     aboutdialog.py
     ---------------------
-    Date                 : October 2013
-    Copyright            : (C) 2013-2014 by Alexander Bruy
+    Date                 : January 2018
+    Copyright            : (C) 2018 by Alexander Bruy
     Email                : alexander dot bruy at gmail dot com
 ***************************************************************************
 *                                                                         *
@@ -18,75 +18,71 @@
 """
 
 __author__ = 'Alexander Bruy'
-__date__ = 'October 2013'
-__copyright__ = '(C) 2013-2014, Alexander Bruy'
+__date__ = 'January 2018'
+__copyright__ = '(C) 2018, Alexander Bruy'
 
 # This will get replaced with a git SHA1 when you do a git archive
 
 __revision__ = '$Format:%H$'
 
 import os
-import ConfigParser
+import configparser
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from qgis.PyQt import uic
+from qgis.PyQt.QtGui import QTextDocument, QPixmap, QDesktopServices
+from qgis.PyQt.QtCore import QUrl
+from qgis.PyQt.QtWidgets import QDialogButtonBox, QDialog
 
-from getools.ui.ui_aboutdialogbase import Ui_Dialog
+from qgis.core import QgsApplication
 
-import getools.resources_rc
+pluginPath = os.path.split(os.path.dirname(__file__))[0]
+WIDGET, BASE = uic.loadUiType(os.path.join(pluginPath, "ui", "aboutdialogbase.ui"))
 
 
-class AboutDialog(QDialog, Ui_Dialog):
-    def __init__(self):
-        QDialog.__init__(self)
+class AboutDialog(BASE, WIDGET):
+    def __init__(self, parent=None):
+        super(AboutDialog, self).__init__(parent)
         self.setupUi(self)
 
-        self.btnHelp = self.buttonBox.button(QDialogButtonBox.Help)
+        cfg = configparser.ConfigParser()
+        cfg.read(os.path.join(pluginPath, "metadata.txt"))
+        name = cfg["general"]["name"]
+        about = cfg["general"]["about"]
+        version = cfg["general"]["version"]
+        icon = cfg["general"]["icon"]
+        author = cfg["general"]["author"]
+        self.home = cfg["general"]["homepage"]
+        bugs = cfg["general"]["tracker"]
 
-        self.lblLogo.setPixmap(QPixmap(':/icons/getools.svg'))
+        self.setWindowTitle(self.tr("About {}".format(name)))
+        self.lblName.setText("<h1>{}</h1>".format(name))
 
-        cfg = ConfigParser.SafeConfigParser()
-        cfg.read(os.path.join(
-            os.path.split(os.path.dirname(__file__))[0], 'metadata.txt'))
-        version = cfg.get('general', 'version')
+        self.lblLogo.setPixmap(QPixmap(os.path.join(pluginPath, *icon.split("/"))))
+        self.lblVersion.setText(self.tr("Version: {}".format(version)))
 
-        self.lblVersion.setText(self.tr('Version: %s') % (version))
         doc = QTextDocument()
-        doc.setHtml(self.getAboutText())
+        doc.setHtml(self.aboutText(about, author, self.home, bugs))
         self.textBrowser.setDocument(doc)
         self.textBrowser.setOpenExternalLinks(True)
 
         self.buttonBox.helpRequested.connect(self.openHelp)
 
-    def reject(self):
-        QDialog.reject(self)
-
     def openHelp(self):
-        overrideLocale = QSettings().value('locale/overrideFlag', False, bool)
-        if not overrideLocale:
-            localeFullName = QLocale.system().name()
-        else:
-            localeFullName = QSettings().value('locale/userLocale', '')
+        locale = QgsApplication.locale()
 
-        localeShortName = localeFullName[0:2]
-        if localeShortName in ['uk']:
+        if locale in ["uk"]:
             QDesktopServices.openUrl(
-                QUrl('http://hub.qgis.org/projects/getools/wiki'))
+                QUrl(self.home))
         else:
             QDesktopServices.openUrl(
-                QUrl('http://hub.qgis.org/projects/getools/wiki'))
+                QUrl(self.home))
 
-    def getAboutText(self):
+    def aboutText(self, about, author, home, bugs):
         return self.tr(
-            '<p>View cursor position, selected feature(s), whole raster or '
-            'vector layer in Google Earth application. It is possible to '
-            'create and use custom styling for all types of vector layers.</p>'
-            '<p>NOTE: supports only rasters loaded via gdal provider.</p>'
-            '<p><strong>Developers</strong>: Alexander Bruy, icons by Robert '
-            'Szczepanek.</p>'
-            '<p><strong>Homepage</strong>: '
-            '<a href="http://hub.qgis.org/projects/getools">'
-            'http://hub.qgis.org/projects/getools</a>.</p>'
-            '<p>Please report bugs at '
-            '<a href="http://hub.qgis.org/projects/getools/issues">'
-            'bugtracker</a>.</p>')
+            "<p>{description}</p>"
+            "<p><strong>Developers</strong>: {developer}</p>"
+            "<p><strong>Homepage</strong>: <a href='{homepage}'>{homepage}</a></p>"
+            "<p>Please report bugs at <a href='{bugtracker}'>bugtracker</a>.</p>".format(description=about,
+                                                                                         developer=author,
+                                                                                         homepage=home,
+                                                                                         bugtracker=bugs))
