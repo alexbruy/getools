@@ -60,19 +60,19 @@ class OptionsDialog(QgsOptionsDialogBase, Ui_OptionsDialog):
     def manageGui(self):
         item = self.mOptionsListWidget.findItems(self.tr('Points'),
             Qt.MatchFixedString | Qt.MatchCaseSensitive)[0]
-        item.setIcon(QIcon(':/icons/points.svg'))
+        item.setIcon(QgsApplication.getThemeIcon('/mIconPointLayer.svg'))
         item = self.mOptionsListWidget.findItems(self.tr('Lines'),
             Qt.MatchFixedString | Qt.MatchCaseSensitive)[0]
-        item.setIcon(QIcon(':/icons/lines.svg'))
+        item.setIcon(QgsApplication.getThemeIcon('/mIconLineLayer.svg'))
         item = self.mOptionsListWidget.findItems(self.tr('Polygons'),
             Qt.MatchFixedString | Qt.MatchCaseSensitive)[0]
-        item.setIcon(QIcon(':/icons/polygons.svg'))
+        item.setIcon(QgsApplication.getThemeIcon('/mIconPolygonLayer.svg'))
         item = self.mOptionsListWidget.findItems(self.tr('Labels'),
             Qt.MatchFixedString | Qt.MatchCaseSensitive)[0]
-        item.setIcon(QIcon(':/icons/labels.svg'))
+        item.setIcon(QgsApplication.getThemeIcon('/mActionLabeling.svg'))
         item = self.mOptionsListWidget.findItems(self.tr('Rasters'),
             Qt.MatchFixedString | Qt.MatchCaseSensitive)[0]
-        item.setIcon(QIcon(':/icons/rasters.svg'))
+        item.setIcon(QgsApplication.getThemeIcon('/mIconRaster.svg'))
 
         # Points tab
         red = self.settings.value('points/point_color_red', 255, int)

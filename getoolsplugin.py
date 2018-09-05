@@ -110,13 +110,13 @@ class GEToolsPlugin:
 
         self.actionSettings = QAction(QCoreApplication.translate(
             'GETools', 'Settings'), self.iface.mainWindow())
-        self.actionSettings.setIcon(QIcon(':/icons/settings.svg'))
+        self.actionSettings.setIcon(QgsApplication.getThemeIcon('/mActionOptions.svg'))
         self.actionSettings.setWhatsThis(
             QCoreApplication.translate('GETools', 'GETools settings'))
 
         self.actionAbout = QAction(QCoreApplication.translate(
             'GETools', 'About GETools...'), self.iface.mainWindow())
-        self.actionAbout.setIcon(QIcon(':/icons/about.png'))
+        self.actionAbout.setIcon(QgsApplication.getThemeIcon('/mActionHelpContents.svg'))
         self.actionAbout.setWhatsThis(
             QCoreApplication.translate('GETools', 'About GETools'))
 
