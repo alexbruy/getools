@@ -2,7 +2,7 @@
 
 """
 ***************************************************************************
-    getools_plugin.py
+    getoolsplugin.py
     ---------------------
     Date                 : October 2013
     Copyright            : (C) 2013-2014 by Alexander Bruy
@@ -26,292 +26,230 @@ __copyright__ = '(C) 2013-2014, Alexander Bruy'
 __revision__ = '$Format:%H$'
 
 import os
-import shutil
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from qgis.PyQt.QtCore import QCoreApplication, QTranslator
+from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt.QtWidgets import QAction
 
-from qgis.core import *
-from qgis.gui import *
+from qgis.core import QgsApplication
 
-from getools.tools.clicktool import ClickTool
-from getools.tools.selecttool import SelectTool
-from getools.gui.optionsdialog import OptionsDialog
+# ~ from getools.tools.clicktool import ClickTool
+# ~ from getools.tools.selecttool import SelectTool
+# ~ from getools.gui.optionsdialog import OptionsDialog
 from getools.gui.aboutdialog import AboutDialog
-from getools.kmlwriter import KMLWriter
-import getools.geutils as utils
+# ~ from getools.kmlwriter import KMLWriter
+# ~ import getools.geutils as utils
 
-import resources_rc
+pluginPath = os.path.dirname(__file__)
 
-
-class GEToolsPlugin:
+class GeToolsPlugin:
     def __init__(self, iface):
         self.iface = iface
-        self.canvas = self.iface.mapCanvas()
 
-        self.qgsVersion = unicode(QGis.QGIS_VERSION_INT)
+        locale = QgsApplication.locale()
+        qmPath = '{}/i18n/getools_{}.qm'.format(pluginPath, locale)
 
-        pluginPath = os.path.abspath(os.path.dirname(__file__))
-
-        overrideLocale = QSettings().value('locale/overrideFlag', False, bool)
-        if not overrideLocale:
-            locale = QLocale.system().name()[:2]
-        else:
-            locale = QSettings().value('locale/userLocale', '')
-
-        translationPath = pluginPath + '/i18n/getools_' + locale + '.qm'
-
-        if QFileInfo(translationPath).exists():
+        if os.path.exists(qmPath):
             self.translator = QTranslator()
-            self.translator.load(self.localePath)
+            self.translator.load(qmPath)
             QCoreApplication.installTranslator(self.translator)
 
     def initGui(self):
-        if int(self.qgsVersion) < 20000:
-            qgisVersion = self.qgsVersion[0] + '.' + self.qgsVersion[2] \
-                + '.' + self.qgsVersion[3]
-            QMessageBox.warning(self.iface.mainWindow(), 'GETools',
-                QCoreApplication.translate('GETools',
-                    'QGIS %s detected.\n') % (qgisVersion) +
-                    QCoreApplication.translate('GETools',
-                        'This version of GETools requires at least '
-                        'QGIS 2.0.\nPlugin will not be enabled.'))
-            return None
+        self.actionPostionToGe = QAction(self.tr('Coords to the Google Earth'), self.iface.mainWindow())
+        self.actionPostionToGe.setIcon(QIcon(os.path.join(pluginPath, 'icons', 'ge-click.svg')))
+        self.actionPostionToGe.setObjectName('gePosition')
+        self.actionPostionToGe.setCheckable(True)
 
-        self.actionSelectCoords = QAction(QCoreApplication.translate(
-            'GETools', 'Coords to Google Earth'), self.iface.mainWindow())
-        self.actionSelectCoords.setIcon(QIcon(':/icons/ge-click.svg'))
-        self.actionSelectCoords.setWhatsThis(QCoreApplication.translate(
-            'GETools', 'View mouse coordinates in Google Earth'))
-        self.actionSelectCoords.setCheckable(True)
+        self.actionFeaturesToGe = QAction(self.tr('Feature(s) to the Google Earth'), self.iface.mainWindow())
+        self.actionFeaturesToGe.setIcon(QIcon(os.path.join(pluginPath, 'icons', 'ge-selected.svg')))
+        self.actionFeaturesToGe.setObjectName('geFeatures')
+        self.actionFeaturesToGe.setCheckable(True)
 
-        self.actionSelectFeatures = QAction(QCoreApplication.translate(
-            'GETools', 'Feature to Google Earth'), self.iface.mainWindow())
-        self.actionSelectFeatures.setIcon(QIcon(':/icons/ge-selected.svg'))
-        self.actionSelectFeatures.setWhatsThis(QCoreApplication.translate(
-            'GETools', 'View selected feature in Google Earth'))
-        self.actionSelectFeatures.setCheckable(True)
+        self.actionVectorToGe = QAction(self.tr('Vector layer to the Google Earth'), self.iface.mainWindow())
+        self.actionVectorToGe.setIcon(QIcon(os.path.join(pluginPath, 'icons', 'ge-export-vector.svg')))
+        self.actionVectorToGe.setObjectName('geVector')
 
-        self.actionProcessVectorLayer = QAction(QCoreApplication.translate(
-            'GETools', 'Vector layer to Google Earth'),
-            self.iface.mainWindow())
-        self.actionProcessVectorLayer.setIcon(
-            QIcon(':/icons/ge-export-vector.svg'))
-        self.actionProcessVectorLayer.setWhatsThis(QCoreApplication.translate(
-            'GETools', 'View vector layer in Google Earth'))
+        self.actionRasterToGe = QAction(self.tr('Raster layer to the Google Earth'), self.iface.mainWindow())
+        self.actionRasterToGe.setIcon(QIcon(os.path.join(pluginPath, 'icons', 'ge-export-raster.svg')))
+        self.actionRasterToGe.setObjectName('geRaster')
 
-        self.actionProcessRasterLayer = QAction(QCoreApplication.translate(
-            'GETools', 'Raster layer to Google Earth'),
-            self.iface.mainWindow())
-        self.actionProcessRasterLayer.setIcon(
-            QIcon(':/icons/ge-export-raster.svg'))
-        self.actionProcessRasterLayer.setWhatsThis(QCoreApplication.translate(
-            'GETools', 'View raster layer in Google Earth'))
-
-        self.actionSettings = QAction(QCoreApplication.translate(
-            'GETools', 'Settings'), self.iface.mainWindow())
+        self.actionSettings = QAction(self.tr('Settings…'), self.iface.mainWindow())
         self.actionSettings.setIcon(QgsApplication.getThemeIcon('/mActionOptions.svg'))
-        self.actionSettings.setWhatsThis(
-            QCoreApplication.translate('GETools', 'GETools settings'))
+        self.actionSettings.setObjectName('geSettings')
 
-        self.actionAbout = QAction(QCoreApplication.translate(
-            'GETools', 'About GETools...'), self.iface.mainWindow())
+        self.actionAbout = QAction(self.tr('About GETools…'), self.iface.mainWindow())
         self.actionAbout.setIcon(QgsApplication.getThemeIcon('/mActionHelpContents.svg'))
-        self.actionAbout.setWhatsThis(
-            QCoreApplication.translate('GETools', 'About GETools'))
+        self.actionAbout.setObjectName('geAbout')
 
-        self.iface.addPluginToVectorMenu(QCoreApplication.translate(
-            'GETools', 'GETools'), self.actionSelectCoords)
-        self.iface.addPluginToVectorMenu(QCoreApplication.translate(
-            'GETools', 'GETools'), self.actionSelectFeatures)
-        self.iface.addPluginToVectorMenu(QCoreApplication.translate(
-            'GETools', 'GETools'), self.actionProcessVectorLayer)
-        self.iface.addPluginToVectorMenu(QCoreApplication.translate(
-            'GETools', 'GETools'), self.actionSettings)
-        self.iface.addPluginToVectorMenu(QCoreApplication.translate(
-            'GETools', 'GETools'), self.actionAbout)
+        self.iface.addPluginToMenu(self.tr('GETools'), self.actionPostionToGe)
+        self.iface.addPluginToMenu(self.tr('GETools'), self.actionFeaturesToGe)
+        self.iface.addPluginToMenu(self.tr('GETools'), self.actionVectorToGe)
+        self.iface.addPluginToMenu(self.tr('GETools'), self.actionRasterToGe)
+        self.iface.addPluginToMenu(self.tr('GETools'), self.actionSettings)
+        self.iface.addPluginToMenu(self.tr('GETools'), self.actionAbout)
 
-        self.iface.addPluginToRasterMenu(QCoreApplication.translate(
-            'GETools', 'GETools'), self.actionProcessRasterLayer)
-        self.iface.addPluginToRasterMenu(QCoreApplication.translate(
-            'GETools', 'GETools'), self.actionSettings)
-        self.iface.addPluginToRasterMenu(QCoreApplication.translate(
-            'GETools', 'GETools'), self.actionAbout)
+        self.iface.addVectorToolBarIcon(self.actionPostionToGe)
+        self.iface.addVectorToolBarIcon(self.actionFeaturesToGe)
+        self.iface.addVectorToolBarIcon(self.actionVectorToGe)
+        self.iface.addRasterToolBarIcon(self.actionRasterToGe)
 
-        self.iface.addVectorToolBarIcon(self.actionSelectCoords)
-        self.iface.addVectorToolBarIcon(self.actionSelectFeatures)
-        self.iface.addVectorToolBarIcon(self.actionProcessVectorLayer)
-
-        self.iface.addRasterToolBarIcon(self.actionProcessRasterLayer)
-
-        self.actionSelectCoords.triggered.connect(self.selectCoords)
-        self.actionSelectFeatures.triggered.connect(self.selectFeatures)
-        self.actionProcessVectorLayer.triggered.connect(self.processLayer)
-        self.actionProcessRasterLayer.triggered.connect(self.processLayer)
+        self.actionPostionToGe.triggered.connect(self.selectCoords)
+        self.actionFeaturesToGe.triggered.connect(self.selectFeatures)
+        self.actionVectorToGe.triggered.connect(self.processLayer)
+        self.actionRasterToGe.triggered.connect(self.processLayer)
         self.actionSettings.triggered.connect(self.settings)
         self.actionAbout.triggered.connect(self.about)
 
         # Map tools
-        self.toolClick = ClickTool(self.canvas)
-        self.toolClick.canvasClicked.connect(self.processCoords)
+        # ~ self.toolClick = ClickTool(self.canvas)
+        # ~ self.toolClick.canvasClicked.connect(self.processCoords)
 
-        self.toolSelect = SelectTool(self.iface, self.canvas)
-        self.toolSelect.featuresSelected.connect(self.processFeatures)
+        # ~ self.toolSelect = SelectTool(self.iface, self.canvas)
+        # ~ self.toolSelect.featuresSelected.connect(self.processFeatures)
 
         # Handle tool changes
-        self.iface.mapCanvas().mapToolSet.connect(self.mapToolChanged)
+        # ~ self.iface.mapCanvas().mapToolSet.connect(self.mapToolChanged)
 
         # Handle layer changes
-        self.iface.currentLayerChanged.connect(self.toggleTools)
+        # ~ self.iface.currentLayerChanged.connect(self.toggleTools)
 
-        self.toggleTools(self.canvas.currentLayer())
-
-        utils.tempDirectory()
+        # ~ self.toggleTools(self.canvas.currentLayer())
 
         # Prepare worker
-        self.thread = QThread()
-        self.writer = KMLWriter()
-        self.writer.moveToThread(self.thread)
-        self.writer.exportError.connect(self.thread.quit)
-        self.writer.exportError.connect(self.showError)
-        self.writer.exportFinished.connect(self.thread.quit)
-        self.writer.exportFinished.connect(self.openResults)
+        # ~ self.thread = QThread()
+        # ~ self.writer = KMLWriter()
+        # ~ self.writer.moveToThread(self.thread)
+        # ~ self.writer.exportError.connect(self.thread.quit)
+        # ~ self.writer.exportError.connect(self.showError)
+        # ~ self.writer.exportFinished.connect(self.thread.quit)
+        # ~ self.writer.exportFinished.connect(self.openResults)
 
     def unload(self):
-        self.iface.removeVectorToolBarIcon(self.actionSelectCoords)
-        self.iface.removeVectorToolBarIcon(self.actionSelectFeatures)
-        self.iface.removeVectorToolBarIcon(self.actionProcessVectorLayer)
+        self.iface.removeVectorToolBarIcon(self.actionPostionToGe)
+        self.iface.removeVectorToolBarIcon(self.actionFeaturesToGe)
+        self.iface.removeVectorToolBarIcon(self.actionVectorToGe)
+        self.iface.removeRasterToolBarIcon(self.actionRasterToGe)
 
-        self.iface.removeRasterToolBarIcon(self.actionProcessRasterLayer)
+        self.iface.removePluginMenu(self.tr('GETools'), self.actionPostionToGe)
+        self.iface.removePluginMenu(self.tr('GETools'), self.actionFeaturesToGe)
+        self.iface.removePluginMenu(self.tr('GETools'), self.actionVectorToGe)
+        self.iface.removePluginMenu(self.tr('GETools'), self.actionRasterToGe)
+        self.iface.removePluginMenu(self.tr('GETools'), self.actionSettings)
+        self.iface.removePluginMenu(self.tr('GETools'), self.actionAbout)
 
-        self.iface.removePluginVectorMenu(QCoreApplication.translate(
-            'GETools', 'GETools'), self.actionSelectCoords)
-        self.iface.removePluginVectorMenu(QCoreApplication.translate(
-            'GETools', 'GETools'), self.actionSelectFeatures)
-        self.iface.removePluginVectorMenu(QCoreApplication.translate(
-            'GETools', 'GETools'), self.actionProcessVectorLayer)
-        self.iface.removePluginVectorMenu(QCoreApplication.translate(
-            'GETools', 'GETools'), self.actionSettings)
-        self.iface.removePluginVectorMenu(QCoreApplication.translate(
-            'GETools', 'GETools'), self.actionAbout)
+        # ~ if self.iface.mapCanvas().mapTool() == self.toolClick:
+            # ~ self.iface.mapCanvas().unsetMapTool(self.toolClick)
+        # ~ if self.iface.mapCanvas().mapTool() == self.toolSelect:
+            # ~ self.iface.mapCanvas().unsetMapTool(self.toolSelect)
 
-        self.iface.removePluginRasterMenu(QCoreApplication.translate(
-            'GETools', 'GETools'), self.actionProcessVectorLayer)
-        self.iface.removePluginRasterMenu(QCoreApplication.translate(
-            'GETools', 'GETools'), self.actionSettings)
-        self.iface.removePluginRasterMenu(QCoreApplication.translate(
-            'GETools', 'GETools'), self.actionAbout)
+        # ~ del self.toolClick
+        # ~ del self.toolSelect
 
-        if self.iface.mapCanvas().mapTool() == self.toolClick:
-            self.iface.mapCanvas().unsetMapTool(self.toolClick)
-        if self.iface.mapCanvas().mapTool() == self.toolSelect:
-            self.iface.mapCanvas().unsetMapTool(self.toolSelect)
-
-        del self.toolClick
-        del self.toolSelect
-
-        self.thread.wait()
-        self.writer = None
-        self.thread = None
+        # ~ self.thread.wait()
+        # ~ self.writer = None
+        # ~ self.thread = None
 
         # Delete temporary files
-        tmp = utils.tempDirectory()
-        if QDir(tmp).exists():
-            shutil.rmtree(tmp, True)
-
-    def selectCoords(self):
-        self.canvas.setMapTool(self.toolClick)
-
-    def selectFeatures(self):
-        self.canvas.setMapTool(self.toolSelect)
 
     def settings(self):
-        dlg = OptionsDialog(self.iface.mainWindow())
-        dlg.exec_()
+        pass
+        # ~ dlg = OptionsDialog()
+        # ~ dlg.exec_()
 
     def about(self):
         dlg = AboutDialog()
         dlg.exec_()
 
+    def tr(self, text):
+        return QCoreApplication.translate('GeTools', text)
+
+    def selectCoords(self):
+        pass
+        #self.canvas.setMapTool(self.toolClick)
+
+    def selectFeatures(self):
+        pass
+        #self.canvas.setMapTool(self.toolSelect)
+
     def mapToolChanged(self, tool):
-        if tool != self.toolClick:
-            self.actionSelectCoords.setChecked(False)
-        if tool != self.toolSelect:
-            self.actionSelectFeatures.setChecked(False)
+        pass
+        # ~ if tool != self.toolClick:
+            # ~ self.actionSelectCoords.setChecked(False)
+        # ~ if tool != self.toolSelect:
+            # ~ self.actionSelectFeatures.setChecked(False)
 
     def toggleTools(self, layer):
-        if layer is None:
-            self.actionSelectCoords.setEnabled(False)
-            self.actionSelectFeatures.setEnabled(False)
-            self.actionProcessVectorLayer.setEnabled(False)
-            self.actionProcessRasterLayer.setEnabled(False)
-            if self.iface.mapCanvas().mapTool() == self.toolClick:
-                self.iface.mapCanvas().unsetMapTool(self.toolClick)
-            if self.iface.mapCanvas().mapTool() == self.toolSelect:
-                self.iface.mapCanvas().unsetMapTool(self.toolSelect)
-        else:
-            if layer.type() != QgsMapLayer.VectorLayer:
-                self.actionSelectCoords.setEnabled(False)
-                self.actionSelectFeatures.setEnabled(False)
-                self.actionProcessVectorLayer.setEnabled(False)
-                self.actionProcessRasterLayer.setEnabled(True)
-                if self.iface.mapCanvas().mapTool() == self.toolClick:
-                    self.iface.mapCanvas().unsetMapTool(self.toolClick)
-                if self.iface.mapCanvas().mapTool() == self.toolSelect:
-                    self.iface.mapCanvas().unsetMapTool(self.toolSelect)
-            else:
-                self.actionSelectCoords.setEnabled(True)
-                self.actionSelectFeatures.setEnabled(True)
-                self.actionProcessVectorLayer.setEnabled(True)
-                self.actionProcessRasterLayer.setEnabled(False)
+        pass
+        # ~ if layer is None:
+            # ~ self.actionSelectCoords.setEnabled(False)
+            # ~ self.actionSelectFeatures.setEnabled(False)
+            # ~ self.actionProcessVectorLayer.setEnabled(False)
+            # ~ self.actionProcessRasterLayer.setEnabled(False)
+            # ~ if self.iface.mapCanvas().mapTool() == self.toolClick:
+                # ~ self.iface.mapCanvas().unsetMapTool(self.toolClick)
+            # ~ if self.iface.mapCanvas().mapTool() == self.toolSelect:
+                # ~ self.iface.mapCanvas().unsetMapTool(self.toolSelect)
+        # ~ else:
+            # ~ if layer.type() != QgsMapLayer.VectorLayer:
+                # ~ self.actionSelectCoords.setEnabled(False)
+                # ~ self.actionSelectFeatures.setEnabled(False)
+                # ~ self.actionProcessVectorLayer.setEnabled(False)
+                # ~ self.actionProcessRasterLayer.setEnabled(True)
+                # ~ if self.iface.mapCanvas().mapTool() == self.toolClick:
+                    # ~ self.iface.mapCanvas().unsetMapTool(self.toolClick)
+                # ~ if self.iface.mapCanvas().mapTool() == self.toolSelect:
+                    # ~ self.iface.mapCanvas().unsetMapTool(self.toolSelect)
+            # ~ else:
+                # ~ self.actionSelectCoords.setEnabled(True)
+                # ~ self.actionSelectFeatures.setEnabled(True)
+                # ~ self.actionProcessVectorLayer.setEnabled(True)
+                # ~ self.actionProcessRasterLayer.setEnabled(False)
 
     def processCoords(self, point, button):
-        if self.thread.isRunning():
-            self.iface.messageBar().pushMessage(
-                QCoreApplication.translate('GETools',
-                    'There is running export operation. Please wait '
-                    'when it finished.'),
-                QgsMessageBar.WARNING, self.iface.messageTimeout())
-        else:
-            self.writer.setPoint(point)
-            self.thread.started.connect(self.writer.exportPoint)
-            self.thread.start()
+        pass
+        # ~ if self.thread.isRunning():
+            # ~ self.iface.messageBar().pushMessage(
+                # ~ self.tr('There is running export operation. Please wait when it finished.'),
+                # ~ QgsMessageBar.WARNING, self.iface.messageTimeout())
+        # ~ else:
+            # ~ self.writer.setPoint(point)
+            # ~ self.thread.started.connect(self.writer.exportPoint)
+            # ~ self.thread.start()
 
     def processFeatures(self):
-        if self.thread.isRunning():
-            self.iface.messageBar().pushMessage(
-                QCoreApplication.translate('GETools',
-                    'There is running export operation. Please wait '
-                    'when it finished.'),
-                QgsMessageBar.WARNING, self.iface.messageTimeout())
-        else:
-            self.writer.setLayer(self.canvas.currentLayer())
-            self.writer.setOnlySelected(True)
-            self.thread.started.connect(self.writer.exportLayer)
-            self.thread.start()
+        pass
+        # ~ if self.thread.isRunning():
+            # ~ self.iface.messageBar().pushMessage(
+                # ~ self.tr('There is running export operation. Please wait hen it finished.'),
+                # ~ QgsMessageBar.WARNING, self.iface.messageTimeout())
+        # ~ else:
+            # ~ self.writer.setLayer(self.canvas.currentLayer())
+            # ~ self.writer.setOnlySelected(True)
+            # ~ self.thread.started.connect(self.writer.exportLayer)
+            # ~ self.thread.start()
 
     def processLayer(self):
-        if self.thread.isRunning():
-            self.iface.messageBar().pushMessage(
-                QCoreApplication.translate('GETools',
-                    'There is running export operation. Please wait '
-                    'when it finished.'),
-                QgsMessageBar.WARNING, self.iface.messageTimeout())
-        else:
-            self.writer.setLayer(self.canvas.currentLayer())
-            self.writer.setOnlySelected(False)
-            self.thread.started.connect(self.writer.exportLayer)
-            self.thread.start()
+        pass
+        # ~ if self.thread.isRunning():
+            # ~ self.iface.messageBar().pushMessage(
+                # ~ self.tr('There is running export operation. Please wait when it finished.'),
+                # ~ QgsMessageBar.WARNING, self.iface.messageTimeout())
+        # ~ else:
+            # ~ self.writer.setLayer(self.canvas.currentLayer())
+            # ~ self.writer.setOnlySelected(False)
+            # ~ self.thread.started.connect(self.writer.exportLayer)
+            # ~ self.thread.start()
 
     def showError(self, message):
-        self.thread.started.disconnect()
-        self.iface.messageBar().pushMessage(
-            message, QgsMessageBar.WARNING, self.iface.messageTimeout())
+        pass
+        # ~ self.thread.started.disconnect()
+        # ~ self.iface.messageBar().pushMessage(
+            # ~ message, QgsMessageBar.WARNING, self.iface.messageTimeout())
 
     def openResults(self, fileName):
-        self.thread.started.disconnect()
-        self.iface.messageBar().pushMessage(
-            QCoreApplication.translate('GETools', 'Export completed'),
-            QgsMessageBar.INFO, self.iface.messageTimeout())
+        pass
+        # ~ self.thread.started.disconnect()
+        # ~ self.iface.messageBar().pushMessage(
+            # ~ self.tr('Export completed'), QgsMessageBar.INFO, self.iface.messageTimeout())
 
-        QDesktopServices.openUrl(QUrl('file:///' + fileName))
+        # ~ QDesktopServices.openUrl(QUrl('file:///' + fileName))

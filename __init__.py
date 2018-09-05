@@ -25,7 +25,8 @@ __copyright__ = '(C) 2013-2014, Alexander Bruy'
 
 __revision__ = '$Format:%H$'
 
+from getools.getoolsplugin import GeToolsPlugin
+
 
 def classFactory(iface):
-    from getools.getools_plugin import GEToolsPlugin
-    return GEToolsPlugin(iface)
+    return GeToolsPlugin(iface)
