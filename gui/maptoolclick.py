@@ -2,7 +2,7 @@
 
 """
 ***************************************************************************
-    clicktool.py
+    maptoolclick.py
     ---------------------
     Date                 : October 2013
     Copyright            : (C) 2013-2014 by Alexander Bruy
@@ -25,29 +25,32 @@ __copyright__ = '(C) 2013-2014, Alexander Bruy'
 
 __revision__ = '$Format:%H$'
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from qgis.core import (QgsApplication,
+                       QgsCoordinateTransform,
+                       QgsCoordinateReferenceSystem,
+                       QgsProject
+                      )
+from qgis.gui import QgsMapToolEmitPoint
 
-from qgis.core import *
-from qgis.gui import *
 
-
-class ClickTool(QgsMapToolEmitPoint):
+class MapToolClick(QgsMapToolEmitPoint):
     def __init__(self, canvas):
-        QgsMapToolEmitPoint.__init__(self, canvas)
+        super(MapToolClick, self).__init__(canvas)
 
         self.canvas = canvas
-        self.cursor = Qt.ArrowCursor
+        self.cursor = QgsApplication.getThemeCursor(QgsApplication.CapturePoint)
+
         self.geoCrs = QgsCoordinateReferenceSystem(4326)
 
     def activate(self):
+        super(MapToolClick, self).activate()
         self.canvas.setCursor(self.cursor)
 
-    def canvasPressEvent(self, event):
-        pnt = self.toMapCoordinates(event.pos())
-        sourceCrs = self.canvas.mapSettings().destinationCrs()
-        if sourceCrs.authid() != 'EPSG:4326':
-            crsTransform = QgsCoordinateTransform(sourceCrs, self.geoCrs)
-            pnt = crsTransform.transform(pnt)
+    def deactivate(self):
+        super(MapToolClick, self).deactivate()
+        self.canvas.unsetCursor()
 
+    def canvasPressEvent(self, event):
+        transform = QgsCoordinateTransform(self.canvas.mapSettings().destinationCrs(), self.geoCrs, QgsProject.instance())
+        pnt = transform.transform(self.toMapCoordinates(event.pos()))
         self.canvasClicked.emit(pnt, event.button())

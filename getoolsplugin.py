@@ -31,9 +31,9 @@ from qgis.PyQt.QtCore import QCoreApplication, QTranslator
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction
 
-from qgis.core import QgsApplication
+from qgis.core import QgsApplication, QgsMapLayer
 
-# ~ from getools.tools.clicktool import ClickTool
+from getools.gui.maptoolclick import MapToolClick
 # ~ from getools.tools.selecttool import SelectTool
 # ~ from getools.gui.optionsdialog import OptionsDialog
 from getools.gui.aboutdialog import AboutDialog
@@ -93,7 +93,7 @@ class GeToolsPlugin:
         self.iface.addVectorToolBarIcon(self.actionVectorToGe)
         self.iface.addRasterToolBarIcon(self.actionRasterToGe)
 
-        self.actionPostionToGe.triggered.connect(self.selectCoords)
+        self.actionPostionToGe.triggered.connect(self.selectPosition)
         self.actionFeaturesToGe.triggered.connect(self.selectFeatures)
         self.actionVectorToGe.triggered.connect(self.processLayer)
         self.actionRasterToGe.triggered.connect(self.processLayer)
@@ -101,17 +101,15 @@ class GeToolsPlugin:
         self.actionAbout.triggered.connect(self.about)
 
         # Map tools
-        # ~ self.toolClick = ClickTool(self.canvas)
-        # ~ self.toolClick.canvasClicked.connect(self.processCoords)
+        self.toolClick = MapToolClick(self.iface.mapCanvas())
+        self.toolClick.setAction(self.actionPostionToGe)
+        self.toolClick.canvasClicked.connect(self.exportPosition)
 
         # ~ self.toolSelect = SelectTool(self.iface, self.canvas)
         # ~ self.toolSelect.featuresSelected.connect(self.processFeatures)
 
-        # Handle tool changes
-        # ~ self.iface.mapCanvas().mapToolSet.connect(self.mapToolChanged)
-
         # Handle layer changes
-        # ~ self.iface.currentLayerChanged.connect(self.toggleTools)
+        self.iface.currentLayerChanged.connect(self.toggleButtons)
 
         # ~ self.toggleTools(self.canvas.currentLayer())
 
@@ -163,50 +161,38 @@ class GeToolsPlugin:
     def tr(self, text):
         return QCoreApplication.translate('GeTools', text)
 
-    def selectCoords(self):
-        pass
-        #self.canvas.setMapTool(self.toolClick)
+    def selectPosition(self):
+        self.iface.mapCanvas().setMapTool(self.toolClick)
 
     def selectFeatures(self):
         pass
         #self.canvas.setMapTool(self.toolSelect)
 
-    def mapToolChanged(self, tool):
-        pass
+    # ~ def toggleMapTools(self, tool):
         # ~ if tool != self.toolClick:
             # ~ self.actionSelectCoords.setChecked(False)
         # ~ if tool != self.toolSelect:
             # ~ self.actionSelectFeatures.setChecked(False)
 
-    def toggleTools(self, layer):
-        pass
-        # ~ if layer is None:
-            # ~ self.actionSelectCoords.setEnabled(False)
-            # ~ self.actionSelectFeatures.setEnabled(False)
-            # ~ self.actionProcessVectorLayer.setEnabled(False)
-            # ~ self.actionProcessRasterLayer.setEnabled(False)
-            # ~ if self.iface.mapCanvas().mapTool() == self.toolClick:
-                # ~ self.iface.mapCanvas().unsetMapTool(self.toolClick)
-            # ~ if self.iface.mapCanvas().mapTool() == self.toolSelect:
-                # ~ self.iface.mapCanvas().unsetMapTool(self.toolSelect)
-        # ~ else:
-            # ~ if layer.type() != QgsMapLayer.VectorLayer:
-                # ~ self.actionSelectCoords.setEnabled(False)
-                # ~ self.actionSelectFeatures.setEnabled(False)
-                # ~ self.actionProcessVectorLayer.setEnabled(False)
-                # ~ self.actionProcessRasterLayer.setEnabled(True)
-                # ~ if self.iface.mapCanvas().mapTool() == self.toolClick:
-                    # ~ self.iface.mapCanvas().unsetMapTool(self.toolClick)
-                # ~ if self.iface.mapCanvas().mapTool() == self.toolSelect:
-                    # ~ self.iface.mapCanvas().unsetMapTool(self.toolSelect)
-            # ~ else:
-                # ~ self.actionSelectCoords.setEnabled(True)
-                # ~ self.actionSelectFeatures.setEnabled(True)
-                # ~ self.actionProcessVectorLayer.setEnabled(True)
-                # ~ self.actionProcessRasterLayer.setEnabled(False)
+    def toggleButtons(self, layer):
+        if layer and layer.type() == QgsMapLayer.VectorLayer:
+            self.actionPostionToGe.setEnabled(True)
+            self.actionFeaturesToGe.setEnabled(True)
+            self.actionVectorToGe.setEnabled(True)
+            self.actionRasterToGe.setEnabled(False)
+        elif layer and layer.type() == QgsMapLayer.RasterLayer:
+            self.actionPostionToGe.setEnabled(False)
+            self.actionFeaturesToGe.setEnabled(False)
+            self.actionVectorToGe.setEnabled(False)
+            self.actionRasterToGe.setEnabled(True)
+        else:
+            self.actionPostionToGe.setEnabled(False)
+            self.actionFeaturesToGe.setEnabled(False)
+            self.actionVectorToGe.setEnabled(False)
+            self.actionRasterToGe.setEnabled(False)
 
-    def processCoords(self, point, button):
-        pass
+    def exportPosition(self, point, button):
+        print(point)
         # ~ if self.thread.isRunning():
             # ~ self.iface.messageBar().pushMessage(
                 # ~ self.tr('There is running export operation. Please wait when it finished.'),
