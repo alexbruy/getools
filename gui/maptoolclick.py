@@ -5,7 +5,7 @@
     maptoolclick.py
     ---------------------
     Date                 : October 2013
-    Copyright            : (C) 2013-2014 by Alexander Bruy
+    Copyright            : (C) 2013-2018 by Alexander Bruy
     Email                : alexander dot bruy at gmail dot com
 ***************************************************************************
 *                                                                         *
