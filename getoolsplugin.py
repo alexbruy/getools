@@ -26,6 +26,7 @@ __copyright__ = '(C) 2013-2018, Alexander Bruy'
 __revision__ = '$Format:%H$'
 
 import os
+import shutil
 
 from qgis.PyQt.QtCore import QCoreApplication, QTranslator
 from qgis.PyQt.QtGui import QIcon
@@ -38,9 +39,10 @@ from getools.gui.maptoolselect import MapToolSelect
 # ~ from getools.gui.optionsdialog import OptionsDialog
 from getools.gui.aboutdialog import AboutDialog
 # ~ from getools.kmlwriter import KMLWriter
-# ~ import getools.geutils as utils
+import getools.geutils as utils
 
 pluginPath = os.path.dirname(__file__)
+
 
 class GeToolsPlugin:
     def __init__(self, iface):
@@ -95,12 +97,11 @@ class GeToolsPlugin:
 
         self.actionPostionToGe.triggered.connect(self.selectPosition)
         self.actionFeaturesToGe.triggered.connect(self.selectFeatures)
-        self.actionVectorToGe.triggered.connect(self.processLayer)
-        self.actionRasterToGe.triggered.connect(self.processLayer)
+        self.actionVectorToGe.triggered.connect(self.exportLayer)
+        self.actionRasterToGe.triggered.connect(self.exportLayer)
         self.actionSettings.triggered.connect(self.settings)
         self.actionAbout.triggered.connect(self.about)
 
-        # Map tools
         self.toolClick = MapToolClick(self.iface.mapCanvas())
         self.toolClick.setAction(self.actionPostionToGe)
         self.toolClick.canvasClicked.connect(self.exportPosition)
@@ -109,19 +110,7 @@ class GeToolsPlugin:
         self.toolSelect.setAction(self.actionFeaturesToGe)
         self.toolSelect.featuresSelected.connect(self.exportFeatures)
 
-        # Handle layer changes
         self.iface.currentLayerChanged.connect(self.toggleButtons)
-
-        # ~ self.toggleTools(self.canvas.currentLayer())
-
-        # Prepare worker
-        # ~ self.thread = QThread()
-        # ~ self.writer = KMLWriter()
-        # ~ self.writer.moveToThread(self.thread)
-        # ~ self.writer.exportError.connect(self.thread.quit)
-        # ~ self.writer.exportError.connect(self.showError)
-        # ~ self.writer.exportFinished.connect(self.thread.quit)
-        # ~ self.writer.exportFinished.connect(self.openResults)
 
     def unload(self):
         self.iface.removeVectorToolBarIcon(self.actionPostionToGe)
@@ -144,11 +133,7 @@ class GeToolsPlugin:
         del self.toolClick
         del self.toolSelect
 
-        # ~ self.thread.wait()
-        # ~ self.writer = None
-        # ~ self.thread = None
-
-        # Delete temporary files
+        utils.removeTempFiles()
 
     def settings(self):
         pass
@@ -168,25 +153,16 @@ class GeToolsPlugin:
     def selectFeatures(self):
         self.iface.mapCanvas().setMapTool(self.toolSelect)
 
-    # ~ def toggleMapTools(self, tool):
-        # ~ if tool != self.toolClick:
-            # ~ self.actionSelectCoords.setChecked(False)
-        # ~ if tool != self.toolSelect:
-            # ~ self.actionSelectFeatures.setChecked(False)
-
     def toggleButtons(self, layer):
         if layer and layer.type() == QgsMapLayer.VectorLayer:
-            self.actionPostionToGe.setEnabled(True)
             self.actionFeaturesToGe.setEnabled(True)
             self.actionVectorToGe.setEnabled(True)
             self.actionRasterToGe.setEnabled(False)
         elif layer and layer.type() == QgsMapLayer.RasterLayer:
-            self.actionPostionToGe.setEnabled(False)
             self.actionFeaturesToGe.setEnabled(False)
             self.actionVectorToGe.setEnabled(False)
             self.actionRasterToGe.setEnabled(True)
         else:
-            self.actionPostionToGe.setEnabled(False)
             self.actionFeaturesToGe.setEnabled(False)
             self.actionVectorToGe.setEnabled(False)
             self.actionRasterToGe.setEnabled(False)
@@ -214,7 +190,7 @@ class GeToolsPlugin:
             # ~ self.thread.started.connect(self.writer.exportLayer)
             # ~ self.thread.start()
 
-    def processLayer(self):
+    def exportLayer(self):
         pass
         # ~ if self.thread.isRunning():
             # ~ self.iface.messageBar().pushMessage(

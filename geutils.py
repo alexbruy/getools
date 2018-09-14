@@ -27,24 +27,27 @@ __revision__ = '$Format:%H$'
 
 import os
 import uuid
-
-from PyQt4.QtCore import *
-
-from qgis.core import *
+import tempfile
 
 
 def tempDirectory():
-    tmp = unicode(os.path.join(QDir.tempPath(), 'getools'))
+    tmp = os.path.join(tempfile.gettempdir(), 'getools')
     if not os.path.exists(tmp):
-        QDir().mkpath(tmp)
+        os.makedirs(tmp)
 
     return os.path.abspath(tmp)
 
 
 def tempFileName():
     tmpDir = tempDirectory()
-    fName = os.path.join(tmpDir, str(uuid.uuid4()).replace('-', '') + '.kml')
+    fName = os.path.join(tmpDir, '{}.kml'.format(uuid.uuid4().hex))
     return fName
+
+
+def removeTempFiles():
+    tmpDir = tempDirectory()
+    if os.path.exists(tmpDir):
+        shutil.rmtree(tmpDir, True)
 
 
 def encodeStringForXml(string):
@@ -57,22 +60,22 @@ def encodeStringForXml(string):
     return encodedString
 
 
-def writeRenderedRaster(layer, fileName):
-    provider = layer.dataProvider()
-    fileWriter = QgsRasterFileWriter(fileName)
-    pipe = QgsRasterPipe(layer.pipe())
+# ~ def writeRenderedRaster(layer, fileName):
+    # ~ provider = layer.dataProvider()
+    # ~ fileWriter = QgsRasterFileWriter(fileName)
+    # ~ pipe = QgsRasterPipe(layer.pipe())
 
-    projector = pipe.projector()
-    if not projector:
-        print 'Cannot get pipe projector'
-        return False
+    # ~ projector = pipe.projector()
+    # ~ if not projector:
+        # ~ print 'Cannot get pipe projector'
+        # ~ return False
 
-    projector.setCRS(provider.crs(), provider.crs())
+    # ~ projector.setCRS(provider.crs(), provider.crs())
 
-    if not pipe.last():
-        del pipe
-        return False
+    # ~ if not pipe.last():
+        # ~ del pipe
+        # ~ return False
 
-    fileWriter.writeRaster(pipe, provider.xSize(), provider.ySize(),
-        provider.extent(), provider.crs())
-    return True
+    # ~ fileWriter.writeRaster(pipe, provider.xSize(), provider.ySize(),
+        # ~ provider.extent(), provider.crs())
+    # ~ return True
