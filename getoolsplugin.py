@@ -19,7 +19,7 @@
 
 __author__ = 'Alexander Bruy'
 __date__ = 'October 2013'
-__copyright__ = '(C) 2013-2014, Alexander Bruy'
+__copyright__ = '(C) 2013-2018, Alexander Bruy'
 
 # This will get replaced with a git SHA1 when you do a git archive
 
@@ -34,7 +34,7 @@ from qgis.PyQt.QtWidgets import QAction
 from qgis.core import QgsApplication, QgsMapLayer
 
 from getools.gui.maptoolclick import MapToolClick
-# ~ from getools.tools.selecttool import SelectTool
+from getools.gui.maptoolselect import MapToolSelect
 # ~ from getools.gui.optionsdialog import OptionsDialog
 from getools.gui.aboutdialog import AboutDialog
 # ~ from getools.kmlwriter import KMLWriter
@@ -105,8 +105,9 @@ class GeToolsPlugin:
         self.toolClick.setAction(self.actionPostionToGe)
         self.toolClick.canvasClicked.connect(self.exportPosition)
 
-        # ~ self.toolSelect = SelectTool(self.iface, self.canvas)
-        # ~ self.toolSelect.featuresSelected.connect(self.processFeatures)
+        self.toolSelect = MapToolSelect(self.iface.mapCanvas())
+        self.toolSelect.setAction(self.actionFeaturesToGe)
+        self.toolSelect.featuresSelected.connect(self.exportFeatures)
 
         # Handle layer changes
         self.iface.currentLayerChanged.connect(self.toggleButtons)
@@ -135,13 +136,13 @@ class GeToolsPlugin:
         self.iface.removePluginMenu(self.tr('GETools'), self.actionSettings)
         self.iface.removePluginMenu(self.tr('GETools'), self.actionAbout)
 
-        # ~ if self.iface.mapCanvas().mapTool() == self.toolClick:
-            # ~ self.iface.mapCanvas().unsetMapTool(self.toolClick)
-        # ~ if self.iface.mapCanvas().mapTool() == self.toolSelect:
-            # ~ self.iface.mapCanvas().unsetMapTool(self.toolSelect)
+        if self.iface.mapCanvas().mapTool() == self.toolClick:
+            self.iface.mapCanvas().unsetMapTool(self.toolClick)
+        if self.iface.mapCanvas().mapTool() == self.toolSelect:
+            self.iface.mapCanvas().unsetMapTool(self.toolSelect)
 
-        # ~ del self.toolClick
-        # ~ del self.toolSelect
+        del self.toolClick
+        del self.toolSelect
 
         # ~ self.thread.wait()
         # ~ self.writer = None
@@ -165,8 +166,7 @@ class GeToolsPlugin:
         self.iface.mapCanvas().setMapTool(self.toolClick)
 
     def selectFeatures(self):
-        pass
-        #self.canvas.setMapTool(self.toolSelect)
+        self.iface.mapCanvas().setMapTool(self.toolSelect)
 
     # ~ def toggleMapTools(self, tool):
         # ~ if tool != self.toolClick:
@@ -202,8 +202,8 @@ class GeToolsPlugin:
             # ~ self.thread.started.connect(self.writer.exportPoint)
             # ~ self.thread.start()
 
-    def processFeatures(self):
-        pass
+    def exportFeatures(self):
+        print(self.iface.activeLayer().selectedFeatureCount())
         # ~ if self.thread.isRunning():
             # ~ self.iface.messageBar().pushMessage(
                 # ~ self.tr('There is running export operation. Please wait hen it finished.'),
