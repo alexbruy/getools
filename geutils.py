@@ -52,34 +52,3 @@ def removeTempFiles():
     tmp = tempDirectory()
     if os.path.exists(tmp):
         shutil.rmtree(tmp, True)
-
-
-def encodeStringForXml(string):
-    encodedString = string
-    encodedString.replace('&', '&amp;')
-    encodedString.replace('"', '&quot;')
-    encodedString.replace("'", '&apos;')
-    encodedString.replace('<', '&lt;')
-    encodedString.replace('>', '&gt;')
-    return encodedString
-
-
-# ~ def writeRenderedRaster(layer, fileName):
-    # ~ provider = layer.dataProvider()
-    # ~ fileWriter = QgsRasterFileWriter(fileName)
-    # ~ pipe = QgsRasterPipe(layer.pipe())
-
-    # ~ projector = pipe.projector()
-    # ~ if not projector:
-        # ~ print 'Cannot get pipe projector'
-        # ~ return False
-
-    # ~ projector.setCRS(provider.crs(), provider.crs())
-
-    # ~ if not pipe.last():
-        # ~ del pipe
-        # ~ return False
-
-    # ~ fileWriter.writeRaster(pipe, provider.xSize(), provider.ySize(),
-        # ~ provider.extent(), provider.crs())
-    # ~ return True

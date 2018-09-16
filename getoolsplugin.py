@@ -28,8 +28,8 @@ __revision__ = '$Format:%H$'
 import os
 import shutil
 
-from qgis.PyQt.QtCore import QCoreApplication, QTranslator
-from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt.QtCore import QCoreApplication, QTranslator, QUrl
+from qgis.PyQt.QtGui import QIcon, QDesktopServices
 from qgis.PyQt.QtWidgets import QAction
 
 from qgis.core import QgsApplication, QgsMapLayer
@@ -38,7 +38,7 @@ from getools.gui.maptoolclick import MapToolClick
 from getools.gui.maptoolselect import MapToolSelect
 # ~ from getools.gui.optionsdialog import OptionsDialog
 from getools.gui.aboutdialog import AboutDialog
-# ~ from getools.kmlwriter import KMLWriter
+from getools.kmlwritertask import KmlWriterTask
 import getools.geutils as utils
 
 pluginPath = os.path.dirname(__file__)
@@ -111,6 +111,8 @@ class GeToolsPlugin:
         self.toolSelect.featuresSelected.connect(self.exportFeatures)
 
         self.iface.currentLayerChanged.connect(self.toggleButtons)
+
+        self.taskManager = QgsApplication.taskManager()
 
     def unload(self):
         self.iface.removeVectorToolBarIcon(self.actionPostionToGe)
@@ -191,27 +193,16 @@ class GeToolsPlugin:
             # ~ self.thread.start()
 
     def exportLayer(self):
-        pass
-        # ~ if self.thread.isRunning():
-            # ~ self.iface.messageBar().pushMessage(
-                # ~ self.tr('There is running export operation. Please wait when it finished.'),
-                # ~ QgsMessageBar.WARNING, self.iface.messageTimeout())
-        # ~ else:
-            # ~ self.writer.setLayer(self.canvas.currentLayer())
-            # ~ self.writer.setOnlySelected(False)
-            # ~ self.thread.started.connect(self.writer.exportLayer)
-            # ~ self.thread.start()
+        task = KmlWriterTask(self.iface.activeLayer())
+        task.exportComplete.connect(self.completed)
+        task.errorOccurred.connect(self.errored)
 
-    def showError(self, message):
-        pass
-        # ~ self.thread.started.disconnect()
-        # ~ self.iface.messageBar().pushMessage(
-            # ~ message, QgsMessageBar.WARNING, self.iface.messageTimeout())
+        self.taskManager.addTask(task)
 
-    def openResults(self, fileName):
-        pass
-        # ~ self.thread.started.disconnect()
-        # ~ self.iface.messageBar().pushMessage(
-            # ~ self.tr('Export completed'), QgsMessageBar.INFO, self.iface.messageTimeout())
+    def completed(self, fileName):
+        uri = QUrl.fromLocalFile(fileName)
+        self.iface.messageBar().pushSuccess(self.tr('GETools'), self.tr('Successfully exported to <a href="{}">{}</a>').format(uri.toString(), fileName))
+        QDesktopServices.openUrl(uri)
 
-        # ~ QDesktopServices.openUrl(QUrl('file:///' + fileName))
+    def errored(self, error):
+        self.iface.messageBar().pushWarning(self.tr('GETools'), error)
