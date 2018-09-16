@@ -28,6 +28,7 @@ __revision__ = '$Format:%H$'
 import os
 import uuid
 import tempfile
+import shutil
 
 
 def tempDirectory():
@@ -38,16 +39,19 @@ def tempDirectory():
     return os.path.abspath(tmp)
 
 
-def tempFileName():
-    tmpDir = tempDirectory()
-    fName = os.path.join(tmpDir, '{}.kml'.format(uuid.uuid4().hex))
+def tempFileName(basename):
+    tmp = os.path.join(tempDirectory(), uuid.uuid4().hex)
+    if not os.path.exists(tmp):
+        os.makedirs(tmp)
+
+    fName = os.path.join(tmp, basename)
     return fName
 
 
 def removeTempFiles():
-    tmpDir = tempDirectory()
-    if os.path.exists(tmpDir):
-        shutil.rmtree(tmpDir, True)
+    tmp = tempDirectory()
+    if os.path.exists(tmp):
+        shutil.rmtree(tmp, True)
 
 
 def encodeStringForXml(string):
