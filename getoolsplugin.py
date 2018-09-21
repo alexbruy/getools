@@ -170,15 +170,11 @@ class GeToolsPlugin:
             self.actionRasterToGe.setEnabled(False)
 
     def exportPosition(self, point, button):
-        print(point)
-        # ~ if self.thread.isRunning():
-            # ~ self.iface.messageBar().pushMessage(
-                # ~ self.tr('There is running export operation. Please wait when it finished.'),
-                # ~ QgsMessageBar.WARNING, self.iface.messageTimeout())
-        # ~ else:
-            # ~ self.writer.setPoint(point)
-            # ~ self.thread.started.connect(self.writer.exportPoint)
-            # ~ self.thread.start()
+        task = KmlWriterTask(point)
+        task.exportComplete.connect(self.completed)
+        task.errorOccurred.connect(self.errored)
+
+        self.taskManager.addTask(task)
 
     def exportFeatures(self):
         print(self.iface.activeLayer().selectedFeatureCount())

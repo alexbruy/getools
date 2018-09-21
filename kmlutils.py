@@ -80,7 +80,7 @@ def rasterToKml(layer):
     with open(templateFile('raster.kml'), 'r', encoding='utf-8') as f:
         tpl = Template(f.read())
 
-    subst = {'layerName': _encodeForXml(layer.name()),
+    subst = {'name': _encodeForXml(layer.name()),
              'description': _encodeForXml(rasterFile),
              'source': rasterFile,
              'altitude': altitude,
@@ -91,6 +91,30 @@ def rasterToKml(layer):
              'west': bbox.xMinimum(),
              'rotation': 0.0,
             }
+    with open(kmlFile, 'w', encoding='utf-8') as f:
+        f.write(tpl.substitute(subst))
+
+    return True, kmlFile
+
+
+def positionToKml(point):
+    settings = QgsSettings()
+    altitude = settings.value('position/altitude', 0.0, float)
+    extrude = settings.value('position/extrude', False, bool)
+    altitudeMode = settings.value('position/altitudeMode', 'clampToGround', str)
+
+    tpl = None
+    with open(templateFile('placemark.kml'), 'r', encoding='utf-8') as f:
+        tpl = Template(f.read())
+
+    subst = {'name': _encodeForXml('Clicked position'),
+             'description': _encodeForXml('Clicked position - {}'.format(point.toString(6))),
+             'extrude': extrude,
+             'altitudeMode': altitudeMode,
+             'coordinates': '{},{},{}'.format(point.x(), point.y(), altitude),
+            }
+
+    kmlFile = utils.tempFileName('position.kml')
     with open(kmlFile, 'w', encoding='utf-8') as f:
         f.write(tpl.substitute(subst))
 

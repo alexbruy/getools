@@ -29,7 +29,7 @@ import os
 
 from qgis.PyQt.QtCore import pyqtSignal, QVariant, QCoreApplication
 
-from qgis.core import QgsTask, QgsGeometry, QgsVectorLayer, QgsRasterLayer
+from qgis.core import QgsTask, QgsPointXY, QgsVectorLayer, QgsRasterLayer
 
 from getools import geutils as utils
 from getools import kmlutils as kmlutils
@@ -41,7 +41,7 @@ class KmlWriterTask(QgsTask):
     errorOccurred = pyqtSignal(str)
 
     def __init__(self, data, onlySelected=False):
-        name = self.tr('position') if isinstance(data, QgsGeometry) else data.name()
+        name = self.tr('position') if isinstance(data, QgsPointXY) else data.name()
         QgsTask.__init__(self, 'GETools - {}'.format(name))
 
         self.data = data
@@ -53,7 +53,7 @@ class KmlWriterTask(QgsTask):
     def run(self):
         result = True
 
-        if isinstance(self.data, QgsGeometry):
+        if isinstance(self.data, QgsPointXY):
             result = self._exportPosition()
         elif isinstance(self.data, QgsVectorLayer):
             result = self._exportVectorLayer()
@@ -84,4 +84,10 @@ class KmlWriterTask(QgsTask):
         pass
 
     def _exportPosition(self):
-        pass
+        result, msg = kmlutils.positionToKml(self.data)
+        if result:
+            self.fileName = os.path.normpath(msg)
+            return True
+        else:
+            self.error = msg
+            return False
