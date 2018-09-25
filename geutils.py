@@ -26,9 +26,14 @@ __copyright__ = '(C) 2013-2014, Alexander Bruy'
 __revision__ = '$Format:%H$'
 
 import os
+import re
 import uuid
 import tempfile
 import shutil
+
+pluginPath = os.path.dirname(__file__)
+
+BAD_CHARS = re.compile(r'[&:\(\)\-\,\'\.\/ ]')
 
 
 def tempDirectory():
@@ -52,3 +57,21 @@ def removeTempFiles():
     tmp = tempDirectory()
     if os.path.exists(tmp):
         shutil.rmtree(tmp, True)
+
+
+def templateFile(fileName):
+    return os.path.join(pluginPath, 'resources', fileName)
+
+
+def safeLayerName(layerName):
+    return BAD_CHARS.sub('', layerName).title().replace(' ', '')
+
+
+def encodeForXml(string):
+    encodedString = string
+    encodedString.replace('&', '&amp;')
+    encodedString.replace('"', '&quot;')
+    encodedString.replace("'", '&apos;')
+    encodedString.replace('<', '&lt;')
+    encodedString.replace('>', '&gt;')
+    return encodedString
