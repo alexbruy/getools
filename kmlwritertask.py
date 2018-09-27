@@ -26,6 +26,7 @@ __copyright__ = '(C) 2013-2018, Alexander Bruy'
 __revision__ = '$Format:%H$'
 
 import os
+import shutil
 from string import Template
 
 from qgis.PyQt.QtCore import pyqtSignal, QVariant, QCoreApplication
@@ -42,6 +43,8 @@ from qgis.core import (QgsTask,
                        QgsRasterNuller,
                        QgsRasterRange,
                        QgsRasterFileWriter,
+                       QgsWkbTypes,
+                       QgsFeatureRequest,
                       )
 
 from getools import geutils as utils
@@ -68,11 +71,11 @@ class KmlWriterTask(QgsTask):
         result = False
 
         if isinstance(self.data, QgsPointXY):
-            result = self.exportPosition()
+            result = self.positionToKml()
         elif isinstance(self.data, QgsVectorLayer):
-            result = self.exportVectorLayer()
+            result = self.vectorToKml()
         elif isinstance(self.data, QgsRasterLayer):
-            result = self.exportRasterLayer()
+            result = self.rasterToKml()
 
         return result
 
@@ -85,7 +88,7 @@ class KmlWriterTask(QgsTask):
     def tr(self, text):
         return QCoreApplication.translate('KmlWriterTask', text)
 
-    def exportPosition(self):
+    def positionToKml(self):
         settings = QgsSettings()
         altitude = settings.value('point/altitude', 0.0, float)
         extrude = settings.value('point/extrude', False, bool)
@@ -108,7 +111,7 @@ class KmlWriterTask(QgsTask):
 
         return True
 
-    def exportRasterLayer(self):
+    def rasterToKml(self):
         if self.data.providerType() != 'gdal':
             self.error = self.tr('Currently only GDAL rasters are supported.')
             return False
@@ -124,7 +127,7 @@ class KmlWriterTask(QgsTask):
         if exportRendered:
             tmp = os.path.split(kmlFile)
             rasterFile = os.path.join(tmp[0], '{}.tif'.format(os.path.splitext(tmp[1])[0]))
-            result = self._exportRasterToFile(rasterFile, False)
+            result = self._exportRaster(rasterFile, False)
             if not result:
                 return False
 
@@ -147,18 +150,28 @@ class KmlWriterTask(QgsTask):
                  'rotation': 0.0,
                 }
 
-        self.filename = os.path.normpath(kmlFile)
+        self.fileName = os.path.normpath(kmlFile)
         with open(kmlFile, 'w', encoding='utf-8') as f:
             f.write(tpl.substitute(subst))
 
         return True
 
+    def vectorToKml(self):
+        result = False
+        geometryType = self.data.geometryType()
+        if geometryType == QgsWkbTypes.PointGeometry:
+            result = self._pointsToKml()
+        elif geometryType == QgsWkbTypes.LineGeometry:
+            pass
+        elif geometryType == QgsWkbTypes.PolygonGeometry:
+            pass
+        else:
+            self.error = self.tr('Unsupported geometry type "{}"'.format(QgsWkbTypes.geometryDisplayString(geometryType)))
+            result = False
 
-    def exportVectorLayer(self):
-        pass
+        return result
 
-
-    def _exportRasterToFile(self, filePath, rawMode=True):
+    def _exportRaster(self, filePath, rawMode=True):
         provider = self.data.dataProvider()
         cols = provider.xSize()
         rows = provider.ySize()
@@ -194,4 +207,51 @@ class KmlWriterTask(QgsTask):
             self.error = self.tr('Failed to export layer "{layer}": {message}.'.format(layer=self.data.name(), message=error))
             return False
 
+        return True
+
+    def _pointsToKml(self):
+        settings = QgsSettings()
+        altitude = settings.value('point/altitude', 0.0, float)
+        extrude = settings.value('point/extrude', False, bool)
+        altitudeMode = settings.value('point/altitudeMode', 'clampToGround', str)
+
+        kmlFile = utils.tempFileName('{}.kml'.format(utils.safeLayerName(self.data.name())))
+        with open(kmlFile, 'w', encoding='utf-8') as f:
+            f.write('<?xml version="1.0" encoding="UTF-8"?>\n')
+            f.write('<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2">\n')
+            f.write('  <Document>\n')
+            f.write('    <name>{}</name>\n'.format(utils.encodeForXml(self.data.name())))
+            f.write('    <description>{}</description>\n'.format(utils.encodeForXml(self.data.source())))
+
+            request = QgsFeatureRequest()
+            request.setDestinationCrs(GEO_CRS, QgsProject.instance().transformContext())
+            if self.onlySelected:
+                request.setFilterFids(self.data.selectedFeatureIds())
+
+            for feat in self.data.getFeatures(request):
+                geom = feat.geometry()
+                multiGeometry = geom.isMultipart()
+                pnt = geom.constGet()
+
+                f.write('    <Placemark>\n')
+
+                if multiGeometry:
+                    f.write('      <MultiGeometry>\n')
+
+                for v in pnt.vertices():
+                    f.write('      <Point>\n')
+                    f.write('        <extrude>{}</extrude>\n'.format(extrude))
+                    f.write('        <gx:altitudeMode>{}</gx:altitudeMode>\n'.format(altitudeMode))
+                    f.write('        <coordinates>{},{},{}</coordinates>\n'.format(v.x(), v.y(), v.z() if v.is3D() else altitude))
+                    f.write('      </Point>\n')
+
+                if multiGeometry:
+                    f.write('      </MultiGeometry>\n')
+
+                f.write('    </Placemark>\n')
+
+            f.write('  </Document>\n')
+            f.write('</kml>\n')
+
+        self.fileName = os.path.normpath(kmlFile)
         return True

@@ -177,16 +177,11 @@ class GeToolsPlugin:
         self.taskManager.addTask(task)
 
     def exportFeatures(self):
-        print(self.iface.activeLayer().selectedFeatureCount())
-        # ~ if self.thread.isRunning():
-            # ~ self.iface.messageBar().pushMessage(
-                # ~ self.tr('There is running export operation. Please wait hen it finished.'),
-                # ~ QgsMessageBar.WARNING, self.iface.messageTimeout())
-        # ~ else:
-            # ~ self.writer.setLayer(self.canvas.currentLayer())
-            # ~ self.writer.setOnlySelected(True)
-            # ~ self.thread.started.connect(self.writer.exportLayer)
-            # ~ self.thread.start()
+        task = KmlWriterTask(self.iface.activeLayer(), True)
+        task.exportComplete.connect(self.completed)
+        task.errorOccurred.connect(self.errored)
+
+        self.taskManager.addTask(task)
 
     def exportLayer(self):
         task = KmlWriterTask(self.iface.activeLayer())
