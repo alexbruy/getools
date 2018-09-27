@@ -359,7 +359,6 @@ class KmlWriterTask(QgsTask):
                     f.write('            </coordinates>\n')
                     f.write('          </LinearRing>\n')
                     f.write('        </outerBoundaryIs>\n')
-                    #TODO: inner rings
                     for i in range(polygon.numInteriorRings()):
                         ring = polygon.interiorRing(i)
                         f.write('        <innerBoundaryIs>\n')
