@@ -99,7 +99,7 @@ class KmlWriterTask(QgsTask):
             tpl = Template(f.read())
 
         subst = {'name': utils.encodeForXml('Clicked position'),
-                 'description': utils.encodeForXml('Clicked position ({})'.format(self.data.toString(6))),
+                 'description': utils.encodeForXml('Clicked position — ({})'.format(self.data.toString(6))),
                  'extrude': extrude,
                  'altitudeMode': altitudeMode,
                  'coordinates': '{},{},{}'.format(self.data.x(), self.data.y(), altitude),
@@ -138,8 +138,9 @@ class KmlWriterTask(QgsTask):
         with open(utils.templateFile('raster.kml'), 'r', encoding='utf-8') as f:
             tpl = Template(f.read())
 
-        subst = {'name': utils.encodeForXml(self.data.name()),
-                 'description': utils.encodeForXml(rasterFile),
+        layerName = utils.encodeForXml(self.data.name())
+        subst = {'name': layerName,
+                 'description': 'QGIS raster — '.format(layerName),
                  'source': rasterFile,
                  'altitude': altitude,
                  'altitudeMode': altitudeMode,
@@ -164,7 +165,7 @@ class KmlWriterTask(QgsTask):
         elif geometryType == QgsWkbTypes.LineGeometry:
             result = self._linesToKml()
         elif geometryType == QgsWkbTypes.PolygonGeometry:
-            pass
+            result = self._polygonsToKml()
         else:
             self.error = self.tr('Unsupported geometry type "{}"'.format(QgsWkbTypes.geometryDisplayString(geometryType)))
             result = False
@@ -215,13 +216,14 @@ class KmlWriterTask(QgsTask):
         extrude = settings.value('point/extrude', False, bool)
         altitudeMode = settings.value('point/altitudeMode', 'clampToGround', str)
 
+        layerName = utils.encodeForXml(self.data.name())
         kmlFile = utils.tempFileName('{}.kml'.format(utils.safeLayerName(self.data.name())))
         with open(kmlFile, 'w', encoding='utf-8') as f:
             f.write('<?xml version="1.0" encoding="UTF-8"?>\n')
             f.write('<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2">\n')
             f.write('  <Document>\n')
-            f.write('    <name>{}</name>\n'.format(utils.encodeForXml(self.data.name())))
-            f.write('    <description>{}</description>\n'.format(utils.encodeForXml(self.data.source())))
+            f.write('    <name>{}</name>\n'.format(layerName))
+            f.write('    <description>QGIS vector — {}</description>\n'.format(layerName))
 
             request = QgsFeatureRequest()
             request.setDestinationCrs(GEO_CRS, QgsProject.instance().transformContext())
@@ -263,13 +265,14 @@ class KmlWriterTask(QgsTask):
         tessellate = settings.value('line/tessellate', False, bool)
         altitudeMode = settings.value('line/altitudeMode', 'clampToGround', str)
 
+        layerName = utils.encodeForXml(self.data.name())
         kmlFile = utils.tempFileName('{}.kml'.format(utils.safeLayerName(self.data.name())))
         with open(kmlFile, 'w', encoding='utf-8') as f:
             f.write('<?xml version="1.0" encoding="UTF-8"?>\n')
             f.write('<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2">\n')
             f.write('  <Document>\n')
-            f.write('    <name>{}</name>\n'.format(utils.encodeForXml(self.data.name())))
-            f.write('    <description>{}</description>\n'.format(utils.encodeForXml(self.data.source())))
+            f.write('    <name>{}</name>\n'.format(layerName))
+            f.write('    <description>QGIS vector — {}</description>\n'.format(layerName))
 
             request = QgsFeatureRequest()
             request.setDestinationCrs(GEO_CRS, QgsProject.instance().transformContext())
@@ -297,6 +300,77 @@ class KmlWriterTask(QgsTask):
                         f.write('          {},{},{}\n'.format(p.x(), p.y(), p.z() if p.is3D() else altitude))
                     f.write('        </coordinates>\n')
                     f.write('      </LineString>\n')
+
+                if multiGeometry:
+                    f.write('      </MultiGeometry>\n')
+
+                f.write('    </Placemark>\n')
+
+            f.write('  </Document>\n')
+            f.write('</kml>\n')
+
+        self.fileName = os.path.normpath(kmlFile)
+        return True
+
+    def _polygonsToKml(self):
+        settings = QgsSettings()
+        altitude = settings.value('polygon/altitude', 0.0, float)
+        extrude = settings.value('polygon/extrude', False, bool)
+        tessellate = settings.value('polygon/tessellate', False, bool)
+        altitudeMode = settings.value('polygon/altitudeMode', 'clampToGround', str)
+
+        layerName = utils.encodeForXml(self.data.name())
+        kmlFile = utils.tempFileName('{}.kml'.format(utils.safeLayerName(self.data.name())))
+        with open(kmlFile, 'w', encoding='utf-8') as f:
+            f.write('<?xml version="1.0" encoding="UTF-8"?>\n')
+            f.write('<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2">\n')
+            f.write('  <Document>\n')
+            f.write('    <name>{}</name>\n'.format(layerName))
+            f.write('    <description>QGIS vector — {}</description>\n'.format(layerName))
+
+            request = QgsFeatureRequest()
+            request.setDestinationCrs(GEO_CRS, QgsProject.instance().transformContext())
+            if self.onlySelected:
+                request.setFilterFids(self.data.selectedFeatureIds())
+
+            for feat in self.data.getFeatures(request):
+                geom = feat.geometry()
+                multiGeometry = geom.isMultipart()
+                parts = geom.asGeometryCollection()
+
+                f.write('    <Placemark>\n')
+
+                if multiGeometry:
+                    f.write('      <MultiGeometry>\n')
+
+                for part in parts:
+                    f.write('      <Polygon>\n')
+                    f.write('        <extrude>{}</extrude>\n'.format(extrude))
+                    f.write('        <tessellate>{}</tessellate>\n'.format(tessellate))
+                    f.write('        <gx:altitudeMode>{}</gx:altitudeMode>\n'.format(altitudeMode))
+
+                    f.write('        <outerBoundaryIs>\n')
+                    f.write('          <LinearRing>\n')
+                    f.write('            <coordinates>\n')
+                    polygon = part.constGet()
+                    ring = polygon.exteriorRing()
+                    for p in ring.points():
+                        f.write('          {},{},{}\n'.format(p.x(), p.y(), p.z() if p.is3D() else altitude))
+                    f.write('            </coordinates>\n')
+                    f.write('          </LinearRing>\n')
+                    f.write('        </outerBoundaryIs>\n')
+                    #TODO: inner rings
+                    for i in range(polygon.numInteriorRings()):
+                        ring = polygon.interiorRing(i)
+                        f.write('        <innerBoundaryIs>\n')
+                        f.write('          <LinearRing>\n')
+                        f.write('            <coordinates>\n')
+                        for p in ring.points():
+                            f.write('          {},{},{}\n'.format(p.x(), p.y(), p.z() if p.is3D() else altitude))
+                        f.write('            </coordinates>\n')
+                        f.write('          </LinearRing>\n')
+                        f.write('        </innerBoundaryIs>\n')
+                    f.write('      </Polygon>\n')
 
                 if multiGeometry:
                     f.write('      </MultiGeometry>\n')
