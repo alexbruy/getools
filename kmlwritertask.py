@@ -162,7 +162,7 @@ class KmlWriterTask(QgsTask):
         if geometryType == QgsWkbTypes.PointGeometry:
             result = self._pointsToKml()
         elif geometryType == QgsWkbTypes.LineGeometry:
-            pass
+            result = self._linesToKml()
         elif geometryType == QgsWkbTypes.PolygonGeometry:
             pass
         else:
@@ -244,6 +244,59 @@ class KmlWriterTask(QgsTask):
                     f.write('        <gx:altitudeMode>{}</gx:altitudeMode>\n'.format(altitudeMode))
                     f.write('        <coordinates>{},{},{}</coordinates>\n'.format(v.x(), v.y(), v.z() if v.is3D() else altitude))
                     f.write('      </Point>\n')
+
+                if multiGeometry:
+                    f.write('      </MultiGeometry>\n')
+
+                f.write('    </Placemark>\n')
+
+            f.write('  </Document>\n')
+            f.write('</kml>\n')
+
+        self.fileName = os.path.normpath(kmlFile)
+        return True
+
+    def _linesToKml(self):
+        settings = QgsSettings()
+        altitude = settings.value('line/altitude', 0.0, float)
+        extrude = settings.value('line/extrude', False, bool)
+        tessellate = settings.value('line/tessellate', False, bool)
+        altitudeMode = settings.value('line/altitudeMode', 'clampToGround', str)
+
+        kmlFile = utils.tempFileName('{}.kml'.format(utils.safeLayerName(self.data.name())))
+        with open(kmlFile, 'w', encoding='utf-8') as f:
+            f.write('<?xml version="1.0" encoding="UTF-8"?>\n')
+            f.write('<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2">\n')
+            f.write('  <Document>\n')
+            f.write('    <name>{}</name>\n'.format(utils.encodeForXml(self.data.name())))
+            f.write('    <description>{}</description>\n'.format(utils.encodeForXml(self.data.source())))
+
+            request = QgsFeatureRequest()
+            request.setDestinationCrs(GEO_CRS, QgsProject.instance().transformContext())
+            if self.onlySelected:
+                request.setFilterFids(self.data.selectedFeatureIds())
+
+            for feat in self.data.getFeatures(request):
+                geom = feat.geometry()
+                multiGeometry = geom.isMultipart()
+                parts = geom.asGeometryCollection()
+
+                f.write('    <Placemark>\n')
+
+                if multiGeometry:
+                    f.write('      <MultiGeometry>\n')
+
+                for part in parts:
+                    f.write('      <LineString>\n')
+                    f.write('        <extrude>{}</extrude>\n'.format(extrude))
+                    f.write('        <tessellate>{}</tessellate>\n'.format(tessellate))
+                    f.write('        <gx:altitudeMode>{}</gx:altitudeMode>\n'.format(altitudeMode))
+                    f.write('        <coordinates>\n')
+                    g = part.constGet()
+                    for p in g.points():
+                        f.write('          {},{},{}\n'.format(p.x(), p.y(), p.z() if p.is3D() else altitude))
+                    f.write('        </coordinates>\n')
+                    f.write('      </LineString>\n')
 
                 if multiGeometry:
                     f.write('      </MultiGeometry>\n')
