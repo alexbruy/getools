@@ -4,8 +4,8 @@
 ***************************************************************************
     kmlwritertask.py
     ---------------------
-    Date                 : October 2013
-    Copyright            : (C) 2013-2018 by Alexander Bruy
+    Date                 : September 2018
+    Copyright            : (C) 2018 by Alexander Bruy
     Email                : alexander dot bruy at gmail dot com
 ***************************************************************************
 *                                                                         *
@@ -18,8 +18,8 @@
 """
 
 __author__ = 'Alexander Bruy'
-__date__ = 'October 2013'
-__copyright__ = '(C) 2013-2018, Alexander Bruy'
+__date__ = 'September 2018'
+__copyright__ = '(C) 2018, Alexander Bruy'
 
 # This will get replaced with a git SHA1 when you do a git archive
 
