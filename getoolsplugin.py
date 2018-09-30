@@ -36,7 +36,7 @@ from qgis.core import QgsApplication, QgsMapLayer
 
 from getools.gui.maptoolclick import MapToolClick
 from getools.gui.maptoolselect import MapToolSelect
-# ~ from getools.gui.optionsdialog import OptionsDialog
+from getools.gui.optionsdialog import OptionsDialog
 from getools.gui.aboutdialog import AboutDialog
 from getools.kmlwritertask import KmlWriterTask
 import getools.geutils as utils
@@ -138,9 +138,8 @@ class GeToolsPlugin:
         utils.removeTempFiles()
 
     def settings(self):
-        pass
-        # ~ dlg = OptionsDialog()
-        # ~ dlg.exec_()
+        dlg = OptionsDialog(self.iface.mainWindow())
+        dlg.exec_()
 
     def about(self):
         dlg = AboutDialog()

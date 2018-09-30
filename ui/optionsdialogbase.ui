@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>700</width>
-    <height>376</height>
+    <height>413</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -42,7 +42,16 @@
        <enum>QFrame::Raised</enum>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
-       <property name="margin">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
         <number>0</number>
        </property>
        <item>
@@ -123,7 +132,16 @@
        <enum>QFrame::Raised</enum>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
-       <property name="margin">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
         <number>0</number>
        </property>
        <item>
@@ -135,11 +153,20 @@
           </sizepolicy>
          </property>
          <property name="currentIndex">
-          <number>2</number>
+          <number>4</number>
          </property>
          <widget class="QWidget" name="mOptionsPagePoints">
           <layout class="QVBoxLayout" name="verticalLayout_14">
-           <property name="margin">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
             <number>0</number>
            </property>
            <item>
@@ -155,8 +182,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>429</width>
-                <height>255</height>
+                <width>340</width>
+                <height>358</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_13">
@@ -166,6 +193,35 @@
                <property name="bottomMargin">
                 <number>0</number>
                </property>
+               <item>
+                <widget class="QgsCollapsibleGroupBox" name="grpPointAttributes">
+                 <property name="title">
+                  <string>Attributes</string>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_10">
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="label_19">
+                    <property name="text">
+                     <string>Field with feature name</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QLineEdit" name="lePointName"/>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="label_18">
+                    <property name="text">
+                     <string>Field with feature description</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QLineEdit" name="lePointDescription"/>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
                <item>
                 <widget class="QgsCollapsibleGroupBox" name="grpPointStyle">
                  <property name="title">
@@ -198,6 +254,9 @@
                    <widget class="QgsColorButton" name="btnPointColor">
                     <property name="text">
                      <string/>
+                    </property>
+                    <property name="allowOpacity" stdset="0">
+                     <bool>true</bool>
                     </property>
                    </widget>
                   </item>
@@ -279,10 +338,10 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="3" column="0">
+                  <item row="3" column="0" colspan="2">
                    <widget class="QCheckBox" name="chkPointConnect">
                     <property name="text">
-                     <string>Connect point to the ground with a line</string>
+                     <string>Connect point to the ground</string>
                     </property>
                    </widget>
                   </item>
@@ -310,7 +369,16 @@
          </widget>
          <widget class="QWidget" name="mOptionsPageLines">
           <layout class="QVBoxLayout" name="verticalLayout_4">
-           <property name="margin">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
             <number>0</number>
            </property>
            <item>
@@ -326,8 +394,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>407</width>
-                <height>281</height>
+                <width>340</width>
+                <height>385</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_15">
@@ -337,6 +405,35 @@
                <property name="bottomMargin">
                 <number>0</number>
                </property>
+               <item>
+                <widget class="QgsCollapsibleGroupBox" name="grpLineAttributes">
+                 <property name="title">
+                  <string>Attributes</string>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_11">
+                  <item row="1" column="3">
+                   <widget class="QLineEdit" name="leLineDescription"/>
+                  </item>
+                  <item row="0" column="3">
+                   <widget class="QLineEdit" name="leLineName"/>
+                  </item>
+                  <item row="1" column="2">
+                   <widget class="QLabel" name="label_23">
+                    <property name="text">
+                     <string>Field with feature description</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="2">
+                   <widget class="QLabel" name="label_20">
+                    <property name="text">
+                     <string>Field with feature name</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
                <item>
                 <widget class="QgsCollapsibleGroupBox" name="grpLineStyle">
                  <property name="title">
@@ -369,6 +466,9 @@
                    <widget class="QgsColorButton" name="btnLineColor">
                     <property name="text">
                      <string/>
+                    </property>
+                    <property name="allowOpacity" stdset="0">
+                     <bool>true</bool>
                     </property>
                    </widget>
                   </item>
@@ -417,13 +517,6 @@
                   <bool>false</bool>
                  </property>
                  <layout class="QGridLayout" name="gridLayout_4">
-                  <item row="3" column="0">
-                   <widget class="QCheckBox" name="chkLineConnect">
-                    <property name="text">
-                     <string>Connect linestring to the ground</string>
-                    </property>
-                   </widget>
-                  </item>
                   <item row="0" column="1">
                    <widget class="QComboBox" name="cmbLineAltitudeMode"/>
                   </item>
@@ -457,7 +550,14 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="4" column="0">
+                  <item row="3" column="0" colspan="2">
+                   <widget class="QCheckBox" name="chkLineConnect">
+                    <property name="text">
+                     <string>Connect linestring to the ground</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="0" colspan="2">
                    <widget class="QCheckBox" name="chkLineFollow">
                     <property name="text">
                      <string>Allow linestring to follow the terrain</string>
@@ -488,7 +588,16 @@
          </widget>
          <widget class="QWidget" name="mOptionsPagePolygons">
           <layout class="QVBoxLayout" name="verticalLayout_5">
-           <property name="margin">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
             <number>0</number>
            </property>
            <item>
@@ -504,8 +613,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>526</width>
-                <height>326</height>
+                <width>340</width>
+                <height>409</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_16">
@@ -515,6 +624,35 @@
                <property name="bottomMargin">
                 <number>0</number>
                </property>
+               <item>
+                <widget class="QgsCollapsibleGroupBox" name="grpPolygonAttributes">
+                 <property name="title">
+                  <string>Attributes</string>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_12">
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="label_24">
+                    <property name="text">
+                     <string>Field with feature name</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QLineEdit" name="lePolygonName"/>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="label_25">
+                    <property name="text">
+                     <string>Field with feature description</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QLineEdit" name="lePolygonDescription"/>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
                <item>
                 <widget class="QgsCollapsibleGroupBox" name="grpPolygonStyle">
                  <property name="title">
@@ -555,6 +693,9 @@
                     <property name="text">
                      <string/>
                     </property>
+                    <property name="allowOpacity" stdset="0">
+                     <bool>true</bool>
+                    </property>
                    </widget>
                   </item>
                   <item row="1" column="1">
@@ -592,13 +733,6 @@
                   <bool>false</bool>
                  </property>
                  <layout class="QGridLayout" name="gridLayout_6">
-                  <item row="3" column="0">
-                   <widget class="QCheckBox" name="chkPolygonConnect">
-                    <property name="text">
-                     <string>Connect polygon to the ground</string>
-                    </property>
-                   </widget>
-                  </item>
                   <item row="0" column="0" rowspan="2">
                    <widget class="QLabel" name="label_14">
                     <property name="text">
@@ -632,7 +766,14 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="4" column="0">
+                  <item row="3" column="0" colspan="2">
+                   <widget class="QCheckBox" name="chkPolygonConnect">
+                    <property name="text">
+                     <string>Connect polygon to the ground</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="0" colspan="2">
                    <widget class="QCheckBox" name="chkPolygonFollow">
                     <property name="text">
                      <string>Allow polygon to follow the terrain</string>
@@ -663,7 +804,16 @@
          </widget>
          <widget class="QWidget" name="mOptionsPageLabels">
           <layout class="QVBoxLayout" name="verticalLayout_6">
-           <property name="margin">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
             <number>0</number>
            </property>
            <item>
@@ -679,8 +829,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>198</width>
-                <height>131</height>
+                <width>197</width>
+                <height>130</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_17">
@@ -722,6 +872,9 @@
                    <widget class="QgsColorButton" name="btnLabelColor">
                     <property name="text">
                      <string/>
+                    </property>
+                    <property name="allowOpacity" stdset="0">
+                     <bool>true</bool>
                     </property>
                    </widget>
                   </item>
@@ -776,7 +929,16 @@
          </widget>
          <widget class="QWidget" name="mOptionsPageRasters">
           <layout class="QVBoxLayout" name="verticalLayout_7">
-           <property name="margin">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
             <number>0</number>
            </property>
            <item>
@@ -792,8 +954,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>305</width>
-                <height>199</height>
+                <width>528</width>
+                <height>365</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_18">
@@ -809,7 +971,7 @@
                   <string>Style</string>
                  </property>
                  <property name="checkable">
-                  <bool>true</bool>
+                  <bool>false</bool>
                  </property>
                  <property name="checked">
                   <bool>false</bool>
@@ -824,21 +986,7 @@
                   <bool>false</bool>
                  </property>
                  <layout class="QGridLayout" name="gridLayout_8">
-                  <item row="0" column="1">
-                   <widget class="QgsColorButton" name="btnRasterColor">
-                    <property name="text">
-                     <string/>
-                    </property>
-                   </widget>
-                  </item>
                   <item row="0" column="0">
-                   <widget class="QLabel" name="label_18">
-                    <property name="text">
-                     <string>Color</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="0">
                    <widget class="QCheckBox" name="chkRasterRendered">
                     <property name="text">
                      <string>Use rendered image</string>
@@ -939,7 +1087,16 @@
       <enum>QFrame::Raised</enum>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout">
-      <property name="margin">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
        <number>0</number>
       </property>
       <item>

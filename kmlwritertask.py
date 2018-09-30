@@ -90,9 +90,9 @@ class KmlWriterTask(QgsTask):
 
     def positionToKml(self):
         settings = QgsSettings()
-        altitude = settings.value('point/altitude', 0.0, float)
-        extrude = settings.value('point/extrude', False, bool)
-        altitudeMode = settings.value('point/altitudeMode', 'clampToGround', str)
+        altitude = settings.value('getools/pointAltitude', 0.0, float)
+        extrude = settings.value('getools/pointExtrude', False, bool)
+        altitudeMode = settings.value('getools/pointAltitudeMode', 'clampToGround', str)
 
         tpl = None
         with open(utils.templateFile('placemark.kml'), 'r', encoding='utf-8') as f:
@@ -117,9 +117,9 @@ class KmlWriterTask(QgsTask):
             return False
 
         settings = QgsSettings()
-        altitude = settings.value('raster/altitude', 0.0, float)
-        altitudeMode = settings.value('raster/altitudeMode', 'clampToGround', str)
-        exportRendered = settings.value('raster/rendered', False, bool)
+        altitude = settings.value('getools/rasterAltitude', 0.0, float)
+        altitudeMode = settings.value('getools/rasterAltitudeMode', 'clampToGround', str)
+        exportRendered = settings.value('getools/rasterRendered', False, bool)
 
         rasterFile = self.data.source()
         kmlFile = utils.tempFileName('{}.kml'.format(utils.safeLayerName(self.data.name())))
@@ -212,9 +212,9 @@ class KmlWriterTask(QgsTask):
 
     def _pointsToKml(self):
         settings = QgsSettings()
-        altitude = settings.value('point/altitude', 0.0, float)
-        extrude = settings.value('point/extrude', False, bool)
-        altitudeMode = settings.value('point/altitudeMode', 'clampToGround', str)
+        altitude = settings.value('getools/pointAltitude', 0.0, float)
+        extrude = settings.value('getools/pointExtrude', False, bool)
+        altitudeMode = settings.value('getools/pointAltitudeMode', 'clampToGround', str)
 
         layerName = utils.encodeForXml(self.data.name())
         kmlFile = utils.tempFileName('{}.kml'.format(utils.safeLayerName(self.data.name())))
@@ -260,10 +260,10 @@ class KmlWriterTask(QgsTask):
 
     def _linesToKml(self):
         settings = QgsSettings()
-        altitude = settings.value('line/altitude', 0.0, float)
-        extrude = settings.value('line/extrude', False, bool)
-        tessellate = settings.value('line/tessellate', False, bool)
-        altitudeMode = settings.value('line/altitudeMode', 'clampToGround', str)
+        altitude = settings.value('getools/lineAltitude', 0.0, float)
+        extrude = settings.value('getools/lineExtrude', False, bool)
+        tessellate = settings.value('getools/lineTessellate', False, bool)
+        altitudeMode = settings.value('getools/lineAltitudeMode', 'clampToGround', str)
 
         layerName = utils.encodeForXml(self.data.name())
         kmlFile = utils.tempFileName('{}.kml'.format(utils.safeLayerName(self.data.name())))
@@ -314,10 +314,10 @@ class KmlWriterTask(QgsTask):
 
     def _polygonsToKml(self):
         settings = QgsSettings()
-        altitude = settings.value('polygon/altitude', 0.0, float)
-        extrude = settings.value('polygon/extrude', False, bool)
-        tessellate = settings.value('polygon/tessellate', False, bool)
-        altitudeMode = settings.value('polygon/altitudeMode', 'clampToGround', str)
+        altitude = settings.value('getools/polygonAltitude', 0.0, float)
+        extrude = settings.value('getools/polygonExtrude', False, bool)
+        tessellate = settings.value('getools/polygonTessellate', False, bool)
+        altitudeMode = settings.value('getools/polygonAltitudeMode', 'clampToGround', str)
 
         layerName = utils.encodeForXml(self.data.name())
         kmlFile = utils.tempFileName('{}.kml'.format(utils.safeLayerName(self.data.name())))

@@ -5,7 +5,7 @@
     optionsdialog.py
     ---------------------
     Date                 : October 2013
-    Copyright            : (C) 2013-2014 by Alexander Bruy
+    Copyright            : (C) 2013-2018 by Alexander Bruy
     Email                : alexander dot bruy at gmail dot com
 ***************************************************************************
 *                                                                         *
@@ -19,306 +19,226 @@
 
 __author__ = 'Alexander Bruy'
 __date__ = 'October 2013'
-__copyright__ = '(C) 2013-2014, Alexander Bruy'
+__copyright__ = '(C) 2013-2018, Alexander Bruy'
 
 # This will get replaced with a git SHA1 when you do a git archive
 
 __revision__ = '$Format:%H$'
 
+import os
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from qgis.PyQt import uic
+from qgis.PyQt.QtCore import Qt
+from qgis.PyQt.QtGui import QColor
 
-from qgis.core import *
-from qgis.gui import *
+from qgis.core import QgsSettings, QgsApplication
+from qgis.gui import QgsOptionsDialogBase
 
-from getools.ui.ui_optionsdialogbase import Ui_OptionsDialog
-import getools.resources_rc
+pluginPath = os.path.split(os.path.dirname(__file__))[0]
+WIDGET, BASE = uic.loadUiType(os.path.join(pluginPath, 'ui', 'optionsdialogbase.ui'))
 
 
-class OptionsDialog(QgsOptionsDialogBase, Ui_OptionsDialog):
+class OptionsDialog(QgsOptionsDialogBase, WIDGET):
 
-    def __init__(self, parent):
-        QgsOptionsDialogBase.__init__(self, 'Window', parent)
+    def __init__(self, parent=None):
+        super(OptionsDialog, self).__init__(None, parent)
         self.setupUi(self)
 
-        self.settings = QSettings('alexbruy', 'getools')
+        self.settings = QgsSettings()
         self.setSettings(self.settings)
         self.initOptionsBase(False)
 
+        self.grpPointAttributes.setSettings(self.settings)
         self.grpPointStyle.setSettings(self.settings)
         self.grpPointGeometry.setSettings(self.settings)
+        self.grpLineAttributes.setSettings(self.settings)
         self.grpLineStyle.setSettings(self.settings)
         self.grpLineGeometry.setSettings(self.settings)
+        self.grpPolygonAttributes.setSettings(self.settings)
         self.grpPolygonStyle.setSettings(self.settings)
         self.grpPolygonGeometry.setSettings(self.settings)
+        self.grpLabelStyle.setSettings(self.settings)
+        self.grpRasterStyle.setSettings(self.settings)
+        self.grpRasterGeometry.setSettings(self.settings)
+
+        item = self.mOptionsListWidget.findItems(self.tr('Points'), Qt.MatchFixedString)[0]
+        item.setIcon(QgsApplication.getThemeIcon('/mIconPointLayer.svg'))
+        item = self.mOptionsListWidget.findItems(self.tr('Lines'), Qt.MatchFixedString)[0]
+        item.setIcon(QgsApplication.getThemeIcon('/mIconLineLayer.svg'))
+        item = self.mOptionsListWidget.findItems(self.tr('Polygons'), Qt.MatchFixedString)[0]
+        item.setIcon(QgsApplication.getThemeIcon('/mIconPolygonLayer.svg'))
+        item = self.mOptionsListWidget.findItems(self.tr('Labels'), Qt.MatchFixedString)[0]
+        item.setIcon(QgsApplication.getThemeIcon('/mActionLabeling.svg'))
+        item = self.mOptionsListWidget.findItems(self.tr('Rasters'), Qt.MatchFixedString)[0]
+        item.setIcon(QgsApplication.getThemeIcon('/mIconRaster.svg'))
 
         self.accepted.connect(self.saveOptions)
 
-        self.manageGui()
+        modes = ((self.tr('Normal'), 'normal'),
+                 (self.tr('Random'), 'random')
+                )
+        for k, v in modes:
+            self.cmbPointColorMode.addItem(k, v)
+            self.cmbLineColorMode.addItem(k, v)
+            self.cmbPolygonColorMode.addItem(k, v)
+            self.cmbLabelColorMode.addItem(k, v)
 
-    def manageGui(self):
-        item = self.mOptionsListWidget.findItems(self.tr('Points'),
-            Qt.MatchFixedString | Qt.MatchCaseSensitive)[0]
-        item.setIcon(QgsApplication.getThemeIcon('/mIconPointLayer.svg'))
-        item = self.mOptionsListWidget.findItems(self.tr('Lines'),
-            Qt.MatchFixedString | Qt.MatchCaseSensitive)[0]
-        item.setIcon(QgsApplication.getThemeIcon('/mIconLineLayer.svg'))
-        item = self.mOptionsListWidget.findItems(self.tr('Polygons'),
-            Qt.MatchFixedString | Qt.MatchCaseSensitive)[0]
-        item.setIcon(QgsApplication.getThemeIcon('/mIconPolygonLayer.svg'))
-        item = self.mOptionsListWidget.findItems(self.tr('Labels'),
-            Qt.MatchFixedString | Qt.MatchCaseSensitive)[0]
-        item.setIcon(QgsApplication.getThemeIcon('/mActionLabeling.svg'))
-        item = self.mOptionsListWidget.findItems(self.tr('Rasters'),
-            Qt.MatchFixedString | Qt.MatchCaseSensitive)[0]
-        item.setIcon(QgsApplication.getThemeIcon('/mIconRaster.svg'))
+        modes = ((self.tr('Clamp to ground'), 'clampToGround'),
+                 (self.tr('Relative to ground'), 'relativeToGround'),
+                 (self.tr('Absolute'), 'absolute'),
+                 (self.tr('Relative to sea floor'), 'relativeToSeaFloor'),
+                 (self.tr('Clamp to sea floor'), 'clampToSeaFloor'),
+                )
+        for k, v in modes:
+            self.cmbPointAltitudeMode.addItem(k, v)
+            self.cmbLineAltitudeMode.addItem(k, v)
+            self.cmbPolygonAltitudeMode.addItem(k, v)
+            self.cmbRasterAltitudeMode.addItem(k, v)
 
         # Points tab
-        red = self.settings.value('points/point_color_red', 255, int)
-        green = self.settings.value('points/point_color_green', 255, int)
-        blue = self.settings.value('points/point_color_blue', 0, int)
-        alpha = self.settings.value('points/point_color_alpha', 255, int)
+        red = self.settings.value('getools/pointColorRed', 255, int)
+        green = self.settings.value('getools/pointColorGreen', 255, int)
+        blue = self.settings.value('getools/pointColorBlue', 0, int)
+        alpha = self.settings.value('getools/pointColorAlpha', 255, int)
         self.btnPointColor.setColor(QColor(red, green, blue, alpha))
-        self.btnPointColor.setColorDialogOptions(QColorDialog.ShowAlphaChannel)
 
-        self.cmbPointColorMode.addItem(self.tr('Normal'), 0)
-        self.cmbPointColorMode.addItem(self.tr('Random'), 1)
-        mode = self.settings.value('points/color_mode', 0, int)
-        self.cmbPointColorMode.setCurrentIndex(
-            self.cmbPointColorMode.findData(mode))
+        mode = self.settings.value('getools/pointColorMode', 'normal')
+        self.cmbPointColorMode.setCurrentIndex(self.cmbPointColorMode.findData(mode))
 
-        self.spnPointScale.setValue(
-            self.settings.value('points/scale', 1.0, float))
+        self.spnPointScale.setValue(self.settings.value('getools/pointScale', 1.0, float))
 
-        self.cmbPointAltitudeMode.addItem(self.tr('Clamp to ground'), 0)
-        self.cmbPointAltitudeMode.addItem(self.tr('Relative to ground'), 1)
-        self.cmbPointAltitudeMode.addItem(self.tr('Absolute'), 2)
-        mode = self.settings.value('points/altitude_mode', 0, int)
-        self.cmbPointAltitudeMode.setCurrentIndex(
-            self.cmbPointAltitudeMode.findData(mode))
+        mode = self.settings.value('getools/pointAltitudeMode', 'clampToGround')
+        self.cmbPointAltitudeMode.setCurrentIndex(self.cmbPointAltitudeMode.findData(mode))
 
-        self.spnPointAltitude.setValue(
-            self.settings.value('points/altitude', 0.0, float))
-
-        self.chkPointConnect.setChecked(
-            self.settings.value('points/extrude', False, bool))
+        self.spnPointAltitude.setValue(self.settings.value('getools/pointAltitude', 0.0, float))
+        self.chkPointConnect.setChecked(self.settings.value('getools/pointExtrude', False, bool))
 
         # Lines tab
-        red = self.settings.value('lines/line_color_red', 255, int)
-        green = self.settings.value('lines/line_color_green', 255, int)
-        blue = self.settings.value('lines/line_color_blue', 0, int)
-        alpha = self.settings.value('lines/line_color_alpha', 255, int)
+        red = self.settings.value('getools/lineColorRed', 255, int)
+        green = self.settings.value('getools/lineColorGreen', 255, int)
+        blue = self.settings.value('getools/lineColorBlue', 0, int)
+        alpha = self.settings.value('getools/lineColorAlpha', 255, int)
         self.btnLineColor.setColor(QColor(red, green, blue, alpha))
-        self.btnLineColor.setColorDialogOptions(QColorDialog.ShowAlphaChannel)
 
-        self.cmbLineColorMode.addItem(self.tr('Normal'), 0)
-        self.cmbLineColorMode.addItem(self.tr('Random'), 1)
-        mode = self.settings.value('lines/color_mode', 0, int)
-        self.cmbLineColorMode.setCurrentIndex(
-            self.cmbLineColorMode.findData(mode))
+        mode = self.settings.value('getools/lineColorMode', 'normal')
+        self.cmbLineColorMode.setCurrentIndex(self.cmbLineColorMode.findData(mode))
 
-        self.spnLineWidth.setValue(
-            self.settings.value('lines/width', 1.0, float))
+        self.spnLineWidth.setValue(self.settings.value('getools/lineWidth', 1.0, float))
 
-        self.cmbLineAltitudeMode.addItem(self.tr('Clamp to ground'), 0)
-        self.cmbLineAltitudeMode.addItem(self.tr('Relative to ground'), 1)
-        self.cmbLineAltitudeMode.addItem(self.tr('Absolute'), 2)
-        self.cmbLineAltitudeMode.addItem(self.tr('Clamp to sea floor'), 3)
-        self.cmbLineAltitudeMode.addItem(self.tr('Relative to sea floor'), 4)
-        mode = self.settings.value('lines/altitude_mode', 0, int)
-        self.cmbLineAltitudeMode.setCurrentIndex(
-            self.cmbLineAltitudeMode.findData(mode))
+        mode = self.settings.value('getools/lineAltitudeMode', 'clampToGround')
+        self.cmbLineAltitudeMode.setCurrentIndex(self.cmbLineAltitudeMode.findData(mode))
 
-        self.spnLineAltitude.setValue(
-            self.settings.value('lines/altitude', 0.0, float))
-
-        self.chkLineConnect.setChecked(
-            self.settings.value('lines/extrude', False, bool))
-        self.chkLineFollow.setChecked(
-            self.settings.value('lines/tessellate', False, bool))
+        self.spnLineAltitude.setValue(self.settings.value('getools/lineAltitude', 0.0, float))
+        self.chkLineConnect.setChecked(self.settings.value('getools/lineExtrude', False, bool))
+        self.chkLineFollow.setChecked(self.settings.value('getools/lineTessellate', False, bool))
 
         # Polygons tab
-        red = self.settings.value('polygons/polygon_color_red', 255, int)
-        green = self.settings.value('polygons/polygon_color_green', 255, int)
-        blue = self.settings.value('polygons/polygon_color_blue', 0, int)
-        alpha = self.settings.value('polygons/polygon_color_alpha', 255, int)
+        red = self.settings.value('getools/polygonColorRred', 255, int)
+        green = self.settings.value('getools/polygonColorGreen', 255, int)
+        blue = self.settings.value('getools/polygonColorBlue', 0, int)
+        alpha = self.settings.value('getools/polygonColorAlpha', 255, int)
         self.btnPolygonColor.setColor(QColor(red, green, blue, alpha))
-        self.btnPolygonColor.setColorDialogOptions(
-            QColorDialog.ShowAlphaChannel)
 
-        self.cmbPolygonColorMode.addItem(self.tr('Normal'), 0)
-        self.cmbPolygonColorMode.addItem(self.tr('Random'), 1)
-        mode = self.settings.value('polygons/color_mode', 0, int)
-        self.cmbPolygonColorMode.setCurrentIndex(
-            self.cmbPolygonColorMode.findData(mode))
+        mode = self.settings.value('getools/polygonColorMode', 'normal')
+        self.cmbPolygonColorMode.setCurrentIndex(self.cmbPolygonColorMode.findData(mode))
 
-        self.chkPolygonFill.setChecked(
-            self.settings.value('polygons/fill', False, bool))
-        self.chkPolygonOutline.setChecked(
-            self.settings.value('polygons/outline', False, bool))
+        self.chkPolygonFill.setChecked(self.settings.value('getools/polygonFill', False, bool))
+        self.chkPolygonOutline.setChecked(self.settings.value('getools/polygonOutline', False, bool))
 
-        self.cmbPolygonAltitudeMode.addItem(self.tr('Clamp to ground'), 0)
-        self.cmbPolygonAltitudeMode.addItem(self.tr('Relative to ground'), 1)
-        self.cmbPolygonAltitudeMode.addItem(self.tr('Absolute'), 2)
-        self.cmbPolygonAltitudeMode.addItem(self.tr('Clamp to sea floor'), 3)
-        self.cmbPolygonAltitudeMode.addItem(self.tr('Relative to sea floor'), 4)
-        mode = self.settings.value('polygons/altitude_mode', 0, int)
-        self.cmbPolygonAltitudeMode.setCurrentIndex(
-            self.cmbPolygonAltitudeMode.findData(mode))
+        mode = self.settings.value('getools/altitude_mode', 'clampToGround')
+        self.cmbPolygonAltitudeMode.setCurrentIndex(self.cmbPolygonAltitudeMode.findData(mode))
 
-        self.spnPolygonAltitude.setValue(
-            self.settings.value('polygons/altitude', 0.0, float))
-
-        self.chkPolygonConnect.setChecked(
-            self.settings.value('polygons/extrude', False, bool))
-        self.chkPolygonFollow.setChecked(
-            self.settings.value('polygons/tessellate', False, bool))
+        self.spnPolygonAltitude.setValue(self.settings.value('getools/polygonAltitude', 0.0, float))
+        self.chkPolygonConnect.setChecked(self.settings.value('getools/polygonExtrude', False, bool))
+        self.chkPolygonFollow.setChecked(self.settings.value('getools/polygonTessellate', False, bool))
 
         # Labels tab
-        red = self.settings.value('labels/label_color_red', 255, int)
-        green = self.settings.value('labels/label_color_green', 255, int)
-        blue = self.settings.value('labels/label_color_blue', 0, int)
-        alpha = self.settings.value('labels/label_color_alpha', 255, int)
+        red = self.settings.value('getools/labelColorRed', 255, int)
+        green = self.settings.value('getools/labelColorGreen', 255, int)
+        blue = self.settings.value('getools/labelColorBlue', 0, int)
+        alpha = self.settings.value('getools/labelColorAlpha', 255, int)
         self.btnLabelColor.setColor(QColor(red, green, blue, alpha))
-        self.btnLabelColor.setColorDialogOptions(QColorDialog.ShowAlphaChannel)
 
-        self.cmbLabelColorMode.addItem(self.tr('Normal'), 0)
-        self.cmbLabelColorMode.addItem(self.tr('Random'), 1)
-        mode = self.settings.value('labels/color_mode', 0, int)
-        self.cmbLabelColorMode.setCurrentIndex(
-            self.cmbLabelColorMode.findData(mode))
+        mode = self.settings.value('getools/labelColorMode', 'normal')
+        self.cmbLabelColorMode.setCurrentIndex(self.cmbLabelColorMode.findData(mode))
 
-        self.spnLabelScale.setValue(
-            self.settings.value('labels/scale', 1.0, float))
+        self.spnLabelScale.setValue(self.settings.value('getools/labelScale', 1.0, float))
 
         # Rasters tab
-        red = self.settings.value('rasters/raster_color_red', 255, int)
-        green = self.settings.value('rasters/raster_color_green', 255, int)
-        blue = self.settings.value('rasters/raster_color_blue', 0, int)
-        alpha = self.settings.value('rasters/raster_color_alpha', 255, int)
-        self.btnRasterColor.setColor(QColor(red, green, blue, alpha))
-        self.btnRasterColor.setColorDialogOptions(
-            QColorDialog.ShowAlphaChannel)
+        self.chkRasterRendered.setChecked(self.settings.value('getools/rasterRendered', False, bool))
 
-        self.chkRasterRendered.setChecked(
-            self.settings.value('rasters/rendered', False, bool))
+        mode = self.settings.value('getools/rasterAltitudeMode', 'clampToGround')
+        self.cmbRasterAltitudeMode.setCurrentIndex(self.cmbRasterAltitudeMode.findData(mode))
 
-        self.cmbRasterAltitudeMode.addItem(self.tr('Clamp to ground'), 0)
-        self.cmbRasterAltitudeMode.addItem(self.tr('Absolute'), 2)
-        self.cmbRasterAltitudeMode.addItem(self.tr('Clamp to sea floor'), 3)
-        self.cmbRasterAltitudeMode.addItem(self.tr('Relative to sea floor'), 4)
-        mode = self.settings.value('rasters/altitude_mode', 0, int)
-        self.cmbRasterAltitudeMode.setCurrentIndex(
-            self.cmbRasterAltitudeMode.findData(mode))
-
-        self.spnRasterAltitude.setValue(
-            self.settings.value('rasters/altitude', 0.0, float))
-
-    def reject(self):
-        QDialog.reject(self)
-
-    def accept(self):
-        QDialog.accept(self)
+        self.spnRasterAltitude.setValue(self.settings.value('getools/rasterAltitude', 0.0, float))
 
     def saveOptions(self):
         # Points tab
-        self.settings.setValue(
-            'points/overrideStyle', self.grpPointStyle.isChecked())
         color = self.btnPointColor.color()
-        self.settings.setValue('points/point_color_red', color.red())
-        self.settings.setValue('points/point_color_green', color.green())
-        self.settings.setValue('points/point_color_blue', color.blue())
-        self.settings.setValue('points/point_color_alpha', color.alpha())
+        self.settings.setValue('getools/pointColorRed', color.red())
+        self.settings.setValue('getools/pointColorGreen', color.green())
+        self.settings.setValue('getools/pointColorBlue', color.blue())
+        self.settings.setValue('getools/pointColorAlpha', color.alpha())
 
-        mode = self.cmbPointColorMode.itemData(
-            self.cmbPointColorMode.currentIndex())
-        self.settings.setValue('points/color_mode', mode)
+        mode = self.cmbPointColorMode.itemData(self.cmbPointColorMode.currentIndex())
+        self.settings.setValue('getools/pointColorMode', mode)
 
-        self.settings.setValue('points/scale', self.spnPointScale.value())
+        self.settings.setValue('getools/pointScale', self.spnPointScale.value())
 
-        mode = self.cmbPointAltitudeMode.itemData(
-            self.cmbPointAltitudeMode.currentIndex())
-        self.settings.setValue('points/altitude_mode', mode)
-        self.settings.setValue(
-            'points/altitude', self.spnPointAltitude.value())
-        self.settings.setValue(
-            'points/extrude', self.chkPointConnect.isChecked())
+        mode = self.cmbPointAltitudeMode.itemData(self.cmbPointAltitudeMode.currentIndex())
+        self.settings.setValue('getools/pointAltitudeMode', mode)
+        self.settings.setValue('getools/pointAltitude', self.spnPointAltitude.value())
+        self.settings.setValue('getools/pointExtrude', self.chkPointConnect.isChecked())
 
         # Lines tab
-        self.settings.setValue(
-            'lines/overrideStyle', self.grpLineStyle.isChecked())
         color = self.btnLineColor.color()
-        self.settings.setValue('lines/line_color_red', color.red())
-        self.settings.setValue('lines/line_color_green', color.green())
-        self.settings.setValue('lines/line_color_blue', color.blue())
-        self.settings.setValue('lines/line_color_alpha', color.alpha())
+        self.settings.setValue('getools/lineColorRed', color.red())
+        self.settings.setValue('getools/lineColorGreen', color.green())
+        self.settings.setValue('getools/lineColorBlue', color.blue())
+        self.settings.setValue('getools/lineColorAlpha', color.alpha())
 
-        mode = self.cmbLineColorMode.itemData(
-            self.cmbLineColorMode.currentIndex())
-        self.settings.setValue('lines/color_mode', mode)
-        self.settings.setValue('lines/width', self.spnLineWidth.value())
+        mode = self.cmbLineColorMode.itemData(self.cmbLineColorMode.currentIndex())
+        self.settings.setValue('getools/lineColorMode', mode)
+        self.settings.setValue('getools/lineWidth', self.spnLineWidth.value())
 
-        mode = self.cmbLineAltitudeMode.itemData(
-            self.cmbLineAltMode.currentIndex())
-        self.settings.setValue('lines/altitude_mode', mode)
-        self.settings.setValue('lines/altitude', self.spnLineAltitude.value())
-        self.settings.setValue(
-            'lines/extrude', self.chkLineConnect.isChecked())
-        self.settings.setValue(
-            'lines/tessellate', self.chkLineFollow.isChecked())
+        mode = self.cmbLineAltitudeMode.itemData(self.cmbLineAltitudeMode.currentIndex())
+        self.settings.setValue('getools/lineAltitudeMode', mode)
+        self.settings.setValue('getools/lineAltitude', self.spnLineAltitude.value())
+        self.settings.setValue('getools/lineExtrude', self.chkLineConnect.isChecked())
+        self.settings.setValue('getools/lineTessellate', self.chkLineFollow.isChecked())
 
         # Polygons tab
-        self.settings.setValue(
-            'polygons/overrideStyle', self.grpPolygonStyle.isChecked())
         color = self.btnPolygonColor.color()
-        self.settings.setValue('polygons/polygon_color_red', color.red())
-        self.settings.setValue('polygons/polygon_color_green', color.green())
-        self.settings.setValue('polygons/polygon_color_blue', color.blue())
-        self.settings.setValue('polygons/polygon_color_alpha', color.alpha())
+        self.settings.setValue('getools/polygonColorRed', color.red())
+        self.settings.setValue('getools/polygonColorGreen', color.green())
+        self.settings.setValue('getools/polygonColorBlue', color.blue())
+        self.settings.setValue('getools/polygonColorAlpha', color.alpha())
 
-        mode = self.cmbPolygonColorMode.itemData(
-            self.cmbPolygonColorMode.currentIndex())
-        self.settings.setValue('polygons/color_mode', mode)
-        self.settings.setValue(
-            'polygons/fill', self.chkPolygonFill.isChecked())
-        self.settings.setValue(
-            'polygons/outline', self.chkPolygonOutline.isChecked())
+        mode = self.cmbPolygonColorMode.itemData(self.cmbPolygonColorMode.currentIndex())
+        self.settings.setValue('getools/polygonColorMode', mode)
+        self.settings.setValue('getools/polygonFill', self.chkPolygonFill.isChecked())
+        self.settings.setValue('getools/polygonOutline', self.chkPolygonOutline.isChecked())
 
-        mode = self.cmbPolygonAltitudeMode.itemData(
-            self.cmbPolygonAltitudeMode.currentIndex())
-        self.settings.setValue('polygons/altitude_mode', mode)
-        self.settings.setValue(
-            'polygons/altitude', self.spnPolygonAltitude.value())
-        self.settings.setValue(
-            'polygons/extrude', self.chkPolygonConnect.isChecked())
-        self.settings.setValue(
-            'polygons/tessellate', self.chkPolygonFollow.isChecked())
+        mode = self.cmbPolygonAltitudeMode.itemData(self.cmbPolygonAltitudeMode.currentIndex())
+        self.settings.setValue('getools/polygonAltitudeMode', mode)
+        self.settings.setValue('getools/polygonAltitude', self.spnPolygonAltitude.value())
+        self.settings.setValue('getools/polygonExtrude', self.chkPolygonConnect.isChecked())
+        self.settings.setValue('getools/polygonTessellate', self.chkPolygonFollow.isChecked())
 
         # Labels tab
         color = self.btnLabelColor.color()
-        self.settings.setValue('labels/label_color_red', color.red())
-        self.settings.setValue('labels/label_color_green', color.green())
-        self.settings.setValue('labels/label_color_blue', color.blue())
-        self.settings.setValue('labels/label_color_alpha', color.alpha())
+        self.settings.setValue('getools/labelColorRed', color.red())
+        self.settings.setValue('getools/labelColorGreen', color.green())
+        self.settings.setValue('getools/labelColorBlue', color.blue())
+        self.settings.setValue('getools/labelColorAlpha', color.alpha())
 
-        mode = self.cmbLabelColorMode.itemData(
-            self.cmbLabelColorMode.currentIndex())
-        self.settings.setValue('labels/color_mode', mode)
-        self.settings.setValue('labels/scale', self.spnLabelScale.value())
+        mode = self.cmbLabelColorMode.itemData(self.cmbLabelColorMode.currentIndex())
+        self.settings.setValue('getools/labelColorMode', mode)
+        self.settings.setValue('getools/labelScale', self.spnLabelScale.value())
 
         # Rasters tab
-        color = self.btnRasterColor.color()
-        self.settings.setValue('rasters/raster_color_red', color.red())
-        self.settings.setValue('rasters/raster_color_green', color.green())
-        self.settings.setValue('rasters/raster_color_blue', color.blue())
-        self.settings.setValue('rasters/raster_color_alpha', color.alpha())
+        self.settings.setValue('getools/rasterRendered', self.chkRasterRendered.isChecked())
 
-        self.settings.setValue(
-            'rasters/rendered', self.chkRasterRendered.isChecked())
-
-        mode = self.cmbRasterAltitudeMode.itemData(
-            self.cmbRasterAltitudeMode.currentIndex())
-        self.settings.setValue('rasters/altitude_mode', mode)
-        self.settings.setValue(
-            'rasters/altitude', self.spnRasterAltitude.value())
+        mode = self.cmbRasterAltitudeMode.itemData(self.cmbRasterAltitudeMode.currentIndex())
+        self.settings.setValue('getools/rasterAltitudeMode', mode)
+        self.settings.setValue('getools/rasterAltitude', self.spnRasterAltitude.value())
