@@ -61,6 +61,19 @@ class OptionsDialog(QgsOptionsDialogBase, WIDGET):
         self.grpRasterStyle.setSettings(self.settings)
         self.grpRasterGeometry.setSettings(self.settings)
 
+        self.grpPointAttributes.setSettingsGroup('getools')
+        self.grpPointStyle.setSettingsGroup('getools')
+        self.grpPointGeometry.setSettingsGroup('getools')
+        self.grpLineAttributes.setSettingsGroup('getools')
+        self.grpLineStyle.setSettingsGroup('getools')
+        self.grpLineGeometry.setSettingsGroup('getools')
+        self.grpPolygonAttributes.setSettingsGroup('getools')
+        self.grpPolygonStyle.setSettingsGroup('getools')
+        self.grpPolygonGeometry.setSettingsGroup('getools')
+        self.grpLabelStyle.setSettingsGroup('getools')
+        self.grpRasterStyle.setSettingsGroup('getools')
+        self.grpRasterGeometry.setSettingsGroup('getools')
+
         item = self.mOptionsListWidget.findItems(self.tr('Points'), Qt.MatchFixedString)[0]
         item.setIcon(QgsApplication.getThemeIcon('/mIconPointLayer.svg'))
         item = self.mOptionsListWidget.findItems(self.tr('Lines'), Qt.MatchFixedString)[0]
