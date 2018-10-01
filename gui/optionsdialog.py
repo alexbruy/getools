@@ -96,6 +96,9 @@ class OptionsDialog(QgsOptionsDialogBase, WIDGET):
             self.cmbRasterAltitudeMode.addItem(k, v)
 
         # Points tab
+        self.lePointName.setText(self.settings.value('getools/pointName', '', str))
+        self.lePointDescription.setText(self.settings.value('getools/pointDescription', '', str))
+
         red = self.settings.value('getools/pointColorRed', 255, int)
         green = self.settings.value('getools/pointColorGreen', 255, int)
         blue = self.settings.value('getools/pointColorBlue', 0, int)
@@ -114,6 +117,9 @@ class OptionsDialog(QgsOptionsDialogBase, WIDGET):
         self.chkPointConnect.setChecked(self.settings.value('getools/pointExtrude', False, bool))
 
         # Lines tab
+        self.leLineName.setText(self.settings.value('getools/lineName', '', str))
+        self.leLineDescription.setText(self.settings.value('getools/lineDescription', '', str))
+
         red = self.settings.value('getools/lineColorRed', 255, int)
         green = self.settings.value('getools/lineColorGreen', 255, int)
         blue = self.settings.value('getools/lineColorBlue', 0, int)
@@ -133,6 +139,9 @@ class OptionsDialog(QgsOptionsDialogBase, WIDGET):
         self.chkLineFollow.setChecked(self.settings.value('getools/lineTessellate', False, bool))
 
         # Polygons tab
+        self.lePolygonName.setText(self.settings.value('getools/polygonName', '', str))
+        self.lePolygonDescription.setText(self.settings.value('getools/polygonDescription', '', str))
+
         red = self.settings.value('getools/polygonColorRred', 255, int)
         green = self.settings.value('getools/polygonColorGreen', 255, int)
         blue = self.settings.value('getools/polygonColorBlue', 0, int)
@@ -174,6 +183,9 @@ class OptionsDialog(QgsOptionsDialogBase, WIDGET):
 
     def saveOptions(self):
         # Points tab
+        self.settings.setValue('getools/pointName', self.lePointName.text())
+        self.settings.setValue('getools/pointDescription', self.lePointDescription.text())
+
         color = self.btnPointColor.color()
         self.settings.setValue('getools/pointColorRed', color.red())
         self.settings.setValue('getools/pointColorGreen', color.green())
@@ -191,6 +203,9 @@ class OptionsDialog(QgsOptionsDialogBase, WIDGET):
         self.settings.setValue('getools/pointExtrude', self.chkPointConnect.isChecked())
 
         # Lines tab
+        self.settings.setValue('getools/lineName', self.leLineName.text())
+        self.settings.setValue('getools/lineDescription', self.leLineDescription.text())
+
         color = self.btnLineColor.color()
         self.settings.setValue('getools/lineColorRed', color.red())
         self.settings.setValue('getools/lineColorGreen', color.green())
@@ -208,6 +223,9 @@ class OptionsDialog(QgsOptionsDialogBase, WIDGET):
         self.settings.setValue('getools/lineTessellate', self.chkLineFollow.isChecked())
 
         # Polygons tab
+        self.settings.setValue('getools/polygonName', self.lePolygonName.text())
+        self.settings.setValue('getools/polygonDescription', self.lePolygonDescription.text())
+
         color = self.btnPolygonColor.color()
         self.settings.setValue('getools/polygonColorRed', color.red())
         self.settings.setValue('getools/polygonColorGreen', color.green())
