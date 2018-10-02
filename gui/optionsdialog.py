@@ -93,7 +93,8 @@ class OptionsDialog(QgsOptionsDialogBase, WIDGET):
         for k, v in modes:
             self.cmbPointColorMode.addItem(k, v)
             self.cmbLineColorMode.addItem(k, v)
-            self.cmbPolygonColorMode.addItem(k, v)
+            self.cmbPolygonFillColorMode.addItem(k, v)
+            self.cmbPolygonStrokeColorMode.addItem(k, v)
             self.cmbLabelColorMode.addItem(k, v)
 
         modes = ((self.tr('Clamp to ground'), 'clampToGround'),
@@ -118,12 +119,12 @@ class OptionsDialog(QgsOptionsDialogBase, WIDGET):
         alpha = self.settings.value('getools/pointColorAlpha', 255, int)
         self.btnPointColor.setColor(QColor(red, green, blue, alpha))
 
-        mode = self.settings.value('getools/pointColorMode', 'normal')
+        mode = self.settings.value('getools/pointColorMode', 'normal', str)
         self.cmbPointColorMode.setCurrentIndex(self.cmbPointColorMode.findData(mode))
 
         self.spnPointScale.setValue(self.settings.value('getools/pointScale', 1.0, float))
 
-        mode = self.settings.value('getools/pointAltitudeMode', 'clampToGround')
+        mode = self.settings.value('getools/pointAltitudeMode', 'clampToGround', str)
         self.cmbPointAltitudeMode.setCurrentIndex(self.cmbPointAltitudeMode.findData(mode))
 
         self.spnPointAltitude.setValue(self.settings.value('getools/pointAltitude', 0.0, float))
@@ -139,12 +140,12 @@ class OptionsDialog(QgsOptionsDialogBase, WIDGET):
         alpha = self.settings.value('getools/lineColorAlpha', 255, int)
         self.btnLineColor.setColor(QColor(red, green, blue, alpha))
 
-        mode = self.settings.value('getools/lineColorMode', 'normal')
+        mode = self.settings.value('getools/lineColorMode', 'normal', str)
         self.cmbLineColorMode.setCurrentIndex(self.cmbLineColorMode.findData(mode))
 
-        self.spnLineWidth.setValue(self.settings.value('getools/lineWidth', 1.0, float))
+        self.spnLineWidth.setValue(self.settings.value('getools/lineWidth', 1, int))
 
-        mode = self.settings.value('getools/lineAltitudeMode', 'clampToGround')
+        mode = self.settings.value('getools/lineAltitudeMode', 'clampToGround', str)
         self.cmbLineAltitudeMode.setCurrentIndex(self.cmbLineAltitudeMode.findData(mode))
 
         self.spnLineAltitude.setValue(self.settings.value('getools/lineAltitude', 0.0, float))
@@ -155,19 +156,29 @@ class OptionsDialog(QgsOptionsDialogBase, WIDGET):
         self.lePolygonName.setText(self.settings.value('getools/polygonName', '', str))
         self.lePolygonDescription.setText(self.settings.value('getools/polygonDescription', '', str))
 
-        red = self.settings.value('getools/polygonColorRred', 255, int)
-        green = self.settings.value('getools/polygonColorGreen', 255, int)
-        blue = self.settings.value('getools/polygonColorBlue', 0, int)
-        alpha = self.settings.value('getools/polygonColorAlpha', 255, int)
-        self.btnPolygonColor.setColor(QColor(red, green, blue, alpha))
+        red = self.settings.value('getools/polygonFillColorRed', 255, int)
+        green = self.settings.value('getools/polygonFillColorGreen', 255, int)
+        blue = self.settings.value('getools/polygonFillColorBlue', 0, int)
+        alpha = self.settings.value('getools/polygonFillColorAlpha', 255, int)
+        self.btnPolygonFillColor.setColor(QColor(red, green, blue, alpha))
 
-        mode = self.settings.value('getools/polygonColorMode', 'normal')
-        self.cmbPolygonColorMode.setCurrentIndex(self.cmbPolygonColorMode.findData(mode))
+        red = self.settings.value('getools/polygonStrokeColorRed', 255, int)
+        green = self.settings.value('getools/polygonStrokeColorGreen', 255, int)
+        blue = self.settings.value('getools/polygonStrokeColorBlue', 0, int)
+        alpha = self.settings.value('getools/polygonStrokeColorAlpha', 255, int)
+        self.btnPolygonStrokeColor.setColor(QColor(red, green, blue, alpha))
+
+        mode = self.settings.value('getools/polygonFillColorMode', 'normal', str)
+        self.cmbPolygonFillColorMode.setCurrentIndex(self.cmbPolygonFillColorMode.findData(mode))
+        mode = self.settings.value('getools/polygonStrokeColorMode', 'normal', str)
+        self.cmbPolygonStrokeColorMode.setCurrentIndex(self.cmbPolygonStrokeColorMode.findData(mode))
+
+        self.spnPolygonStrokeWidth.setValue(self.settings.value('getools/polygonStrokeWidth', 1, int))
 
         self.chkPolygonFill.setChecked(self.settings.value('getools/polygonFill', False, bool))
         self.chkPolygonOutline.setChecked(self.settings.value('getools/polygonOutline', False, bool))
 
-        mode = self.settings.value('getools/altitude_mode', 'clampToGround')
+        mode = self.settings.value('getools/altitude_mode', 'clampToGround', str)
         self.cmbPolygonAltitudeMode.setCurrentIndex(self.cmbPolygonAltitudeMode.findData(mode))
 
         self.spnPolygonAltitude.setValue(self.settings.value('getools/polygonAltitude', 0.0, float))
@@ -181,7 +192,7 @@ class OptionsDialog(QgsOptionsDialogBase, WIDGET):
         alpha = self.settings.value('getools/labelColorAlpha', 255, int)
         self.btnLabelColor.setColor(QColor(red, green, blue, alpha))
 
-        mode = self.settings.value('getools/labelColorMode', 'normal')
+        mode = self.settings.value('getools/labelColorMode', 'normal', str)
         self.cmbLabelColorMode.setCurrentIndex(self.cmbLabelColorMode.findData(mode))
 
         self.spnLabelScale.setValue(self.settings.value('getools/labelScale', 1.0, float))
@@ -189,7 +200,7 @@ class OptionsDialog(QgsOptionsDialogBase, WIDGET):
         # Rasters tab
         self.chkRasterRendered.setChecked(self.settings.value('getools/rasterRendered', False, bool))
 
-        mode = self.settings.value('getools/rasterAltitudeMode', 'clampToGround')
+        mode = self.settings.value('getools/rasterAltitudeMode', 'clampToGround', str)
         self.cmbRasterAltitudeMode.setCurrentIndex(self.cmbRasterAltitudeMode.findData(mode))
 
         self.spnRasterAltitude.setValue(self.settings.value('getools/rasterAltitude', 0.0, float))
@@ -227,6 +238,7 @@ class OptionsDialog(QgsOptionsDialogBase, WIDGET):
 
         mode = self.cmbLineColorMode.itemData(self.cmbLineColorMode.currentIndex())
         self.settings.setValue('getools/lineColorMode', mode)
+
         self.settings.setValue('getools/lineWidth', self.spnLineWidth.value())
 
         mode = self.cmbLineAltitudeMode.itemData(self.cmbLineAltitudeMode.currentIndex())
@@ -239,14 +251,25 @@ class OptionsDialog(QgsOptionsDialogBase, WIDGET):
         self.settings.setValue('getools/polygonName', self.lePolygonName.text())
         self.settings.setValue('getools/polygonDescription', self.lePolygonDescription.text())
 
-        color = self.btnPolygonColor.color()
-        self.settings.setValue('getools/polygonColorRed', color.red())
-        self.settings.setValue('getools/polygonColorGreen', color.green())
-        self.settings.setValue('getools/polygonColorBlue', color.blue())
-        self.settings.setValue('getools/polygonColorAlpha', color.alpha())
+        color = self.btnPolygonFillColor.color()
+        self.settings.setValue('getools/polygonFillColorRed', color.red())
+        self.settings.setValue('getools/polygonFillColorGreen', color.green())
+        self.settings.setValue('getools/polygonFillColorBlue', color.blue())
+        self.settings.setValue('getools/polygonFillColorAlpha', color.alpha())
 
-        mode = self.cmbPolygonColorMode.itemData(self.cmbPolygonColorMode.currentIndex())
-        self.settings.setValue('getools/polygonColorMode', mode)
+        color = self.btnPolygonStrokeColor.color()
+        self.settings.setValue('getools/polygonStrokeColorRed', color.red())
+        self.settings.setValue('getools/polygonStrokeColorGreen', color.green())
+        self.settings.setValue('getools/polygonStrokeColorBlue', color.blue())
+        self.settings.setValue('getools/polygonStrokeColorAlpha', color.alpha())
+
+        mode = self.cmbPolygonFillColorMode.itemData(self.cmbPolygonFillColorMode.currentIndex())
+        self.settings.setValue('getools/polygonFillColorMode', mode)
+        mode = self.cmbPolygonStrokeColorMode.itemData(self.cmbPolygonStrokeColorMode.currentIndex())
+        self.settings.setValue('getools/polygonStrokeColorMode', mode)
+
+        self.settings.setValue('getools/polygonStrokeWidth', self.spnPolygonStrokeWidth.value())
+
         self.settings.setValue('getools/polygonFill', self.chkPolygonFill.isChecked())
         self.settings.setValue('getools/polygonOutline', self.chkPolygonOutline.isChecked())
 

@@ -153,7 +153,7 @@
           </sizepolicy>
          </property>
          <property name="currentIndex">
-          <number>1</number>
+          <number>2</number>
          </property>
          <widget class="QWidget" name="mOptionsPagePoints">
           <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -321,10 +321,13 @@
                      <string> m</string>
                     </property>
                     <property name="decimals">
-                     <number>6</number>
+                     <number>2</number>
                     </property>
                     <property name="minimum">
-                     <double>-999999.999998999992386</double>
+                     <double>-9999999.990000000223517</double>
+                    </property>
+                    <property name="maximum">
+                     <double>9999999.990000000223517</double>
                     </property>
                     <property name="value">
                      <double>0.000000000000000</double>
@@ -490,12 +493,9 @@
                    </widget>
                   </item>
                   <item row="2" column="1">
-                   <widget class="QDoubleSpinBox" name="spnLineWidth">
-                    <property name="minimum">
-                     <double>1.000000000000000</double>
-                    </property>
-                    <property name="maximum">
-                     <double>100.000000000000000</double>
+                   <widget class="QSpinBox" name="spnLineWidth">
+                    <property name="suffix">
+                     <string> px</string>
                     </property>
                    </widget>
                   </item>
@@ -540,10 +540,13 @@
                      <string> m</string>
                     </property>
                     <property name="decimals">
-                     <number>6</number>
+                     <number>2</number>
                     </property>
                     <property name="minimum">
-                     <double>-999999.999998999992386</double>
+                     <double>-9999999.990000000223517</double>
+                    </property>
+                    <property name="maximum">
+                     <double>9999999.990000000223517</double>
                     </property>
                     <property name="value">
                      <double>0.000000000000000</double>
@@ -553,14 +556,14 @@
                   <item row="3" column="0" colspan="2">
                    <widget class="QCheckBox" name="chkLineConnect">
                     <property name="text">
-                     <string>Connect linestring to the ground</string>
+                     <string>Connect line to the ground</string>
                     </property>
                    </widget>
                   </item>
                   <item row="4" column="0" colspan="2">
                    <widget class="QCheckBox" name="chkLineFollow">
                     <property name="text">
-                     <string>Allow linestring to follow the terrain</string>
+                     <string>Allow line to follow the terrain</string>
                     </property>
                    </widget>
                   </item>
@@ -612,9 +615,9 @@
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>0</y>
-                <width>340</width>
-                <height>409</height>
+                <y>-132</y>
+                <width>514</width>
+                <height>497</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_16">
@@ -674,22 +677,29 @@
                   <bool>false</bool>
                  </property>
                  <layout class="QGridLayout" name="gridLayout_5">
+                  <item row="3" column="0">
+                   <widget class="QLabel" name="label_27">
+                    <property name="text">
+                     <string>Stroke color mode</string>
+                    </property>
+                   </widget>
+                  </item>
                   <item row="1" column="0">
                    <widget class="QLabel" name="label_12">
                     <property name="text">
-                     <string>Color mode</string>
+                     <string>Fill color mode</string>
                     </property>
                    </widget>
                   </item>
                   <item row="0" column="0">
                    <widget class="QLabel" name="label_11">
                     <property name="text">
-                     <string>Color</string>
+                     <string>Fill color</string>
                     </property>
                    </widget>
                   </item>
                   <item row="0" column="1">
-                   <widget class="QgsColorButton" name="btnPolygonColor">
+                   <widget class="QgsColorButton" name="btnPolygonFillColor">
                     <property name="text">
                      <string/>
                     </property>
@@ -699,19 +709,53 @@
                    </widget>
                   </item>
                   <item row="1" column="1">
-                   <widget class="QComboBox" name="cmbPolygonColorMode"/>
+                   <widget class="QComboBox" name="cmbPolygonFillColorMode"/>
                   </item>
-                  <item row="2" column="0">
+                  <item row="5" column="0">
                    <widget class="QCheckBox" name="chkPolygonFill">
                     <property name="text">
                      <string>Fill polygon</string>
                     </property>
                    </widget>
                   </item>
-                  <item row="3" column="0">
+                  <item row="6" column="0">
                    <widget class="QCheckBox" name="chkPolygonOutline">
                     <property name="text">
                      <string>Outline polygon</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="0">
+                   <widget class="QLabel" name="label_26">
+                    <property name="text">
+                     <string>Stroke color</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="0">
+                   <widget class="QLabel" name="label_28">
+                    <property name="text">
+                     <string>Stroke width</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="1">
+                   <widget class="QComboBox" name="cmbPolygonStrokeColorMode"/>
+                  </item>
+                  <item row="2" column="1">
+                   <widget class="QgsColorButton" name="btnPolygonStrokeColor">
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="allowOpacity" stdset="0">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="1">
+                   <widget class="QSpinBox" name="spnPolygonStrokeWidth">
+                    <property name="suffix">
+                     <string> px</string>
                     </property>
                    </widget>
                   </item>
@@ -756,10 +800,13 @@
                      <string> m</string>
                     </property>
                     <property name="decimals">
-                     <number>6</number>
+                     <number>2</number>
                     </property>
                     <property name="minimum">
-                     <double>-999999.999998999992386</double>
+                     <double>-9999999.990000000223517</double>
+                    </property>
+                    <property name="maximum">
+                     <double>9999999.990000000223517</double>
                     </property>
                     <property name="value">
                      <double>0.000000000000000</double>
@@ -1154,8 +1201,8 @@
   <tabstop>lePolygonName</tabstop>
   <tabstop>lePolygonDescription</tabstop>
   <tabstop>grpPolygonStyle</tabstop>
-  <tabstop>btnPolygonColor</tabstop>
-  <tabstop>cmbPolygonColorMode</tabstop>
+  <tabstop>btnPolygonFillColor</tabstop>
+  <tabstop>cmbPolygonFillColorMode</tabstop>
   <tabstop>chkPolygonFill</tabstop>
   <tabstop>chkPolygonOutline</tabstop>
   <tabstop>cmbPolygonAltitudeMode</tabstop>
