@@ -153,7 +153,7 @@
           </sizepolicy>
          </property>
          <property name="currentIndex">
-          <number>4</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="mOptionsPagePoints">
           <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -182,8 +182,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>340</width>
-                <height>358</height>
+                <width>528</width>
+                <height>365</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_13">
@@ -394,7 +394,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>340</width>
+                <width>514</width>
                 <height>385</height>
                </rect>
               </property>
@@ -613,7 +613,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>340</width>
+                <width>514</width>
                 <height>409</height>
                </rect>
               </property>
@@ -829,8 +829,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>197</width>
-                <height>130</height>
+                <width>528</width>
+                <height>365</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_17">

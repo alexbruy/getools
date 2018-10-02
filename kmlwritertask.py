@@ -215,6 +215,12 @@ class KmlWriterTask(QgsTask):
         altitude = settings.value('getools/pointAltitude', 0.0, float)
         extrude = settings.value('getools/pointExtrude', False, bool)
         altitudeMode = settings.value('getools/pointAltitudeMode', 'clampToGround', str)
+        name = settings.value('getools/pointName', '', str)
+        description = settings.value('getools/pointDescription', '', str)
+
+        fields = self.data.fields()
+        idxName = fields.indexFromName(name)
+        idxDescription = fields.indexFromName(description)
 
         layerName = utils.encodeForXml(self.data.name())
         kmlFile = utils.tempFileName('{}.kml'.format(utils.safeLayerName(self.data.name())))
@@ -230,12 +236,25 @@ class KmlWriterTask(QgsTask):
             if self.onlySelected:
                 request.setFilterFids(self.data.selectedFeatureIds())
 
+            attrs = []
+            if idxName != -1:
+                attrs.append(idxName)
+            if idxDescription != -1:
+                attrs.append(idxDescription)
+            if len(attrs) > 0:
+                request.setSubsetOfAttributes(attrs)
+
             for feat in self.data.getFeatures(request):
                 geom = feat.geometry()
                 multiGeometry = geom.isMultipart()
                 pnt = geom.constGet()
 
                 f.write('    <Placemark>\n')
+
+                if idxName != -1:
+                    f.write('      <name>{}</name>\n'.format(feat[name]))
+                if idxDescription != -1:
+                    f.write('      <description>{}</description>\n'.format(feat[description]))
 
                 if multiGeometry:
                     f.write('      <MultiGeometry>\n')
@@ -264,6 +283,12 @@ class KmlWriterTask(QgsTask):
         extrude = settings.value('getools/lineExtrude', False, bool)
         tessellate = settings.value('getools/lineTessellate', False, bool)
         altitudeMode = settings.value('getools/lineAltitudeMode', 'clampToGround', str)
+        name = settings.value('getools/lineName', '', str)
+        description = settings.value('getools/lineDescription', '', str)
+
+        fields = self.data.fields()
+        idxName = fields.indexFromName(name)
+        idxDescription = fields.indexFromName(description)
 
         layerName = utils.encodeForXml(self.data.name())
         kmlFile = utils.tempFileName('{}.kml'.format(utils.safeLayerName(self.data.name())))
@@ -279,12 +304,25 @@ class KmlWriterTask(QgsTask):
             if self.onlySelected:
                 request.setFilterFids(self.data.selectedFeatureIds())
 
+            attrs = []
+            if idxName != -1:
+                attrs.append(idxName)
+            if idxDescription != -1:
+                attrs.append(idxDescription)
+            if len(attrs) > 0:
+                request.setSubsetOfAttributes(attrs)
+
             for feat in self.data.getFeatures(request):
                 geom = feat.geometry()
                 multiGeometry = geom.isMultipart()
                 parts = geom.asGeometryCollection()
 
                 f.write('    <Placemark>\n')
+
+                if idxName != -1:
+                    f.write('      <name>{}</name>\n'.format(feat[name]))
+                if idxDescription != -1:
+                    f.write('      <description>{}</description>\n'.format(feat[description]))
 
                 if multiGeometry:
                     f.write('      <MultiGeometry>\n')
@@ -318,6 +356,12 @@ class KmlWriterTask(QgsTask):
         extrude = settings.value('getools/polygonExtrude', False, bool)
         tessellate = settings.value('getools/polygonTessellate', False, bool)
         altitudeMode = settings.value('getools/polygonAltitudeMode', 'clampToGround', str)
+        name = settings.value('getools/plygonName', '', str)
+        description = settings.value('getools/polygonDescription', '', str)
+
+        fields = self.data.fields()
+        idxName = fields.indexFromName(name)
+        idxDescription = fields.indexFromName(description)
 
         layerName = utils.encodeForXml(self.data.name())
         kmlFile = utils.tempFileName('{}.kml'.format(utils.safeLayerName(self.data.name())))
@@ -333,12 +377,25 @@ class KmlWriterTask(QgsTask):
             if self.onlySelected:
                 request.setFilterFids(self.data.selectedFeatureIds())
 
+            attrs = []
+            if idxName != -1:
+                attrs.append(idxName)
+            if idxDescription != -1:
+                attrs.append(idxDescription)
+            if len(attrs) > 0:
+                request.setSubsetOfAttributes(attrs)
+
             for feat in self.data.getFeatures(request):
                 geom = feat.geometry()
                 multiGeometry = geom.isMultipart()
                 parts = geom.asGeometryCollection()
 
                 f.write('    <Placemark>\n')
+
+                if idxName != -1:
+                    f.write('      <name>{}</name>\n'.format(feat[name]))
+                if idxDescription != -1:
+                    f.write('      <description>{}</description>\n'.format(feat[description]))
 
                 if multiGeometry:
                     f.write('      <MultiGeometry>\n')
