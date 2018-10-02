@@ -231,6 +231,8 @@ class KmlWriterTask(QgsTask):
             f.write('    <name>{}</name>\n'.format(layerName))
             f.write('    <description>QGIS vector — {}</description>\n'.format(layerName))
 
+            # TODO: write styles
+
             request = QgsFeatureRequest()
             request.setDestinationCrs(GEO_CRS, QgsProject.instance().transformContext())
             if self.onlySelected:
@@ -298,6 +300,8 @@ class KmlWriterTask(QgsTask):
             f.write('  <Document>\n')
             f.write('    <name>{}</name>\n'.format(layerName))
             f.write('    <description>QGIS vector — {}</description>\n'.format(layerName))
+
+            # TODO: write styles
 
             request = QgsFeatureRequest()
             request.setDestinationCrs(GEO_CRS, QgsProject.instance().transformContext())
@@ -372,6 +376,8 @@ class KmlWriterTask(QgsTask):
             f.write('    <name>{}</name>\n'.format(layerName))
             f.write('    <description>QGIS vector — {}</description>\n'.format(layerName))
 
+            # TODO: write styles
+
             request = QgsFeatureRequest()
             request.setDestinationCrs(GEO_CRS, QgsProject.instance().transformContext())
             if self.onlySelected:
@@ -438,3 +444,79 @@ class KmlWriterTask(QgsTask):
 
         self.fileName = os.path.normpath(kmlFile)
         return True
+
+    def _defaultStyle(self):
+        style = []
+        settings = QgsSettings()
+        r = settings.value('getools/labelColorRed', 255, int)
+        g = settings.value('getools/labelColorGreen', 255, int)
+        b = settings.value('getools/labelColorBlue', 0, int)
+        a = settings.value('getools/labelColorAlpha', 255, int)
+        mode = settings.value('getools/labelColorMode', 'normal', str)
+        scale = settings.value('getools/labelScale', 1.0, float)
+
+        style.append('    <Style id="simpleStyle">\n')
+        style.append('      <LabelStyle>\n')
+        style.append('        <сolor>{:02x}{:02x}{:02x}{:02x}</color>\n'.format(a, b, g, r))
+        style.append('        <сolorMode>{}</colorMode>\n'.format(mode))
+        style.append('        <scale>{}</scale>\n'.format(scale))
+        style.append('      </LabelStyle>\n')
+
+        geometryType = self.data.geometryType()
+        if geometryType == QgsWkbTypes.PointGeometry:
+            r = settings.value('getools/pointColorRed', 255, int)
+            g = settings.value('getools/pointColorGreen', 255, int)
+            b = settings.value('getools/pointColorBlue', 0, int)
+            a = settings.value('getools/pointColorAlpha', 255, int)
+            mode = settings.value('getools/pointColorMode', 'normal', str)
+            scale = settings.value('getools/pointScale', 1.0, float)
+
+            style.append('      <IconStyle>\n')
+            style.append('        <color>{:02x}{:02x}{:02x}{:02x}</color>\n'.format(a, b, g, r))
+            style.append('        <colorMode>{}</colorMode>\n'.format(mode))
+            style.append('        <scale>{}</scale>\n'.format(scale))
+            style.append('      </IconStyle>\n')
+        elif geometryType == QgsWkbTypes.LineGeometry:
+            r = settings.value('getools/lineColorRed', 255, int)
+            g = settings.value('getools/lineColorGreen', 255, int)
+            b = settings.value('getools/lineColorBlue', 0, int)
+            a = settings.value('getools/lineColorAlpha', 255, int)
+            mode = settings.value('getools/lineColorMode', 'normal', str)
+            width = settings.value('getools/lineWidth', 1, int)
+
+            style.append('      <LineStyle>\n')
+            style.append('        <color>{:02x}{:02x}{:02x}{:02x}</color>\n'.format(a, b, g, r))
+            style.append('        <colorMode>{}</colorMode>\n'.format(mode))
+            style.append('        <width>{}</width>\n'.format(width))
+            style.append('      </LineStyle>\n')
+        elif geometryType == QgsWkbTypes.PolygonGeometry:
+            r = settings.value('getools/polygonStrokeColorRed', 255, int)
+            g = settings.value('getools/polygonStrokeColorGreen', 255, int)
+            b = settings.value('getools/polygonStrokeColorBlue', 0, int)
+            a = settings.value('getools/polygonStrokeColorAlpha', 255, int)
+            mode = settings.value('getools/polygonStrokeColorMode', 'normal', str)
+            width = settings.value('getools/polygonStrokeWidth', 1, int)
+
+            style.append('      <LineStyle>\n')
+            style.append('        <color>{:02x}{:02x}{:02x}{:02x}</color>\n'.format(a, b, g, r))
+            style.append('        <colorMode>{}</colorMode>\n'.format(mode))
+            style.append('        <width>{}</width>\n'.format(width))
+            style.append('      </LineStyle>\n')
+
+            r = settings.value('getools/polygonFillColorRed', 255, int)
+            g = settings.value('getools/polygonFillColorGreen', 255, int)
+            b = settings.value('getools/polygonFillColorBlue', 0, int)
+            a = settings.value('getools/polygonFillColorAlpha', 255, int)
+            mode = settings.value('getools/polygonFillColorMode', 'normal', str)
+            fill = settings.value('getools/polygonFill', True, bool)
+            outline = settings.value('getools/polygonOutline', True, bool)
+
+            style.append('      <PolyStyle>\n')
+            style.append('        <color>{:02x}{:02x}{:02x}{:02x}</color>\n'.format(a, b, g, r))
+            style.append('        <colorMode>{}</colorMode>\n'.format(mode))
+            style.append('        <fill>{:d}</fill>\n'.format(fill))
+            style.append('        <outline>{:d}</outline>\n'.format(outline))
+            style.append('      </PolyStyle>\n')
+
+        style.append('    </Style>\n')
+        return ''.join(style)

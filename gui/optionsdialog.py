@@ -175,8 +175,8 @@ class OptionsDialog(QgsOptionsDialogBase, WIDGET):
 
         self.spnPolygonStrokeWidth.setValue(self.settings.value('getools/polygonStrokeWidth', 1, int))
 
-        self.chkPolygonFill.setChecked(self.settings.value('getools/polygonFill', False, bool))
-        self.chkPolygonOutline.setChecked(self.settings.value('getools/polygonOutline', False, bool))
+        self.chkPolygonFill.setChecked(self.settings.value('getools/polygonFill', True, bool))
+        self.chkPolygonOutline.setChecked(self.settings.value('getools/polygonOutline', True, bool))
 
         mode = self.settings.value('getools/altitude_mode', 'clampToGround', str)
         self.cmbPolygonAltitudeMode.setCurrentIndex(self.cmbPolygonAltitudeMode.findData(mode))
