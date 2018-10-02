@@ -231,7 +231,12 @@ class KmlWriterTask(QgsTask):
             f.write('    <name>{}</name>\n'.format(layerName))
             f.write('    <description>QGIS vector — {}</description>\n'.format(layerName))
 
-            # TODO: write styles
+            overrideStyle = settings.value('QgsCollapsibleGroupBox/getools/grpPointStyle/checked', False, bool)
+            if overrideStyle:
+                style = self._defaultStyle()
+                f.write(style)
+            else:
+                pass
 
             request = QgsFeatureRequest()
             request.setDestinationCrs(GEO_CRS, QgsProject.instance().transformContext())
@@ -257,6 +262,11 @@ class KmlWriterTask(QgsTask):
                     f.write('      <name>{}</name>\n'.format(feat[name]))
                 if idxDescription != -1:
                     f.write('      <description>{}</description>\n'.format(feat[description]))
+
+                if overrideStyle:
+                    f.write('      <styleUrl>#simpleStyle</styleUrl>\n')
+                else:
+                    pass
 
                 if multiGeometry:
                     f.write('      <MultiGeometry>\n')
@@ -301,7 +311,12 @@ class KmlWriterTask(QgsTask):
             f.write('    <name>{}</name>\n'.format(layerName))
             f.write('    <description>QGIS vector — {}</description>\n'.format(layerName))
 
-            # TODO: write styles
+            overrideStyle = settings.value('QgsCollapsibleGroupBox/getools/grpLineStyle/checked', False, bool)
+            if overrideStyle:
+                style = self._defaultStyle()
+                f.write(style)
+            else:
+                pass
 
             request = QgsFeatureRequest()
             request.setDestinationCrs(GEO_CRS, QgsProject.instance().transformContext())
@@ -327,6 +342,11 @@ class KmlWriterTask(QgsTask):
                     f.write('      <name>{}</name>\n'.format(feat[name]))
                 if idxDescription != -1:
                     f.write('      <description>{}</description>\n'.format(feat[description]))
+
+                if overrideStyle:
+                    f.write('      <styleUrl>#simpleStyle</styleUrl>\n')
+                else:
+                    pass
 
                 if multiGeometry:
                     f.write('      <MultiGeometry>\n')
@@ -376,7 +396,12 @@ class KmlWriterTask(QgsTask):
             f.write('    <name>{}</name>\n'.format(layerName))
             f.write('    <description>QGIS vector — {}</description>\n'.format(layerName))
 
-            # TODO: write styles
+            overrideStyle = settings.value('QgsCollapsibleGroupBox/getools/grpPolygonStyle/checked', False, bool)
+            if overrideStyle:
+                style = self._defaultStyle()
+                f.write(style)
+            else:
+                pass
 
             request = QgsFeatureRequest()
             request.setDestinationCrs(GEO_CRS, QgsProject.instance().transformContext())
@@ -402,6 +427,11 @@ class KmlWriterTask(QgsTask):
                     f.write('      <name>{}</name>\n'.format(feat[name]))
                 if idxDescription != -1:
                     f.write('      <description>{}</description>\n'.format(feat[description]))
+
+                if overrideStyle:
+                    f.write('      <styleUrl>#simpleStyle</styleUrl>\n')
+                else:
+                    pass
 
                 if multiGeometry:
                     f.write('      <MultiGeometry>\n')
