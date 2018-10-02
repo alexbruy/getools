@@ -153,7 +153,7 @@
           </sizepolicy>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="mOptionsPagePoints">
           <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -613,7 +613,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>514</width>
+                <width>340</width>
                 <height>409</height>
                </rect>
               </property>
@@ -829,8 +829,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>528</width>
-                <height>365</height>
+                <width>197</width>
+                <height>130</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_17">
@@ -954,8 +954,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>528</width>
-                <height>365</height>
+                <width>331</width>
+                <height>170</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_18">
@@ -1127,6 +1127,51 @@
    <header>qgis.gui</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>mOptionsListWidget</tabstop>
+  <tabstop>scrollArea</tabstop>
+  <tabstop>lePointName</tabstop>
+  <tabstop>lePointDescription</tabstop>
+  <tabstop>grpPointStyle</tabstop>
+  <tabstop>btnPointColor</tabstop>
+  <tabstop>cmbPointColorMode</tabstop>
+  <tabstop>spnPointScale</tabstop>
+  <tabstop>cmbPointAltitudeMode</tabstop>
+  <tabstop>spnPointAltitude</tabstop>
+  <tabstop>chkPointConnect</tabstop>
+  <tabstop>scrollArea_2</tabstop>
+  <tabstop>leLineName</tabstop>
+  <tabstop>leLineDescription</tabstop>
+  <tabstop>grpLineStyle</tabstop>
+  <tabstop>btnLineColor</tabstop>
+  <tabstop>cmbLineColorMode</tabstop>
+  <tabstop>spnLineWidth</tabstop>
+  <tabstop>cmbLineAltitudeMode</tabstop>
+  <tabstop>spnLineAltitude</tabstop>
+  <tabstop>chkLineConnect</tabstop>
+  <tabstop>chkLineFollow</tabstop>
+  <tabstop>scrollArea_3</tabstop>
+  <tabstop>lePolygonName</tabstop>
+  <tabstop>lePolygonDescription</tabstop>
+  <tabstop>grpPolygonStyle</tabstop>
+  <tabstop>btnPolygonColor</tabstop>
+  <tabstop>cmbPolygonColorMode</tabstop>
+  <tabstop>chkPolygonFill</tabstop>
+  <tabstop>chkPolygonOutline</tabstop>
+  <tabstop>cmbPolygonAltitudeMode</tabstop>
+  <tabstop>spnPolygonAltitude</tabstop>
+  <tabstop>chkPolygonConnect</tabstop>
+  <tabstop>chkPolygonFollow</tabstop>
+  <tabstop>scrollArea_4</tabstop>
+  <tabstop>grpLabelStyle</tabstop>
+  <tabstop>btnLabelColor</tabstop>
+  <tabstop>cmbLabelColorMode</tabstop>
+  <tabstop>spnLabelScale</tabstop>
+  <tabstop>scrollArea_5</tabstop>
+  <tabstop>chkRasterRendered</tabstop>
+  <tabstop>spnRasterAltitude</tabstop>
+  <tabstop>cmbRasterAltitudeMode</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>
