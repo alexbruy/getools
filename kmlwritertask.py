@@ -264,7 +264,7 @@ class KmlWriterTask(QgsTask):
                     f.write('      <description>{}</description>\n'.format(feat[description]))
 
                 if overrideStyle:
-                    f.write('      <styleUrl>#simpleStyle</styleUrl>\n')
+                    f.write('      <styleUrl>#default</styleUrl>\n')
                 else:
                     pass
 
@@ -344,7 +344,7 @@ class KmlWriterTask(QgsTask):
                     f.write('      <description>{}</description>\n'.format(feat[description]))
 
                 if overrideStyle:
-                    f.write('      <styleUrl>#simpleStyle</styleUrl>\n')
+                    f.write('      <styleUrl>#default</styleUrl>\n')
                 else:
                     pass
 
@@ -429,7 +429,7 @@ class KmlWriterTask(QgsTask):
                     f.write('      <description>{}</description>\n'.format(feat[description]))
 
                 if overrideStyle:
-                    f.write('      <styleUrl>#simpleStyle</styleUrl>\n')
+                    f.write('      <styleUrl>#default</styleUrl>\n')
                 else:
                     pass
 
@@ -485,12 +485,12 @@ class KmlWriterTask(QgsTask):
         mode = settings.value('getools/labelColorMode', 'normal', str)
         scale = settings.value('getools/labelScale', 1.0, float)
 
-        style.append('    <Style id="simpleStyle">\n')
-        style.append('      <LabelStyle>\n')
-        style.append('        <сolor>{:02x}{:02x}{:02x}{:02x}</color>\n'.format(a, b, g, r))
-        style.append('        <сolorMode>{}</colorMode>\n'.format(mode))
-        style.append('        <scale>{}</scale>\n'.format(scale))
-        style.append('      </LabelStyle>\n')
+        style.append('    <Style id="default">')
+        style.append('      <LabelStyle>')
+        style.append('        <сolor>{:02x}{:02x}{:02x}{:02x}</color>'.format(a, b, g, r))
+        style.append('        <сolorMode>{}</colorMode>'.format(mode))
+        style.append('        <scale>{}</scale>'.format(scale))
+        style.append('      </LabelStyle>')
 
         geometryType = self.data.geometryType()
         if geometryType == QgsWkbTypes.PointGeometry:
@@ -501,11 +501,11 @@ class KmlWriterTask(QgsTask):
             mode = settings.value('getools/pointColorMode', 'normal', str)
             scale = settings.value('getools/pointScale', 1.0, float)
 
-            style.append('      <IconStyle>\n')
-            style.append('        <color>{:02x}{:02x}{:02x}{:02x}</color>\n'.format(a, b, g, r))
-            style.append('        <colorMode>{}</colorMode>\n'.format(mode))
-            style.append('        <scale>{}</scale>\n'.format(scale))
-            style.append('      </IconStyle>\n')
+            style.append('      <IconStyle>')
+            style.append('        <color>{:02x}{:02x}{:02x}{:02x}</color>'.format(a, b, g, r))
+            style.append('        <colorMode>{}</colorMode>'.format(mode))
+            style.append('        <scale>{}</scale>'.format(scale))
+            style.append('      </IconStyle>')
         elif geometryType == QgsWkbTypes.LineGeometry:
             r = settings.value('getools/lineColorRed', 255, int)
             g = settings.value('getools/lineColorGreen', 255, int)
@@ -514,11 +514,11 @@ class KmlWriterTask(QgsTask):
             mode = settings.value('getools/lineColorMode', 'normal', str)
             width = settings.value('getools/lineWidth', 1, int)
 
-            style.append('      <LineStyle>\n')
-            style.append('        <color>{:02x}{:02x}{:02x}{:02x}</color>\n'.format(a, b, g, r))
-            style.append('        <colorMode>{}</colorMode>\n'.format(mode))
-            style.append('        <width>{}</width>\n'.format(width))
-            style.append('      </LineStyle>\n')
+            style.append('      <LineStyle>')
+            style.append('        <color>{:02x}{:02x}{:02x}{:02x}</color>'.format(a, b, g, r))
+            style.append('        <colorMode>{}</colorMode>'.format(mode))
+            style.append('        <width>{}</width>'.format(width))
+            style.append('      </LineStyle>')
         elif geometryType == QgsWkbTypes.PolygonGeometry:
             r = settings.value('getools/polygonStrokeColorRed', 255, int)
             g = settings.value('getools/polygonStrokeColorGreen', 255, int)
@@ -527,11 +527,11 @@ class KmlWriterTask(QgsTask):
             mode = settings.value('getools/polygonStrokeColorMode', 'normal', str)
             width = settings.value('getools/polygonStrokeWidth', 1, int)
 
-            style.append('      <LineStyle>\n')
-            style.append('        <color>{:02x}{:02x}{:02x}{:02x}</color>\n'.format(a, b, g, r))
-            style.append('        <colorMode>{}</colorMode>\n'.format(mode))
-            style.append('        <width>{}</width>\n'.format(width))
-            style.append('      </LineStyle>\n')
+            style.append('      <LineStyle>')
+            style.append('        <color>{:02x}{:02x}{:02x}{:02x}</color>'.format(a, b, g, r))
+            style.append('        <colorMode>{}</colorMode>'.format(mode))
+            style.append('        <width>{}</width>'.format(width))
+            style.append('      </LineStyle>')
 
             r = settings.value('getools/polygonFillColorRed', 255, int)
             g = settings.value('getools/polygonFillColorGreen', 255, int)
@@ -541,12 +541,12 @@ class KmlWriterTask(QgsTask):
             fill = settings.value('getools/polygonFill', True, bool)
             outline = settings.value('getools/polygonOutline', True, bool)
 
-            style.append('      <PolyStyle>\n')
-            style.append('        <color>{:02x}{:02x}{:02x}{:02x}</color>\n'.format(a, b, g, r))
-            style.append('        <colorMode>{}</colorMode>\n'.format(mode))
-            style.append('        <fill>{:d}</fill>\n'.format(fill))
-            style.append('        <outline>{:d}</outline>\n'.format(outline))
-            style.append('      </PolyStyle>\n')
+            style.append('      <PolyStyle>')
+            style.append('        <color>{:02x}{:02x}{:02x}{:02x}</color>'.format(a, b, g, r))
+            style.append('        <colorMode>{}</colorMode>'.format(mode))
+            style.append('        <fill>{:d}</fill>'.format(fill))
+            style.append('        <outline>{:d}</outline>'.format(outline))
+            style.append('      </PolyStyle>')
 
         style.append('    </Style>\n')
-        return ''.join(style)
+        return '\n'.join(style)
