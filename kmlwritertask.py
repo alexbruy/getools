@@ -264,7 +264,6 @@ class KmlWriterTask(QgsTask):
 
                 for feat in self.data.getFeatures(request):
                     geom = feat.geometry()
-                    multiGeometry = geom.isMultipart()
                     pnt = geom.constGet()
 
                     f.write('    <Placemark>\n')
@@ -276,18 +275,20 @@ class KmlWriterTask(QgsTask):
 
                     f.write('      <styleUrl>#{}</styleUrl>\n'.format(styleId))
 
-                    if multiGeometry:
-                        f.write('      <MultiGeometry>\n')
-
+                    geometry = []
                     for v in pnt.vertices():
-                        f.write('      <Point>\n')
-                        f.write('        <extrude>{}</extrude>\n'.format(extrude))
-                        f.write('        <gx:altitudeMode>{}</gx:altitudeMode>\n'.format(altitudeMode))
-                        f.write('        <coordinates>{},{},{}</coordinates>\n'.format(v.x(), v.y(), v.z() if v.is3D() else altitude))
-                        f.write('      </Point>\n')
+                        geometry.append('      <Point>\n')
+                        geometry.append('        <extrude>{}</extrude>\n'.format(extrude))
+                        geometry.append('        <gx:altitudeMode>{}</gx:altitudeMode>\n'.format(altitudeMode))
+                        geometry.append('        <coordinates>{},{},{}</coordinates>\n'.format(v.x(), v.y(), v.z() if v.is3D() else altitude))
+                        geometry.append('      </Point>\n')
 
-                    if multiGeometry:
+                    if geom.isMultipart():
+                        f.write('      <MultiGeometry>\n')
+                        f.write(''.join(geometry))
                         f.write('      </MultiGeometry>\n')
+                    else:
+                        f.write(''.join(geometry))
 
                     f.write('    </Placemark>\n')
 
@@ -349,7 +350,6 @@ class KmlWriterTask(QgsTask):
 
                 for feat in self.data.getFeatures(request):
                     geom = feat.geometry()
-                    multiGeometry = geom.isMultipart()
                     parts = geom.asGeometryCollection()
 
                     f.write('    <Placemark>\n')
@@ -361,23 +361,25 @@ class KmlWriterTask(QgsTask):
 
                     f.write('      <styleUrl>#{}</styleUrl>\n'.format(styleId))
 
-                    if multiGeometry:
-                        f.write('      <MultiGeometry>\n')
-
+                    geometry = []
                     for part in parts:
-                        f.write('      <LineString>\n')
-                        f.write('        <extrude>{}</extrude>\n'.format(extrude))
-                        f.write('        <tessellate>{}</tessellate>\n'.format(tessellate))
-                        f.write('        <gx:altitudeMode>{}</gx:altitudeMode>\n'.format(altitudeMode))
-                        f.write('        <coordinates>\n')
+                        geometry.append('      <LineString>\n')
+                        geometry.append('        <extrude>{}</extrude>\n'.format(extrude))
+                        geometry.append('        <tessellate>{}</tessellate>\n'.format(tessellate))
+                        geometry.append('        <gx:altitudeMode>{}</gx:altitudeMode>\n'.format(altitudeMode))
+                        geometry.append('        <coordinates>\n')
                         g = part.constGet()
                         for p in g.points():
-                            f.write('          {},{},{}\n'.format(p.x(), p.y(), p.z() if p.is3D() else altitude))
-                        f.write('        </coordinates>\n')
-                        f.write('      </LineString>\n')
+                            geometry.append('          {},{},{}\n'.format(p.x(), p.y(), p.z() if p.is3D() else altitude))
+                        geometry.append('        </coordinates>\n')
+                        geometry.append('      </LineString>\n')
 
-                    if multiGeometry:
+                    if geom.isMultipart():
+                        f.write('      <MultiGeometry>\n')
+                        f.write(''.join(geometry))
                         f.write('      </MultiGeometry>\n')
+                    else:
+                        f.write(''.join(geometry))
 
                     f.write('    </Placemark>\n')
 
@@ -439,7 +441,6 @@ class KmlWriterTask(QgsTask):
 
                 for feat in self.data.getFeatures(request):
                     geom = feat.geometry()
-                    multiGeometry = geom.isMultipart()
                     parts = geom.asGeometryCollection()
 
                     f.write('    <Placemark>\n')
@@ -451,39 +452,41 @@ class KmlWriterTask(QgsTask):
 
                     f.write('      <styleUrl>#{}</styleUrl>\n'.format(styleId))
 
-                    if multiGeometry:
-                        f.write('      <MultiGeometry>\n')
-
+                    geometry = []
                     for part in parts:
-                        f.write('      <Polygon>\n')
-                        f.write('        <extrude>{}</extrude>\n'.format(extrude))
-                        f.write('        <tessellate>{}</tessellate>\n'.format(tessellate))
-                        f.write('        <gx:altitudeMode>{}</gx:altitudeMode>\n'.format(altitudeMode))
+                        geometry.append('      <Polygon>\n')
+                        geometry.append('        <extrude>{}</extrude>\n'.format(extrude))
+                        geometry.append('        <tessellate>{}</tessellate>\n'.format(tessellate))
+                        geometry.append('        <gx:altitudeMode>{}</gx:altitudeMode>\n'.format(altitudeMode))
 
-                        f.write('        <outerBoundaryIs>\n')
-                        f.write('          <LinearRing>\n')
-                        f.write('            <coordinates>\n')
+                        geometry.append('        <outerBoundaryIs>\n')
+                        geometry.append('          <LinearRing>\n')
+                        geometry.append('            <coordinates>\n')
                         polygon = part.constGet()
                         ring = polygon.exteriorRing()
                         for p in ring.points():
-                            f.write('          {},{},{}\n'.format(p.x(), p.y(), p.z() if p.is3D() else altitude))
-                        f.write('            </coordinates>\n')
-                        f.write('          </LinearRing>\n')
-                        f.write('        </outerBoundaryIs>\n')
+                            geometry.append('          {},{},{}\n'.format(p.x(), p.y(), p.z() if p.is3D() else altitude))
+                        geometry.append('            </coordinates>\n')
+                        geometry.append('          </LinearRing>\n')
+                        geometry.append('        </outerBoundaryIs>\n')
                         for i in range(polygon.numInteriorRings()):
                             ring = polygon.interiorRing(i)
-                            f.write('        <innerBoundaryIs>\n')
-                            f.write('          <LinearRing>\n')
-                            f.write('            <coordinates>\n')
+                            geometry.append('        <innerBoundaryIs>\n')
+                            geometry.append('          <LinearRing>\n')
+                            geometry.append('            <coordinates>\n')
                             for p in ring.points():
-                                f.write('          {},{},{}\n'.format(p.x(), p.y(), p.z() if p.is3D() else altitude))
-                            f.write('            </coordinates>\n')
-                            f.write('          </LinearRing>\n')
-                            f.write('        </innerBoundaryIs>\n')
-                        f.write('      </Polygon>\n')
+                                geometry.append('          {},{},{}\n'.format(p.x(), p.y(), p.z() if p.is3D() else altitude))
+                            geometry.append('            </coordinates>\n')
+                            geometry.append('          </LinearRing>\n')
+                            geometry.append('        </innerBoundaryIs>\n')
+                        geometry.append('      </Polygon>\n')
 
-                    if multiGeometry:
+                    if geom.isMultipart():
+                        f.write('      <MultiGeometry>\n')
+                        f.write(''.join(geometry))
                         f.write('      </MultiGeometry>\n')
+                    else:
+                        f.write(''.join(geometry))
 
                     f.write('    </Placemark>\n')
 
