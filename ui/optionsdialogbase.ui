@@ -252,6 +252,12 @@
                   </item>
                   <item row="0" column="1">
                    <widget class="QgsColorButton" name="btnPointColor">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
                     <property name="text">
                      <string/>
                     </property>
@@ -279,6 +285,12 @@
                   </item>
                   <item row="2" column="1">
                    <widget class="QDoubleSpinBox" name="spnPointScale">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
                     <property name="minimum">
                      <double>1.000000000000000</double>
                     </property>
@@ -317,6 +329,12 @@
                   </item>
                   <item row="1" column="1" rowspan="2">
                    <widget class="QDoubleSpinBox" name="spnPointAltitude">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
                     <property name="suffix">
                      <string> m</string>
                     </property>
@@ -396,7 +414,7 @@
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>0</y>
+                <y>-20</y>
                 <width>514</width>
                 <height>385</height>
                </rect>
@@ -467,6 +485,12 @@
                   </item>
                   <item row="0" column="1">
                    <widget class="QgsColorButton" name="btnLineColor">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
                     <property name="text">
                      <string/>
                     </property>
@@ -494,6 +518,12 @@
                   </item>
                   <item row="2" column="1">
                    <widget class="QSpinBox" name="spnLineWidth">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
                     <property name="suffix">
                      <string> px</string>
                     </property>
@@ -536,6 +566,12 @@
                   </item>
                   <item row="1" column="1" rowspan="2">
                    <widget class="QDoubleSpinBox" name="spnLineAltitude">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
                     <property name="suffix">
                      <string> m</string>
                     </property>
@@ -615,7 +651,7 @@
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>-132</y>
+                <y>0</y>
                 <width>514</width>
                 <height>497</height>
                </rect>
@@ -700,6 +736,12 @@
                   </item>
                   <item row="0" column="1">
                    <widget class="QgsColorButton" name="btnPolygonFillColor">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
                     <property name="text">
                      <string/>
                     </property>
@@ -710,20 +752,6 @@
                   </item>
                   <item row="1" column="1">
                    <widget class="QComboBox" name="cmbPolygonFillColorMode"/>
-                  </item>
-                  <item row="5" column="0">
-                   <widget class="QCheckBox" name="chkPolygonFill">
-                    <property name="text">
-                     <string>Fill polygon</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="6" column="0">
-                   <widget class="QCheckBox" name="chkPolygonOutline">
-                    <property name="text">
-                     <string>Outline polygon</string>
-                    </property>
-                   </widget>
                   </item>
                   <item row="2" column="0">
                    <widget class="QLabel" name="label_26">
@@ -744,6 +772,12 @@
                   </item>
                   <item row="2" column="1">
                    <widget class="QgsColorButton" name="btnPolygonStrokeColor">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
                     <property name="text">
                      <string/>
                     </property>
@@ -754,8 +788,28 @@
                   </item>
                   <item row="4" column="1">
                    <widget class="QSpinBox" name="spnPolygonStrokeWidth">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
                     <property name="suffix">
                      <string> px</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="5" column="0" colspan="2">
+                   <widget class="QCheckBox" name="chkPolygonFill">
+                    <property name="text">
+                     <string>Fill polygon</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="6" column="0" colspan="2">
+                   <widget class="QCheckBox" name="chkPolygonOutline">
+                    <property name="text">
+                     <string>Outline polygon</string>
                     </property>
                    </widget>
                   </item>
@@ -796,6 +850,12 @@
                   </item>
                   <item row="1" column="1" rowspan="2">
                    <widget class="QDoubleSpinBox" name="spnPolygonAltitude">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
                     <property name="suffix">
                      <string> m</string>
                     </property>
@@ -876,8 +936,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>197</width>
-                <height>130</height>
+                <width>528</width>
+                <height>365</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_17">
@@ -917,6 +977,12 @@
                   </item>
                   <item row="0" column="1">
                    <widget class="QgsColorButton" name="btnLabelColor">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
                     <property name="text">
                      <string/>
                     </property>
@@ -944,6 +1010,12 @@
                   </item>
                   <item row="2" column="1">
                    <widget class="QDoubleSpinBox" name="spnLabelScale">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
                     <property name="minimum">
                      <double>1.000000000000000</double>
                     </property>
@@ -1001,8 +1073,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>331</width>
-                <height>170</height>
+                <width>528</width>
+                <height>365</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_18">
@@ -1067,6 +1139,12 @@
                   </item>
                   <item row="1" column="1" rowspan="2">
                    <widget class="QDoubleSpinBox" name="spnRasterAltitude">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
                     <property name="suffix">
                      <string> m</string>
                     </property>
