@@ -248,7 +248,6 @@ class KmlWriterTask(QgsTask):
             if self.onlySelected:
                 request.setFilterFids(self.data.selectedFeatureIds())
 
-            # attributes with feature name and description
             attrs = []
             if idxName != -1:
                 attrs.append(idxName)
@@ -257,7 +256,6 @@ class KmlWriterTask(QgsTask):
             if len(attrs) > 0:
                 request.setSubsetOfAttributes(attrs)
 
-            # process styles
             for styleId, expression in styleMap.items():
                 if expression != 'all':
                     request.setFilterExpression(expression)
