@@ -47,6 +47,7 @@ from qgis.core import (QgsTask,
                        QgsFeatureRequest,
                       )
 
+from getools.styleutils import defaultStyle, kmlStyle
 from getools import geutils as utils
 
 GEO_CRS = QgsCoordinateReferenceSystem(4326)
@@ -222,6 +223,16 @@ class KmlWriterTask(QgsTask):
         idxName = fields.indexFromName(name)
         idxDescription = fields.indexFromName(description)
 
+        overrideStyle = settings.value('QgsCollapsibleGroupBox/getools/grpPointStyle/checked', False, bool)
+        if overrideStyle:
+            styleMap, style = defaultStyle(self.data)
+        else:
+            styleMap, style = kmlStyle(self.data)
+
+        if styleMap is None:
+            self.error = style
+            return False
+
         layerName = utils.encodeForXml(self.data.name())
         kmlFile = utils.tempFileName('{}.kml'.format(utils.safeLayerName(self.data.name())))
         with open(kmlFile, 'w', encoding='utf-8') as f:
@@ -230,19 +241,14 @@ class KmlWriterTask(QgsTask):
             f.write('  <Document>\n')
             f.write('    <name>{}</name>\n'.format(layerName))
             f.write('    <description>QGIS vector — {}</description>\n'.format(layerName))
-
-            overrideStyle = settings.value('QgsCollapsibleGroupBox/getools/grpPointStyle/checked', False, bool)
-            if overrideStyle:
-                style = self._defaultStyle()
-                f.write(style)
-            else:
-                pass
+            f.write('    {}\n'.format(style))
 
             request = QgsFeatureRequest()
             request.setDestinationCrs(GEO_CRS, QgsProject.instance().transformContext())
             if self.onlySelected:
                 request.setFilterFids(self.data.selectedFeatureIds())
 
+            # attributes with feature name and description
             attrs = []
             if idxName != -1:
                 attrs.append(idxName)
@@ -251,37 +257,39 @@ class KmlWriterTask(QgsTask):
             if len(attrs) > 0:
                 request.setSubsetOfAttributes(attrs)
 
-            for feat in self.data.getFeatures(request):
-                geom = feat.geometry()
-                multiGeometry = geom.isMultipart()
-                pnt = geom.constGet()
+            # process styles
+            for styleId, expression in styleMap.items():
+                if expression != 'all':
+                    request.setFilterExpression(expression)
 
-                f.write('    <Placemark>\n')
+                for feat in self.data.getFeatures(request):
+                    geom = feat.geometry()
+                    multiGeometry = geom.isMultipart()
+                    pnt = geom.constGet()
 
-                if idxName != -1:
-                    f.write('      <name>{}</name>\n'.format(feat[name]))
-                if idxDescription != -1:
-                    f.write('      <description>{}</description>\n'.format(feat[description]))
+                    f.write('    <Placemark>\n')
 
-                if overrideStyle:
-                    f.write('      <styleUrl>#default</styleUrl>\n')
-                else:
-                    pass
+                    if idxName != -1:
+                        f.write('      <name>{}</name>\n'.format(feat[name]))
+                    if idxDescription != -1:
+                        f.write('      <description>{}</description>\n'.format(feat[description]))
 
-                if multiGeometry:
-                    f.write('      <MultiGeometry>\n')
+                    f.write('      <styleUrl>#{}</styleUrl>\n'.format(styleId))
 
-                for v in pnt.vertices():
-                    f.write('      <Point>\n')
-                    f.write('        <extrude>{}</extrude>\n'.format(extrude))
-                    f.write('        <gx:altitudeMode>{}</gx:altitudeMode>\n'.format(altitudeMode))
-                    f.write('        <coordinates>{},{},{}</coordinates>\n'.format(v.x(), v.y(), v.z() if v.is3D() else altitude))
-                    f.write('      </Point>\n')
+                    if multiGeometry:
+                        f.write('      <MultiGeometry>\n')
 
-                if multiGeometry:
-                    f.write('      </MultiGeometry>\n')
+                    for v in pnt.vertices():
+                        f.write('      <Point>\n')
+                        f.write('        <extrude>{}</extrude>\n'.format(extrude))
+                        f.write('        <gx:altitudeMode>{}</gx:altitudeMode>\n'.format(altitudeMode))
+                        f.write('        <coordinates>{},{},{}</coordinates>\n'.format(v.x(), v.y(), v.z() if v.is3D() else altitude))
+                        f.write('      </Point>\n')
 
-                f.write('    </Placemark>\n')
+                    if multiGeometry:
+                        f.write('      </MultiGeometry>\n')
+
+                    f.write('    </Placemark>\n')
 
             f.write('  </Document>\n')
             f.write('</kml>\n')
@@ -302,6 +310,16 @@ class KmlWriterTask(QgsTask):
         idxName = fields.indexFromName(name)
         idxDescription = fields.indexFromName(description)
 
+        overrideStyle = settings.value('QgsCollapsibleGroupBox/getools/grpLineStyle/checked', False, bool)
+        if overrideStyle:
+            styleMap, style = defaultStyle(self.data)
+        else:
+            styleMap, style = kmlStyle(self.data)
+
+        if styleMap is None:
+            self.error = style
+            return False
+
         layerName = utils.encodeForXml(self.data.name())
         kmlFile = utils.tempFileName('{}.kml'.format(utils.safeLayerName(self.data.name())))
         with open(kmlFile, 'w', encoding='utf-8') as f:
@@ -310,13 +328,7 @@ class KmlWriterTask(QgsTask):
             f.write('  <Document>\n')
             f.write('    <name>{}</name>\n'.format(layerName))
             f.write('    <description>QGIS vector — {}</description>\n'.format(layerName))
-
-            overrideStyle = settings.value('QgsCollapsibleGroupBox/getools/grpLineStyle/checked', False, bool)
-            if overrideStyle:
-                style = self._defaultStyle()
-                f.write(style)
-            else:
-                pass
+            f.write('    {}\n'.format(style))
 
             request = QgsFeatureRequest()
             request.setDestinationCrs(GEO_CRS, QgsProject.instance().transformContext())
@@ -331,42 +343,43 @@ class KmlWriterTask(QgsTask):
             if len(attrs) > 0:
                 request.setSubsetOfAttributes(attrs)
 
-            for feat in self.data.getFeatures(request):
-                geom = feat.geometry()
-                multiGeometry = geom.isMultipart()
-                parts = geom.asGeometryCollection()
+            for styleId, expression in styleMap.items():
+                if expression != 'all':
+                    request.setFilterExpression(expression)
 
-                f.write('    <Placemark>\n')
+                for feat in self.data.getFeatures(request):
+                    geom = feat.geometry()
+                    multiGeometry = geom.isMultipart()
+                    parts = geom.asGeometryCollection()
 
-                if idxName != -1:
-                    f.write('      <name>{}</name>\n'.format(feat[name]))
-                if idxDescription != -1:
-                    f.write('      <description>{}</description>\n'.format(feat[description]))
+                    f.write('    <Placemark>\n')
 
-                if overrideStyle:
-                    f.write('      <styleUrl>#default</styleUrl>\n')
-                else:
-                    pass
+                    if idxName != -1:
+                        f.write('      <name>{}</name>\n'.format(feat[name]))
+                    if idxDescription != -1:
+                        f.write('      <description>{}</description>\n'.format(feat[description]))
 
-                if multiGeometry:
-                    f.write('      <MultiGeometry>\n')
+                    f.write('      <styleUrl>#{}</styleUrl>\n'.format(styleId))
 
-                for part in parts:
-                    f.write('      <LineString>\n')
-                    f.write('        <extrude>{}</extrude>\n'.format(extrude))
-                    f.write('        <tessellate>{}</tessellate>\n'.format(tessellate))
-                    f.write('        <gx:altitudeMode>{}</gx:altitudeMode>\n'.format(altitudeMode))
-                    f.write('        <coordinates>\n')
-                    g = part.constGet()
-                    for p in g.points():
-                        f.write('          {},{},{}\n'.format(p.x(), p.y(), p.z() if p.is3D() else altitude))
-                    f.write('        </coordinates>\n')
-                    f.write('      </LineString>\n')
+                    if multiGeometry:
+                        f.write('      <MultiGeometry>\n')
 
-                if multiGeometry:
-                    f.write('      </MultiGeometry>\n')
+                    for part in parts:
+                        f.write('      <LineString>\n')
+                        f.write('        <extrude>{}</extrude>\n'.format(extrude))
+                        f.write('        <tessellate>{}</tessellate>\n'.format(tessellate))
+                        f.write('        <gx:altitudeMode>{}</gx:altitudeMode>\n'.format(altitudeMode))
+                        f.write('        <coordinates>\n')
+                        g = part.constGet()
+                        for p in g.points():
+                            f.write('          {},{},{}\n'.format(p.x(), p.y(), p.z() if p.is3D() else altitude))
+                        f.write('        </coordinates>\n')
+                        f.write('      </LineString>\n')
 
-                f.write('    </Placemark>\n')
+                    if multiGeometry:
+                        f.write('      </MultiGeometry>\n')
+
+                    f.write('    </Placemark>\n')
 
             f.write('  </Document>\n')
             f.write('</kml>\n')
@@ -387,6 +400,16 @@ class KmlWriterTask(QgsTask):
         idxName = fields.indexFromName(name)
         idxDescription = fields.indexFromName(description)
 
+        overrideStyle = settings.value('QgsCollapsibleGroupBox/getools/grpPolygonStyle/checked', False, bool)
+        if overrideStyle:
+            styleMap, style = defaultStyle(self.data)
+        else:
+            styleMap, style = kmlStyle(self.data)
+
+        if styleMap is None:
+            self.error = style
+            return False
+
         layerName = utils.encodeForXml(self.data.name())
         kmlFile = utils.tempFileName('{}.kml'.format(utils.safeLayerName(self.data.name())))
         with open(kmlFile, 'w', encoding='utf-8') as f:
@@ -395,13 +418,7 @@ class KmlWriterTask(QgsTask):
             f.write('  <Document>\n')
             f.write('    <name>{}</name>\n'.format(layerName))
             f.write('    <description>QGIS vector — {}</description>\n'.format(layerName))
-
-            overrideStyle = settings.value('QgsCollapsibleGroupBox/getools/grpPolygonStyle/checked', False, bool)
-            if overrideStyle:
-                style = self._defaultStyle()
-                f.write(style)
-            else:
-                pass
+            f.write('    {}\n'.format(style))
 
             request = QgsFeatureRequest()
             request.setDestinationCrs(GEO_CRS, QgsProject.instance().transformContext())
@@ -416,137 +433,62 @@ class KmlWriterTask(QgsTask):
             if len(attrs) > 0:
                 request.setSubsetOfAttributes(attrs)
 
-            for feat in self.data.getFeatures(request):
-                geom = feat.geometry()
-                multiGeometry = geom.isMultipart()
-                parts = geom.asGeometryCollection()
+            for styleId, expression in styleMap.items():
+                if expression != 'all':
+                    request.setFilterExpression(expression)
 
-                f.write('    <Placemark>\n')
+                for feat in self.data.getFeatures(request):
+                    geom = feat.geometry()
+                    multiGeometry = geom.isMultipart()
+                    parts = geom.asGeometryCollection()
 
-                if idxName != -1:
-                    f.write('      <name>{}</name>\n'.format(feat[name]))
-                if idxDescription != -1:
-                    f.write('      <description>{}</description>\n'.format(feat[description]))
+                    f.write('    <Placemark>\n')
 
-                if overrideStyle:
-                    f.write('      <styleUrl>#default</styleUrl>\n')
-                else:
-                    pass
+                    if idxName != -1:
+                        f.write('      <name>{}</name>\n'.format(feat[name]))
+                    if idxDescription != -1:
+                        f.write('      <description>{}</description>\n'.format(feat[description]))
 
-                if multiGeometry:
-                    f.write('      <MultiGeometry>\n')
+                    f.write('      <styleUrl>#{}</styleUrl>\n'.format(styleId))
 
-                for part in parts:
-                    f.write('      <Polygon>\n')
-                    f.write('        <extrude>{}</extrude>\n'.format(extrude))
-                    f.write('        <tessellate>{}</tessellate>\n'.format(tessellate))
-                    f.write('        <gx:altitudeMode>{}</gx:altitudeMode>\n'.format(altitudeMode))
+                    if multiGeometry:
+                        f.write('      <MultiGeometry>\n')
 
-                    f.write('        <outerBoundaryIs>\n')
-                    f.write('          <LinearRing>\n')
-                    f.write('            <coordinates>\n')
-                    polygon = part.constGet()
-                    ring = polygon.exteriorRing()
-                    for p in ring.points():
-                        f.write('          {},{},{}\n'.format(p.x(), p.y(), p.z() if p.is3D() else altitude))
-                    f.write('            </coordinates>\n')
-                    f.write('          </LinearRing>\n')
-                    f.write('        </outerBoundaryIs>\n')
-                    for i in range(polygon.numInteriorRings()):
-                        ring = polygon.interiorRing(i)
-                        f.write('        <innerBoundaryIs>\n')
+                    for part in parts:
+                        f.write('      <Polygon>\n')
+                        f.write('        <extrude>{}</extrude>\n'.format(extrude))
+                        f.write('        <tessellate>{}</tessellate>\n'.format(tessellate))
+                        f.write('        <gx:altitudeMode>{}</gx:altitudeMode>\n'.format(altitudeMode))
+
+                        f.write('        <outerBoundaryIs>\n')
                         f.write('          <LinearRing>\n')
                         f.write('            <coordinates>\n')
+                        polygon = part.constGet()
+                        ring = polygon.exteriorRing()
                         for p in ring.points():
                             f.write('          {},{},{}\n'.format(p.x(), p.y(), p.z() if p.is3D() else altitude))
                         f.write('            </coordinates>\n')
                         f.write('          </LinearRing>\n')
-                        f.write('        </innerBoundaryIs>\n')
-                    f.write('      </Polygon>\n')
+                        f.write('        </outerBoundaryIs>\n')
+                        for i in range(polygon.numInteriorRings()):
+                            ring = polygon.interiorRing(i)
+                            f.write('        <innerBoundaryIs>\n')
+                            f.write('          <LinearRing>\n')
+                            f.write('            <coordinates>\n')
+                            for p in ring.points():
+                                f.write('          {},{},{}\n'.format(p.x(), p.y(), p.z() if p.is3D() else altitude))
+                            f.write('            </coordinates>\n')
+                            f.write('          </LinearRing>\n')
+                            f.write('        </innerBoundaryIs>\n')
+                        f.write('      </Polygon>\n')
 
-                if multiGeometry:
-                    f.write('      </MultiGeometry>\n')
+                    if multiGeometry:
+                        f.write('      </MultiGeometry>\n')
 
-                f.write('    </Placemark>\n')
+                    f.write('    </Placemark>\n')
 
             f.write('  </Document>\n')
             f.write('</kml>\n')
 
         self.fileName = os.path.normpath(kmlFile)
         return True
-
-    def _defaultStyle(self):
-        style = []
-        settings = QgsSettings()
-        r = settings.value('getools/labelColorRed', 255, int)
-        g = settings.value('getools/labelColorGreen', 255, int)
-        b = settings.value('getools/labelColorBlue', 0, int)
-        a = settings.value('getools/labelColorAlpha', 255, int)
-        mode = settings.value('getools/labelColorMode', 'normal', str)
-        scale = settings.value('getools/labelScale', 1.0, float)
-
-        style.append('    <Style id="default">')
-        style.append('      <LabelStyle>')
-        style.append('        <сolor>{:02x}{:02x}{:02x}{:02x}</color>'.format(a, b, g, r))
-        style.append('        <сolorMode>{}</colorMode>'.format(mode))
-        style.append('        <scale>{}</scale>'.format(scale))
-        style.append('      </LabelStyle>')
-
-        geometryType = self.data.geometryType()
-        if geometryType == QgsWkbTypes.PointGeometry:
-            r = settings.value('getools/pointColorRed', 255, int)
-            g = settings.value('getools/pointColorGreen', 255, int)
-            b = settings.value('getools/pointColorBlue', 0, int)
-            a = settings.value('getools/pointColorAlpha', 255, int)
-            mode = settings.value('getools/pointColorMode', 'normal', str)
-            scale = settings.value('getools/pointScale', 1.0, float)
-
-            style.append('      <IconStyle>')
-            style.append('        <color>{:02x}{:02x}{:02x}{:02x}</color>'.format(a, b, g, r))
-            style.append('        <colorMode>{}</colorMode>'.format(mode))
-            style.append('        <scale>{}</scale>'.format(scale))
-            style.append('      </IconStyle>')
-        elif geometryType == QgsWkbTypes.LineGeometry:
-            r = settings.value('getools/lineColorRed', 255, int)
-            g = settings.value('getools/lineColorGreen', 255, int)
-            b = settings.value('getools/lineColorBlue', 0, int)
-            a = settings.value('getools/lineColorAlpha', 255, int)
-            mode = settings.value('getools/lineColorMode', 'normal', str)
-            width = settings.value('getools/lineWidth', 1, int)
-
-            style.append('      <LineStyle>')
-            style.append('        <color>{:02x}{:02x}{:02x}{:02x}</color>'.format(a, b, g, r))
-            style.append('        <colorMode>{}</colorMode>'.format(mode))
-            style.append('        <width>{}</width>'.format(width))
-            style.append('      </LineStyle>')
-        elif geometryType == QgsWkbTypes.PolygonGeometry:
-            r = settings.value('getools/polygonStrokeColorRed', 255, int)
-            g = settings.value('getools/polygonStrokeColorGreen', 255, int)
-            b = settings.value('getools/polygonStrokeColorBlue', 0, int)
-            a = settings.value('getools/polygonStrokeColorAlpha', 255, int)
-            mode = settings.value('getools/polygonStrokeColorMode', 'normal', str)
-            width = settings.value('getools/polygonStrokeWidth', 1, int)
-
-            style.append('      <LineStyle>')
-            style.append('        <color>{:02x}{:02x}{:02x}{:02x}</color>'.format(a, b, g, r))
-            style.append('        <colorMode>{}</colorMode>'.format(mode))
-            style.append('        <width>{}</width>'.format(width))
-            style.append('      </LineStyle>')
-
-            r = settings.value('getools/polygonFillColorRed', 255, int)
-            g = settings.value('getools/polygonFillColorGreen', 255, int)
-            b = settings.value('getools/polygonFillColorBlue', 0, int)
-            a = settings.value('getools/polygonFillColorAlpha', 255, int)
-            mode = settings.value('getools/polygonFillColorMode', 'normal', str)
-            fill = settings.value('getools/polygonFill', True, bool)
-            outline = settings.value('getools/polygonOutline', True, bool)
-
-            style.append('      <PolyStyle>')
-            style.append('        <color>{:02x}{:02x}{:02x}{:02x}</color>'.format(a, b, g, r))
-            style.append('        <colorMode>{}</colorMode>'.format(mode))
-            style.append('        <fill>{:d}</fill>'.format(fill))
-            style.append('        <outline>{:d}</outline>'.format(outline))
-            style.append('      </PolyStyle>')
-
-        style.append('    </Style>\n')
-        return '\n'.join(style)
