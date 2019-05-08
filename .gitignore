@@ -3,4 +3,5 @@
 *~
 *.diff
 *.log*
-__pycache__
+*.qm
+__pycache__/
