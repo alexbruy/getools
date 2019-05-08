@@ -1,9 +1,9 @@
 [general]
 name=GETools
-description=View cursor position, selected features or whole layer in Google Earth
-about=This plugin is a "bridge" between QGIS and Google Earth. With it one can easily view or show to another person location, feature(s) or whole layer in Google Earth. Just click in desired place of QGIS map, select features in active vector layer, or simply select whole layer (raster or vector) in ToC. Plugin will generate corresponding KML file and open it with Google Earth. It is possible to specify and use custom style for all types of vector features (point, line, polygon).
+description=View cursor position, selected features or whole layer in the Google Earth
+about=This plugin is a "bridge" between QGIS and Google Earth. With it one can easily view or show to another person location, feature(s) or a whole layer in the Google Earth. Just click at the desired place on the QGIS map, select features in the active vector layer, or simply select whole layer (raster or vector) in the QGIS layer tree. Plugin will generate corresponding KML file and open it with Google Earth desktop app (need to be installed). It is possible to preserve layer style or specify and use custom style for all types of vector features (point, line, polygon).
 category=Plugins
-version=0.1.0
+version=1.0.0
 qgisMinimumVersion=3.0
 
 author=Alexander Bruy
