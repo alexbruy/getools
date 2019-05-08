@@ -127,14 +127,14 @@ def kmlStyle(layer):
         return None, tr('"{}" renderer is not supported.'.format(rendererType))
 
 
-def _singleStyle(layer):
+def _simpleStyle(layer):
     symbolLayer = layer.renderer().symbol().symbolLayer(0)
     labeling = layer.labeling()
     ok, style = _symbolLayerToStyle(symbolLayer, labeling)
     if not ok:
         return None, style
 
-    styleDefinition = '    <Style id="simpleStyle">{}\n    </Style>'.format(style)
+    styleDefinition = '    <Style id="simpleStyle">\n{}\n    </Style>'.format(style)
     return {'simpleStyle': 'all'}, styleDefinition
 
 
@@ -161,12 +161,13 @@ def _categorizedStyle(layer):
         if not ok:
             return None, style
 
-        styleDefinition = '    <Style id="{}">{}\n    </Style>'.format(styleId, style)
+        styleDefinition = '    <Style id="{}">\n{}\n    </Style>'.format(styleId, style)
         styles.append(styleDefinition)
 
         if c.value() is not None:
-            elseValues.append(QgsExpression.quotedValue(c.value()))
-            styleMap[styleId] = '{} = {}'.format(classAttribute, c.value())
+            v = QgsExpression.quotedValue(c.value())
+            elseValues.append(v)
+            styleMap[styleId] = '{} = {}'.format(classAttribute, v)
         else:
             styleMap[styleId] = '{} NOT IN ({})'.format(classAttribute, ','.join(elseValues))
 
@@ -194,7 +195,7 @@ def _graduatedStyle(layer):
         ok, style = _symbolLayerToStyle(symbolLayer, labeling)
         if not ok:
             return None, style
-        styleDefinition = '    <Style id="{}">{}\n    </Style>'.format(styleId, style)
+        styleDefinition = '    <Style id="{}">\n{}\n    </Style>'.format(styleId, style)
         styles.append(styleDefinition)
         styleMap[styleId] = '{attr} >= {lower} AND {attr} <= {upper}'.format(attr=classAttribute, lower=r.lowerValue(), upper=r.upperValue())
 

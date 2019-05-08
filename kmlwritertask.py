@@ -241,7 +241,7 @@ class KmlWriterTask(QgsTask):
             f.write('  <Document>\n')
             f.write('    <name>{}</name>\n'.format(layerName))
             f.write('    <description>QGIS vector — {}</description>\n'.format(layerName))
-            f.write('    {}\n'.format(style))
+            f.write('{}\n'.format(style))
 
             request = QgsFeatureRequest()
             request.setDestinationCrs(GEO_CRS, QgsProject.instance().transformContext())
@@ -328,7 +328,7 @@ class KmlWriterTask(QgsTask):
             f.write('  <Document>\n')
             f.write('    <name>{}</name>\n'.format(layerName))
             f.write('    <description>QGIS vector — {}</description>\n'.format(layerName))
-            f.write('    {}\n'.format(style))
+            f.write('{}\n'.format(style))
 
             request = QgsFeatureRequest()
             request.setDestinationCrs(GEO_CRS, QgsProject.instance().transformContext())
@@ -418,7 +418,7 @@ class KmlWriterTask(QgsTask):
             f.write('  <Document>\n')
             f.write('    <name>{}</name>\n'.format(layerName))
             f.write('    <description>QGIS vector — {}</description>\n'.format(layerName))
-            f.write('    {}\n'.format(style))
+            f.write('{}\n'.format(style))
 
             request = QgsFeatureRequest()
             request.setDestinationCrs(GEO_CRS, QgsProject.instance().transformContext())
