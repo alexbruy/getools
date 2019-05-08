@@ -25,7 +25,7 @@ __copyright__ = '(C) 2019, Alexander Bruy'
 
 __revision__ = '$Format:%H$'
 
-from qgis.PyQt.QtCore import QCoreApplication
+from qgis.PyQt.QtCore import Qt, QCoreApplication
 
 from qgis.core import QgsSettings, QgsExpression, QgsUnitTypes, QgsWkbTypes
 from qgis.utils import iface
