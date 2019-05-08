@@ -52,7 +52,7 @@ def defaultStyle(layer):
     style.append('        <scale>{}</scale>'.format(scale))
     style.append('      </LabelStyle>')
 
-    geometryType = self.data.geometryType()
+    geometryType = layer.geometryType()
     if geometryType == QgsWkbTypes.PointGeometry:
         r = settings.value('getools/pointColorRed', 255, int)
         g = settings.value('getools/pointColorGreen', 255, int)
