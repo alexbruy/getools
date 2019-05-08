@@ -107,7 +107,8 @@ class OptionsDialog(QgsOptionsDialogBase, WIDGET):
             self.cmbPointAltitudeMode.addItem(k, v)
             self.cmbLineAltitudeMode.addItem(k, v)
             self.cmbPolygonAltitudeMode.addItem(k, v)
-            self.cmbRasterAltitudeMode.addItem(k, v)
+            if v != 'relativeToGround':
+                self.cmbRasterAltitudeMode.addItem(k, v)
 
         # Points tab
         self.lePointName.setText(self.settings.value('getools/pointName', '', str))
