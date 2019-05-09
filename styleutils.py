@@ -47,8 +47,8 @@ def defaultStyle(layer):
 
     style.append('    <Style id="default">')
     style.append('      <LabelStyle>')
-    style.append('        <сolor>{:02x}{:02x}{:02x}{:02x}</color>'.format(a, b, g, r))
-    style.append('        <сolorMode>{}</colorMode>'.format(mode))
+    style.append('        <color>{:02x}{:02x}{:02x}{:02x}</color>'.format(a, b, g, r))
+    style.append('        <colorMode>{}</colorMode>'.format(mode))
     style.append('        <scale>{}</scale>'.format(scale))
     style.append('      </LabelStyle>')
 
@@ -209,7 +209,7 @@ def _symbolLayerToStyle(symbolLayer, labeling):
         color = labeling.settings().format().color()
         style.append('      <LabelStyle>')
         style.append('        <сolor>{:02x}{:02x}{:02x}{:02x}</color>'.format(color.alpha(), color.blue(), color.green(), color.red()))
-        style.append('        <сolorMode>normal</colorMode>')
+        style.append('        <colorMode>normal</colorMode>')
         style.append('        <scale>1</scale>')
         style.append('      </LabelStyle>')
 
